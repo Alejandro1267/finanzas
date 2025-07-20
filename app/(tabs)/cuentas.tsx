@@ -1,36 +1,14 @@
+"use client"
+
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import AccountModal from '@/components/finance/AccountModal';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useFinanceStore } from '@/store/FinanceStore';
 
 export default function TabTwoScreen() {
-    const addAccount = () => {
-        console.log('addAccount')
-    }
-
-    const { accounts } = useFinanceStore();
-
-  // const cuentas = [
-    // {
-    //   nombre: "Gastos Básicos",
-    //   porcentaje: 50,
-    //   balance: 0,
-    //   color: "#FF6B6B"
-    // },
-    // {
-    //   nombre: "Ahorros",
-    //   porcentaje: 30,
-    //   balance: 0,
-    //   color: "#4ECDC4"
-    // },
-    // {
-    //   nombre: "Galletas",
-    //   porcentaje: 20,
-    //   balance: 0,
-    //   color: "#4CAF50"
-    // },
-  // ]
+    const { accounts, setShowAccountModal, createEmptyAccount } = useFinanceStore();
 
   return (
     <ParallaxScrollView
@@ -49,7 +27,8 @@ export default function TabTwoScreen() {
           <View style={styles.list}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => {addAccount()}}
+            // onPress={() => {addAccount()}}
+            onPress={() => {setShowAccountModal(true); createEmptyAccount()}}
           >
               <Text style={styles.buttonText}>Agregar Cuenta</Text>
           </TouchableOpacity>
@@ -65,6 +44,7 @@ export default function TabTwoScreen() {
           ))}
           </View>
       </ScrollView>
+      <AccountModal />
     </ParallaxScrollView>
   );
 }
