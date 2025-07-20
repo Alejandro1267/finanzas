@@ -11,14 +11,14 @@
 
 "use client"
 
-import { AccountsList } from "@/components/finance/AccountsList"
-import { AccountsModal } from "@/components/finance/AccountsModal"
-import { ActionButtons } from "@/components/finance/ActionButtons"
-import { AlertMessage } from "@/components/finance/AlertMessage"
-import { ExpenseModal } from "@/components/finance/ExpenseModal"
-import { Header } from "@/components/finance/Header"
-import { IncomeModal } from "@/components/finance/IncomeModal"
-import { TransactionsList } from "@/components/finance/TransactionsList"
+import { AccountsList } from "@/components/finance2/AccountsList"
+import { AccountsModal } from "@/components/finance2/AccountsModal"
+import { ActionButtons } from "@/components/finance2/ActionButtons"
+import { AlertMessage } from "@/components/finance2/AlertMessage"
+import { ExpenseModal } from "@/components/finance2/ExpenseModal"
+import { Header } from "@/components/finance2/Header"
+import { IncomeModal } from "@/components/finance2/IncomeModal"
+import { TransactionsList } from "@/components/finance2/TransactionsList"
 import { useState } from "react"
 import { View } from "react-native"
 
