@@ -40,6 +40,7 @@ export default function TabTwoScreen() {
               <Text>{account.name}</Text>
               <Text>{account.percentage}%</Text>
               <Text>{account.balance}</Text>
+              <Text>{account.color}</Text>
             </View>
           ))}
           </View>

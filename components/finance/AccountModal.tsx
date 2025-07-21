@@ -12,17 +12,17 @@ export default function AccountModal() {
   const { showAccountModal, setShowAccountModal, currentAccount, setField, addAccount } = useFinanceStore();
 
   const handleAddAccount = () => {
-    if (!currentAccount?.name || !currentAccount?.percentage || !currentAccount?.balance) {
+    if (!currentAccount?.name || !currentAccount?.percentage) {
       Alert.alert('Error', 'Por favor completa todos los campos');
       return;
     }
     
       addAccount({
-        id: "12",
+        id: "13",
         name: currentAccount?.name || "",
         percentage: currentAccount?.percentage || 0,
         balance: currentAccount?.balance || 0,
-        color: "#FF6B6B",
+        color: currentAccount?.color || "#1E824C",
       });
     
       // Limpiar el formulario
