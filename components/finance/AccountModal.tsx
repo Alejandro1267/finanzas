@@ -1,5 +1,5 @@
 import { useFinanceStore } from '@/store/FinanceStore';
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 
@@ -12,10 +12,10 @@ export default function AccountModal() {
   const { showAccountModal, setShowAccountModal, currentAccount, setField, addAccount } = useFinanceStore();
 
   const handleAddAccount = () => {
-    //   if (!accountName || !accountPercentage || !accountBalance) {
-    //     Alert.alert('Error', 'Por favor completa todos los campos');
-    //     return;
-    //   }
+    if (!currentAccount?.name || !currentAccount?.percentage || !currentAccount?.balance) {
+      Alert.alert('Error', 'Por favor completa todos los campos');
+      return;
+    }
     
       addAccount({
         id: "12",
@@ -32,6 +32,22 @@ export default function AccountModal() {
     //   setIsModalVisible(false);
     };
 
+    const COLOR_PALETTE = [
+        "#1F3A93", // Azul
+        "#4ECDC4", // Cian
+        "#1E824C", // Verde Oscuro
+        "#A3CB38", // Verde Claro
+        "#F9BF3B", // Amarillo
+        "#FF6F00", // Naranja
+        // "#E63946", // Rojo
+        "#F44336", // Rojo
+        "#FF6B81", // Rosa
+        "#8E44AD", // Morado
+        "#6F4E37", // Café
+        "#95A5A6", // Gris
+        "#2C3E50", // Negro
+    ];
+
   return (
     <Modal
       animationType="slide"
@@ -43,13 +59,15 @@ export default function AccountModal() {
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Nueva Cuenta</Text>    
 
+          <Text>Nombre de la Cuenta</Text>
           <TextInput
             style={styles.input}
-            placeholder="Nombre de la cuenta"
+            placeholder="Nombre"
             value={currentAccount?.name || ""}
             onChangeText={(value) => setField("name", value)}
           />
 
+          <Text>Porcentaje de Ingreso</Text>
           <TextInput
             style={styles.input}
             placeholder="Porcentaje (%)"
@@ -58,6 +76,7 @@ export default function AccountModal() {
             onChangeText={(value) => setField("percentage", Number(value))}
           />
 
+          <Text>Saldo Inicial</Text>
           <TextInput
             style={styles.input}
             placeholder="Saldo inicial"
@@ -65,6 +84,33 @@ export default function AccountModal() {
             value={currentAccount?.balance.toString() || "0"}
             onChangeText={(value) => setField("balance", Number(value))}
           />
+
+          {/* <Text>Color</Text> */}
+          <View style={{ marginBottom: 15 }}>
+            <Text style={{ marginBottom: 10, fontWeight: '500' }}>Color de la cuenta</Text>
+            <View>
+              {/* Dividir los colores en filas de 5 */}
+              {Array.from({ length: Math.ceil(COLOR_PALETTE.length / 6) }).map((_, rowIndex) => (
+                <View key={rowIndex} style={{ flexDirection: 'row', marginBottom: 10 }}>
+                  {COLOR_PALETTE.slice(rowIndex * 6, (rowIndex + 1) * 6).map((color) => (
+                    <TouchableOpacity
+                      key={color}
+                      onPress={() => setField("color", color)}
+                      style={[
+                        styles.colorCircle,
+                        { 
+                          backgroundColor: color,
+                          borderColor: currentAccount?.color === color ? '#000' : 'transparent',
+                          borderWidth: currentAccount?.color === color ? 2 : 0,
+                          marginRight: 10
+                        }
+                      ]}
+                    />
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
             
           <View style={styles.buttonContainer}>
             <TouchableOpacity
@@ -86,6 +132,12 @@ export default function AccountModal() {
     </Modal>
   )
 }
+
+// Agrega esto al inicio del archivo, después de los imports
+
+  
+  // Reemplaza el TextInput del color con:
+  
 
 
 const styles = StyleSheet.create({
@@ -123,7 +175,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
       },
       cancelButton: {
-        backgroundColor: '#f44336',
+        backgroundColor: '#F44336',
       },
       addButton: {
         backgroundColor: '#4CAF50',
@@ -138,4 +190,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
       },
+      colorCircle: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: '#E0E0E0'
+      }
 })
