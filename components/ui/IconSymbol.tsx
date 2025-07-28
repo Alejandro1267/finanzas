@@ -23,8 +23,7 @@ const MAPPING = {
   "chevron.right": "chevron-right",
   circle: "wallet",
   plus: "add",
-  // 'circle.fill': 'circle',
-  // 'wallet': 'circle',
+  "list.bullet": "list-alt",
 } as IconMapping;
 
 /**
