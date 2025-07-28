@@ -8,11 +8,20 @@ export type Account = {
   color: string
 }
 
+export type Record = {
+  id: string
+  type: "income" | "expense"
+  amount: number
+  description: string
+  date: string
+}
+
 type FinanceState = {
   // State
   currentAccount: Account | null
   accounts: Account[]
   showAccountModal: boolean
+  records: Record[]
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -52,6 +61,29 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     },
   ],
   showAccountModal:  false,
+  records: [
+    {
+      id: "1",
+      type: "income",
+      amount: 100,
+      description: "Regalo",
+      date: "2025-07-28"
+    },
+    {
+      id: "2",
+      type: "expense",
+      amount: 50,
+      description: "Galletas",
+      date: "2025-07-28"
+    },
+    {
+      id: "3",
+      type: "income",
+      amount: 250,
+      description: "Sueldo",
+      date: "2025-07-28"
+    },
+  ],
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
