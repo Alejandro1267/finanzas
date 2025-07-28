@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { IconSymbol } from "../ui/IconSymbol";
 
 export default function AccountModal() {
   const {
@@ -16,6 +17,7 @@ export default function AccountModal() {
     currentAccount,
     setField,
     addAccount,
+    createEmptyAccount,
   } = useFinanceStore();
 
   const handleAddAccount = () => {
@@ -25,7 +27,7 @@ export default function AccountModal() {
     }
 
     addAccount({
-      id: "13",
+      id: "11",
       name: currentAccount?.name || "",
       percentage: currentAccount?.percentage || 0,
       balance: currentAccount?.balance || 0,
@@ -51,51 +53,53 @@ export default function AccountModal() {
   ];
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={showAccountModal}
-      onRequestClose={() => setShowAccountModal(false)}
-    >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Nueva Cuenta</Text>
+    <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showAccountModal}
+        onRequestClose={() => setShowAccountModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Nueva Cuenta</Text>
 
-          <Text>Nombre de la Cuenta</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre"
-            value={currentAccount?.name || ""}
-            onChangeText={(value) => setField("name", value)}
-          />
+            <Text>Nombre de la Cuenta</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre"
+              value={currentAccount?.name || ""}
+              onChangeText={(value) => setField("name", value)}
+            />
 
-          <Text>Porcentaje de Ingreso</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Porcentaje (%)"
-            keyboardType="numeric"
-            value={currentAccount?.percentage.toString() || "0"}
-            onChangeText={(value) => setField("percentage", Number(value))}
-          />
+            <Text>Porcentaje de Ingreso</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Porcentaje (%)"
+              keyboardType="numeric"
+              value={currentAccount?.percentage.toString() || "0"}
+              onChangeText={(value) => setField("percentage", Number(value))}
+            />
 
-          <Text>Saldo Inicial</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Saldo inicial"
-            keyboardType="numeric"
-            value={currentAccount?.balance.toString() || "0"}
-            onChangeText={(value) => setField("balance", Number(value))}
-          />
+            <Text>Saldo Inicial</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Saldo inicial"
+              keyboardType="numeric"
+              value={currentAccount?.balance.toString() || "0"}
+              onChangeText={(value) => setField("balance", Number(value))}
+            />
 
-          {/* <Text>Color</Text> */}
-          <View style={{ marginBottom: 15 }}>
-            <Text style={{ marginBottom: 10, fontWeight: "500" }}>
-              Color de la cuenta
-            </Text>
-            <View>
-              {/* Dividir los colores en filas de 5 */}
-              {Array.from({ length: Math.ceil(COLOR_PALETTE.length / 6) }).map(
-                (_, rowIndex) => (
+            {/* <Text>Color</Text> */}
+            <View style={{ marginBottom: 15 }}>
+              <Text style={{ marginBottom: 10, fontWeight: "500" }}>
+                Color de la cuenta
+              </Text>
+              <View>
+                {/* Dividir los colores en filas de 5 */}
+                {Array.from({
+                  length: Math.ceil(COLOR_PALETTE.length / 6),
+                }).map((_, rowIndex) => (
                   <View
                     key={rowIndex}
                     style={{ flexDirection: "row", marginBottom: 10 }}
@@ -122,29 +126,38 @@ export default function AccountModal() {
                       )
                     )}
                   </View>
-                )
-              )}
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => setShowAccountModal(false)}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.addButton]}
+                onPress={handleAddAccount}
+              >
+                <Text style={styles.buttonText}>Agregar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={() => setShowAccountModal(false)}
-            >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.addButton]}
-              onPress={handleAddAccount}
-            >
-              <Text style={styles.buttonText}>Agregar</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => {
+          setShowAccountModal(true);
+          createEmptyAccount();
+        }}
+      >
+        <IconSymbol name="plus" size={24} color="#fff" />
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -205,5 +218,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderWidth: 1,
     borderColor: "#E0E0E0",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#007AFF",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });

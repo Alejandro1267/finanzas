@@ -1,18 +1,17 @@
-"use client"
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import AccountModal from '@/components/finance/AccountModal';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useFinanceStore } from '@/store/FinanceStore';
+import AccountModal from "@/components/finance/AccountModal";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useFinanceStore } from "@/store/FinanceStore";
 
 export default function TabTwoScreen() {
-    const { accounts, setShowAccountModal, createEmptyAccount } = useFinanceStore();
+  const { accounts, setShowAccountModal, createEmptyAccount } =
+    useFinanceStore();
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#C8E6C9', dark: '#237D32' }}
+      headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
       headerImage={
         <IconSymbol
           size={310}
@@ -20,31 +19,30 @@ export default function TabTwoScreen() {
           name="chevron.left.forwardslash.chevron.right"
           style={styles.headerImage}
         />
-      }>
-      <ScrollView
-          style={styles.titleContainer}
-      >
-          <View style={styles.list}>
-          <TouchableOpacity
+      }
+    >
+      <ScrollView style={styles.titleContainer}>
+        <View>
+          {/* <TouchableOpacity
             style={styles.button}
-            // onPress={() => {addAccount()}}
-            onPress={() => {setShowAccountModal(true); createEmptyAccount()}}
+            onPress={() => {
+              setShowAccountModal(true);
+              createEmptyAccount();
+            }}
           >
-              <Text style={styles.buttonText}>Agregar Cuenta</Text>
-          </TouchableOpacity>
-          {accounts.map((account) => (
-            <View
-              key={account.name}
-              // style={styles.list}
-            >
-              <Text>{account.name}</Text>
-              <Text>{account.percentage}%</Text>
-              <Text>{account.balance}</Text>
-              <Text>{account.color}</Text>
-            </View>
-          ))}
+            <Text style={styles.buttonText}>Agregar Cuenta</Text>
+          </TouchableOpacity> */}
+
+          <View style={styles.list}>
+            {accounts.map((account) => (
+              <View key={account.name}>
+                <Text style={styles.listItem}>{account.name}</Text>
+              </View>
+            ))}
           </View>
+        </View>
       </ScrollView>
+
       <AccountModal />
     </ParallaxScrollView>
   );
@@ -54,24 +52,28 @@ const styles = StyleSheet.create({
   headerImage: {
     bottom: -90,
     left: -35,
-    position: 'absolute',
+    position: "absolute",
   },
   titleContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 32,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 16,
     borderRadius: 8,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   list: {
-    flexDirection: 'column',
-    gap: 24,
-  }
+    flexDirection: "column",
+    // gap: 24,
+  },
+  listItem: {
+    // backgroundColor: "#FF6F00",
+    padding: 8,
+  },
 });
