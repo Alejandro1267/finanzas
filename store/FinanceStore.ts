@@ -22,10 +22,12 @@ type FinanceState = {
   accounts: Account[]
   showAccountModal: boolean
   records: Record[]
+  alertMessage: string
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
   setShowAccountModal: (show: boolean) => void
+  setAlertMessage: (message: string) => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -84,6 +86,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       date: "2025-07-28"
     },
   ],
+  alertMessage: "",
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -118,6 +121,10 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       color: ""
     } })
   },
+  setAlertMessage: (message: string) => {
+    set({ alertMessage: message })
+    setTimeout(() => set({ alertMessage: "" }), 3000)
+  }
 
 
 }))

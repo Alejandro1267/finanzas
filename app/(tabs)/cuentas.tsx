@@ -1,11 +1,15 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import AccountModal from "@/components/finance/AccountModal";
 import { AccountsList } from "@/components/finance/AccountsList";
+import { AlertMessage } from "@/components/finance2/AlertMessage";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useFinanceStore } from "@/store/FinanceStore";
 
 export default function TabTwoScreen() {
+  const { setAlertMessage } = useFinanceStore();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
@@ -18,6 +22,10 @@ export default function TabTwoScreen() {
         />
       }
     >
+      <AlertMessage />
+      <TouchableOpacity onPress={() => setAlertMessage("Hello")}>
+        <Text>Mostrar Alerta</Text>
+      </TouchableOpacity>
       <AccountsList />
       <AccountModal />
     </ParallaxScrollView>
