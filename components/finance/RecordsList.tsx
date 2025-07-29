@@ -81,9 +81,9 @@ const styles = StyleSheet.create({
     color: Colors.red,
   },
   account: {
-    fontSize: 12,
-    color: "#",
-    // color: Colors.slate[500],
+    fontSize: 14,
+    color: Colors.blue,
     marginTop: 4,
+    fontWeight: "500",
   },
 });
