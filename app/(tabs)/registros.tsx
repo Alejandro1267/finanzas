@@ -1,3 +1,4 @@
+import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -22,6 +23,7 @@ export default function TabTwoScreen() {
       }
     >
       <RecordsList />
+      <RecordModal />
     </ParallaxScrollView>
   );
 }

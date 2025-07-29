@@ -24,11 +24,13 @@ type FinanceState = {
   showAccountModal: boolean
   records: Record[]
   alertMessage: string
+  showRecordModal: boolean
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
   setShowAccountModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
+  setShowRecordModal: (show: boolean) => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -91,6 +93,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     },
   ],
   alertMessage: "",
+  showRecordModal: false,
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -99,6 +102,14 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   setShowAccountModal: (show: boolean) => {
     set({ showAccountModal: show })
   },
+  setAlertMessage: (message: string) => {
+    set({ alertMessage: message })
+    setTimeout(() => set({ alertMessage: "" }), 3000)
+  },
+  setShowRecordModal: (show: boolean) => {
+    set({ showRecordModal: show })
+  },
+
 
   // Functions
   addAccount: (account: Account) => {
@@ -125,10 +136,5 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       color: ""
     } })
   },
-  setAlertMessage: (message: string) => {
-    set({ alertMessage: message })
-    setTimeout(() => set({ alertMessage: "" }), 3000)
-  }
-
 
 }))
