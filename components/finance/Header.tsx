@@ -1,10 +1,11 @@
 import { Colors } from "@/constants/Colors";
-import { useFinanceStore } from "@/store/FinanceStore2";
 import { StyleSheet, Text, View } from "react-native";
 
 export function Header() {
-  const getTotalBalance = useFinanceStore((state) => state.getTotalBalance);
-  const totalBalance = getTotalBalance();
+  // const getTotalBalance = useFinanceStore((state) => state.getTotalBalance);
+  // const totalBalance = getTotalBalance();
+
+  const totalBalance = 0;
 
   return (
     <View style={styles.container}>
