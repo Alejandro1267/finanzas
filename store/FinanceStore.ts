@@ -14,6 +14,7 @@ export type Record = {
   amount: number
   description: string
   date: string
+  account: string
 }
 
 type FinanceState = {
@@ -69,21 +70,24 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       type: "income",
       amount: 100,
       description: "Regalo",
-      date: "2025-07-28"
+      date: "2025-07-28",
+      account: "3",
     },
     {
       id: "2",
       type: "expense",
       amount: 50,
       description: "Galletas",
-      date: "2025-07-28"
+      date: "2025-07-28",
+      account: "3",
     },
     {
       id: "3",
       type: "income",
       amount: 250,
       description: "Sueldo",
-      date: "2025-07-28"
+      date: "2025-07-28",
+      account: "1",
     },
   ],
   alertMessage: "",
