@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -32,17 +33,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
-    color: "#1e293b",
+    color: Colors.slate[800],
   },
   accountCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.white,
     padding: 16,
     marginBottom: 12,
     borderRadius: 8,
     elevation: 2,
-    shadowColor: "#000",
+    shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -59,11 +60,11 @@ const styles = StyleSheet.create({
   accountName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1e293b",
+    color: Colors.slate[800],
   },
   accountDetails: {
     fontSize: 14,
-    color: "#64748b",
+    color: Colors.slate[500],
     marginTop: 4,
   },
 });

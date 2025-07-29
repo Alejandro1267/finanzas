@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -7,9 +8,11 @@ export function AlertMessage() {
   if (!alertMessage) return null;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{alertMessage}</Text>
-    </View>
+    <>
+      <View style={styles.container}>
+        <Text style={styles.text}>{alertMessage}</Text>
+      </View>
+    </>
   );
 }
 
@@ -19,19 +22,19 @@ const styles = StyleSheet.create({
     top: 50,
     left: 20,
     right: 20,
-    backgroundColor: "#F44336",
+    backgroundColor: Colors.red,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
     zIndex: 1000,
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
   text: {
-    color: "white",
+    color: Colors.white,
     textAlign: "center",
     fontWeight: "600",
   },

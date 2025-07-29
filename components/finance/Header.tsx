@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore2";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -17,7 +18,7 @@ export function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#1e293b",
+    backgroundColor: Colors.slate[900],
     paddingVertical: 24,
     paddingHorizontal: 20,
     alignItems: "center",
@@ -25,11 +26,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: Colors.white,
     marginBottom: 8,
   },
   balance: {
     fontSize: 18,
-    color: "#e2e8f0",
+    color: Colors.slate[200],
   },
 });

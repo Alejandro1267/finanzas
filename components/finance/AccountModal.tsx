@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore";
 import {
   Alert,
@@ -31,25 +32,24 @@ export default function AccountModal() {
       name: currentAccount?.name || "",
       percentage: currentAccount?.percentage || 0,
       balance: currentAccount?.balance || 0,
-      color: currentAccount?.color || "#1E824C",
+      color: currentAccount?.color || Colors.blue,
     });
     setShowAccountModal(false);
   };
 
   const COLOR_PALETTE = [
-    "#1F3A93", // Azul
-    "#4ECDC4", // Cian
-    "#1E824C", // Verde Oscuro
-    "#A3CB38", // Verde Claro
-    "#F9BF3B", // Amarillo
-    "#FF6F00", // Naranja
-    // "#E63946", // Rojo
-    "#F44336", // Rojo
-    "#FF6B81", // Rosa
-    "#8E44AD", // Morado
-    "#6F4E37", // Café
-    "#95A5A6", // Gris
-    "#2C3E50", // Negro
+    Colors.blue, // Azul
+    Colors.cyan, // Cian
+    Colors.darkGreen, // Verde Oscuro
+    Colors.lightGreen, // Verde Claro
+    Colors.yellow, // Amarillo
+    Colors.orange, // Naranja
+    Colors.red, // Rojo
+    Colors.pink, // Rosa
+    Colors.purple, // Morado
+    Colors.brown, // Café
+    Colors.gray, // Gris
+    Colors.navyBlue, // Negro
   ];
 
   return (
@@ -155,7 +155,7 @@ export default function AccountModal() {
           createEmptyAccount();
         }}
       >
-        <IconSymbol name="plus" size={24} color="#fff" />
+        <IconSymbol name="plus" size={24} color={Colors.white} />
       </TouchableOpacity>
     </View>
   );
@@ -166,11 +166,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: Colors.modalBackground,
     padding: 20,
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 20,
     width: "90%",
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.slate[100],
     padding: 10,
     borderRadius: 5,
     marginBottom: 15,
@@ -196,10 +196,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   cancelButton: {
-    backgroundColor: "#F44336",
+    backgroundColor: Colors.red,
   },
   addButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: Colors.green,
   },
   buttonText: {
     color: "white",
@@ -217,20 +217,20 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: Colors.slate[200],
   },
   fab: {
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "#007AFF",
+    backgroundColor: Colors.green,
     width: 56,
     height: 56,
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
     elevation: 8,
-    shadowColor: "#000",
+    shadowColor: Colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
