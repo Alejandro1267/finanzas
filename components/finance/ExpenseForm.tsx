@@ -1,6 +1,5 @@
 import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore";
-import { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,58 +10,23 @@ import {
 } from "react-native";
 
 export function ExpenseForm() {
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedAccountId, setSelectedAccountId] = useState("");
-
-  const { setShowRecordModal, setAlertMessage, accounts } = useFinanceStore();
-
-  //   const addExpense = useFinanceStore((state) => state.addExpense);
-
-  const addExpense = () => {
-    console.log("addExpense");
-  };
-
-  const handleSubmit = () => {
-    if (!amount || !description || !selectedAccountId) {
-      setAlertMessage("Por favor completa todos los campos");
-      return;
-    }
-
-    const numAmount = Number.parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setAlertMessage("Ingresa un monto válido");
-      return;
-    }
-
-    addExpense();
-    setAmount("");
-    setDescription("");
-    setSelectedAccountId("");
-  };
-
-  const handleClose = () => {
-    setShowRecordModal(false);
-    setAmount("");
-    setDescription("");
-    setSelectedAccountId("");
-  };
+  const { accounts, currentRecord, setRecordField } = useFinanceStore();
 
   return (
     <View>
       <TextInput
         style={styles.input}
         placeholder="Monto"
-        value={amount}
-        onChangeText={setAmount}
+        value={currentRecord?.amount.toString() || ""}
+        onChangeText={(value) => { console.log(value);setRecordField("amount", Number(value)) }}
         keyboardType="numeric"
         placeholderTextColor="#9ca3af"
       />
       <TextInput
         style={styles.input}
         placeholder="Descripción"
-        value={description}
-        onChangeText={setDescription}
+        value={currentRecord?.description || ""}
+        onChangeText={(value) => { console.log(value);setRecordField("description", value)}}
         placeholderTextColor="#9ca3af"
       />
       <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
@@ -75,9 +39,9 @@ export function ExpenseForm() {
             key={account.id}
             style={[
               styles.accountOption,
-              selectedAccountId === account.id && styles.selectedAccount,
+              currentRecord?.account === account.id && styles.selectedAccount,
             ]}
-            onPress={() => setSelectedAccountId(account.id)}
+            onPress={() => setRecordField("account", account.id)}
           >
             <View
               style={[

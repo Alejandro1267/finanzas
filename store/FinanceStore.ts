@@ -37,7 +37,8 @@ type FinanceState = {
   addAccount: (account: Account) => void
   addRecord: (record: Record) => void
   // setField: <K extends keyof Account>(field: K, value: Account[K]) => void
-  setField: <T extends Account | Record, K extends keyof T>(field: K, value: T[K]) => void
+  setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
+  setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   createEmptyAccount: () => void
   createEmptyRecord: () => void
 
@@ -135,29 +136,27 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   //       },
   //     };
   //   }),
-  setField: <T extends Account | Record, K extends keyof T>(field: K, value: T[K]) =>
+  setAccountField: <K extends keyof Account>(field: K, value: Account[K]) =>
     set((state) => {
-      // Si el campo existe en Account, actualiza currentAccount
-      if (field in (state.currentAccount || {}) && state.currentAccount) {
-        return {
-          ...state,
-          currentAccount: {
-            ...state.currentAccount,
-            [field]: value,
-          },
-        }
+      if (!state.currentAccount) return state
+      return {
+        ...state,
+        currentAccount: {
+          ...state.currentAccount,
+          [field]: value,
+        },
       }
-      // Si el campo existe en Record, actualiza currentRecord
-      if (field in (state.currentRecord || {}) && state.currentRecord) {
-        return {
-          ...state,
-          currentRecord: {
-            ...state.currentRecord,
-            [field]: value,
-          },
-        }
+    }),
+  setRecordField: <K extends keyof Record>(field: K, value: Record[K]) =>
+    set((state) => {
+      if (!state.currentRecord) return state
+      return {
+        ...state,
+        currentRecord: {
+          ...state.currentRecord,
+          [field]: value,
+        },
       }
-      return state
     }),
   createEmptyAccount: () => {
     set({ currentAccount: {

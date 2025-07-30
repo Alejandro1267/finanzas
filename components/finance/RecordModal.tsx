@@ -11,7 +11,7 @@ type RecordType = "income" | "expense";
 export function RecordModal() {
   const [activeTab, setActiveTab] = useState<RecordType>("income");
 
-  const { showRecordModal, setShowRecordModal, setAlertMessage, accounts, currentRecord, addRecord } =
+  const { showRecordModal, setShowRecordModal, setAlertMessage, accounts, currentRecord, addRecord, createEmptyRecord } =
     useFinanceStore();
 
     // const handleSubmit = () => {
@@ -106,7 +106,7 @@ export function RecordModal() {
       {/* Trigger del Modal */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => setShowRecordModal(true)}
+        onPress={() => { createEmptyRecord(); setShowRecordModal(true) }}
       >
         <IconSymbol name="plus" size={24} color="white" />
       </TouchableOpacity>

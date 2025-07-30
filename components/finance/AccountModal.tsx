@@ -16,7 +16,7 @@ export default function AccountModal() {
     showAccountModal,
     setShowAccountModal,
     currentAccount,
-    setField,
+    setAccountField,
     addAccount,
     createEmptyAccount,
   } = useFinanceStore();
@@ -69,7 +69,7 @@ export default function AccountModal() {
               style={styles.input}
               placeholder="Nombre"
               value={currentAccount?.name || ""}
-              onChangeText={(value) => setField("name", value)}
+              onChangeText={(value) => setAccountField("name", value)}
             />
 
             <Text>Porcentaje de Ingreso</Text>
@@ -78,7 +78,7 @@ export default function AccountModal() {
               placeholder="Porcentaje (%)"
               keyboardType="numeric"
               value={currentAccount?.percentage.toString() || "0"}
-              onChangeText={(value) => setField("percentage", Number(value))}
+              onChangeText={(value) => setAccountField("percentage", Number(value))}
             />
 
             <Text>Saldo Inicial</Text>
@@ -87,7 +87,7 @@ export default function AccountModal() {
               placeholder="Saldo inicial"
               keyboardType="numeric"
               value={currentAccount?.balance.toString() || "0"}
-              onChangeText={(value) => setField("balance", Number(value))}
+              onChangeText={(value) => setAccountField("balance", Number(value))}
             />
 
             {/* <Text>Color</Text> */}
@@ -108,7 +108,7 @@ export default function AccountModal() {
                       (color) => (
                         <TouchableOpacity
                           key={color}
-                          onPress={() => setField("color", color)}
+                          onPress={() => setAccountField("color", color)}
                           style={[
                             styles.colorCircle,
                             {
