@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import AccountModal from "@/components/finance/AccountModal";
 import { AccountsList } from "@/components/finance/AccountsList";
@@ -30,7 +30,7 @@ export default function TabTwoScreen() {
           setAlertMessage("Alerta");
         }}
       >
-        Mostrar Alerta
+        <Text>Mostrar Alerta</Text>
       </TouchableOpacity>
       <Header />
       <AccountsList />

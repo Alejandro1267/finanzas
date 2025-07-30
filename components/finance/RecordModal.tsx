@@ -10,54 +10,37 @@ type RecordType = "income" | "expense";
 
 export function RecordModal() {
   const [activeTab, setActiveTab] = useState<RecordType>("income");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedAccountId, setSelectedAccountId] = useState("");
 
-  const { showRecordModal, setShowRecordModal, setAlertMessage, accounts } =
+  const { showRecordModal, setShowRecordModal, setAlertMessage, accounts, currentRecord, addRecord } =
     useFinanceStore();
 
-  const addIncome = () => {
-    console.log("addIncome", { amount, description });
-    // Aquí iría la lógica para agregar ingreso
-  };
-
-  const addExpense = () => {
-    console.log("addExpense", { amount, description, selectedAccountId });
-    // Aquí iría la lógica para agregar gasto
-  };
+    // const handleSubmit = () => {
+    //   console.log(currentRecord);
+    // }
 
   const handleSubmit = () => {
-    if (!amount || !description) {
-      setAlertMessage("Por favor completa todos los campos");
-      return;
-    }
+    // const numAmount = Number.parseFloat(currentRecord?.amount || "");
+    // if (isNaN(numAmount) || numAmount <= 0) {
+      // setAlertMessage("Ingresa un monto válido");
+      // return;
+    // }
+    console.log(currentRecord);
 
-    if (activeTab === "expense" && !selectedAccountId) {
+    if (!currentRecord?.account) {
       setAlertMessage("Por favor selecciona una cuenta");
       return;
     }
 
-    const numAmount = Number.parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setAlertMessage("Ingresa un monto válido");
-      return;
-    }
-
-    if (activeTab === "income") {
-      addIncome();
-    } else {
-      addExpense();
-    }
+    addRecord(currentRecord);
 
     handleClose();
   };
 
   const handleClose = () => {
     setShowRecordModal(false);
-    setAmount("");
-    setDescription("");
-    setSelectedAccountId("");
+    // setAmount("");
+    // setDescription("");
+    // setSelectedAccountId("");
     setActiveTab("income");
   };
 

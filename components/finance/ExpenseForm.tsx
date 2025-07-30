@@ -35,7 +35,6 @@ export function ExpenseForm() {
       return;
     }
 
-    // addExpense(numAmount, description, selectedAccountId);
     addExpense();
     setAmount("");
     setDescription("");
@@ -51,7 +50,6 @@ export function ExpenseForm() {
 
   return (
     <View>
-      {/* <Text style={styles.title}>Registrar Gasto</Text> */}
       <TextInput
         style={styles.input}
         placeholder="Monto"

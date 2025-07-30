@@ -12,7 +12,7 @@ export type Record = {
   id: string
   type: "income" | "expense"
   amount: number
-  description: string
+  description?: string
   date: string
   account: string
 }
@@ -20,28 +20,33 @@ export type Record = {
 type FinanceState = {
   // State
   currentAccount: Account | null
+  currentRecord: Record | null
   accounts: Account[]
-  showAccountModal: boolean
   records: Record[]
-  alertMessage: string
+  showAccountModal: boolean
   showRecordModal: boolean
+  alertMessage: string
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
   setShowAccountModal: (show: boolean) => void
-  setAlertMessage: (message: string) => void
   setShowRecordModal: (show: boolean) => void
+  setAlertMessage: (message: string) => void
 
   // Functions
   addAccount: (account: Account) => void
-  setField: <K extends keyof Account>(field: K, value: Account[K]) => void
+  addRecord: (record: Record) => void
+  // setField: <K extends keyof Account>(field: K, value: Account[K]) => void
+  setField: <T extends Account | Record, K extends keyof T>(field: K, value: T[K]) => void
   createEmptyAccount: () => void
+  createEmptyRecord: () => void
 
 }
 
 export const useFinanceStore = create<FinanceState>((set, get) => ({
   // Initial State
   currentAccount: null,
+  currentRecord: null,
   accounts: [
     {
       id: "1",
@@ -65,7 +70,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       color: "#45B7D1"
     },
   ],
-  showAccountModal:  false,
   records: [
     {
       id: "1",
@@ -92,8 +96,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       account: "1",
     },
   ],
-  alertMessage: "",
+  showAccountModal:  false,
   showRecordModal: false,
+  alertMessage: "",
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -102,12 +107,12 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   setShowAccountModal: (show: boolean) => {
     set({ showAccountModal: show })
   },
+  setShowRecordModal: (show: boolean) => {
+    set({ showRecordModal: show })
+  },
   setAlertMessage: (message: string) => {
     set({ alertMessage: message })
     setTimeout(() => set({ alertMessage: "" }), 3000)
-  },
-  setShowRecordModal: (show: boolean) => {
-    set({ showRecordModal: show })
   },
 
 
@@ -115,17 +120,44 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   addAccount: (account: Account) => {
     set({ accounts: [...get().accounts, account] })
   },
-  setField: <K extends keyof Account>(field: K, value: Account[K]) =>
-    set((state) => {
-      if (!state.currentAccount) return state;
+  addRecord: (record: Record) => {
+    set({ records: [...get().records, record] })
+  },
+  // setField: <K extends keyof Account>(field: K, value: Account[K]) =>
+  //   set((state) => {
+  //     if (!state.currentAccount) return state;
 
-      return {
-        ...state,
-        currentAccount: {
-          ...state.currentAccount,
-          [field]: value,
-        },
-      };
+  //     return {
+  //       ...state,
+  //       currentAccount: {
+  //         ...state.currentAccount,
+  //         [field]: value,
+  //       },
+  //     };
+  //   }),
+  setField: <T extends Account | Record, K extends keyof T>(field: K, value: T[K]) =>
+    set((state) => {
+      // Si el campo existe en Account, actualiza currentAccount
+      if (field in (state.currentAccount || {}) && state.currentAccount) {
+        return {
+          ...state,
+          currentAccount: {
+            ...state.currentAccount,
+            [field]: value,
+          },
+        }
+      }
+      // Si el campo existe en Record, actualiza currentRecord
+      if (field in (state.currentRecord || {}) && state.currentRecord) {
+        return {
+          ...state,
+          currentRecord: {
+            ...state.currentRecord,
+            [field]: value,
+          },
+        }
+      }
+      return state
     }),
   createEmptyAccount: () => {
     set({ currentAccount: {
@@ -136,5 +168,15 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       color: ""
     } })
   },
+  createEmptyRecord: () => {
+    set({ currentRecord: {
+      id: "",
+      type: "income",
+      amount: 0,
+      description: "",
+      date: "",
+      account: ""
+    }})
+  }
 
 }))
