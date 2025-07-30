@@ -16,8 +16,10 @@ export function ExpenseForm() {
   return (
     <View>
       <DateInput
-        value={currentRecord?.date || new Date()}
-        onChange={(date) => setRecordField("date", date)}
+        // value={currentRecord?.date || new Date()}
+        value={new Date()}
+        // onChange={(date) => setRecordField("date", date)}
+        onChange={(date) => console.log(date)}
       />
       <TextInput
         style={styles.input}
