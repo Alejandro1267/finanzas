@@ -14,56 +14,74 @@ export function ExpenseForm() {
   const { accounts, currentRecord, setRecordField } = useFinanceStore();
 
   return (
-    <View>
-      <DateInput />
-      <TextInput
-        style={styles.input}
-        placeholder="Monto"
-        value={currentRecord?.amount.toString() || ""}
-        onChangeText={(value) => {
-          console.log(value);
-          setRecordField("amount", Number(value));
-        }}
-        keyboardType="numeric"
-        placeholderTextColor="#9ca3af"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Descripción"
-        value={currentRecord?.description || ""}
-        onChangeText={(value) => {
-          console.log(value);
-          setRecordField("description", value);
-        }}
-        placeholderTextColor="#9ca3af"
-      />
-      <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
-      <ScrollView
-        style={styles.accountSelector}
-        showsVerticalScrollIndicator={false}
-      >
-        {accounts.map((account) => (
-          <TouchableOpacity
-            key={account.id}
-            style={[
-              styles.accountOption,
-              currentRecord?.account === account.id && styles.selectedAccount,
-            ]}
-            onPress={() => setRecordField("account", account.id)}
-          >
-            <View
+    // <View>
+    <ScrollView>
+      <View>
+        <Text style={styles.selectAccountText}>Seleccionar Fecha:</Text>
+        <DateInput
+          date={currentRecord?.date}
+          onDateChange={(date) => setRecordField("date", date)}
+        />
+      </View>
+
+      <View>
+        <Text style={styles.selectAccountText}>Seleccionar Importe:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Monto"
+          value={currentRecord?.amount.toString() || ""}
+          onChangeText={(value) => {
+            console.log(value);
+            setRecordField("amount", Number(value));
+          }}
+          keyboardType="numeric"
+          placeholderTextColor="#9ca3af"
+        />
+      </View>
+
+      <View>
+        <Text style={styles.selectAccountText}>Seleccionar Descripción:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Descripción"
+          value={currentRecord?.description || ""}
+          onChangeText={(value) => {
+            console.log(value);
+            setRecordField("description", value);
+          }}
+          placeholderTextColor="#9ca3af"
+        />
+      </View>
+
+      <View>
+        <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
+        <ScrollView
+          style={styles.accountSelector}
+          showsVerticalScrollIndicator={false}
+        >
+          {accounts.map((account) => (
+            <TouchableOpacity
+              key={account.id}
               style={[
-                styles.colorIndicator,
-                { backgroundColor: account.color },
+                styles.accountOption,
+                currentRecord?.account === account.id && styles.selectedAccount,
               ]}
-            />
-            <Text style={styles.accountOptionText}>
-              {account.name} (${account.balance.toFixed(2)})
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+              onPress={() => setRecordField("account", account.id)}
+            >
+              <View
+                style={[
+                  styles.colorIndicator,
+                  { backgroundColor: account.color },
+                ]}
+              />
+              <Text style={styles.accountOptionText}>
+                {account.name} (${account.balance.toFixed(2)})
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </ScrollView>
   );
 }
 
