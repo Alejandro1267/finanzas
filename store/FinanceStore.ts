@@ -177,7 +177,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       type: "income",
       amount: 0,
       description: "",
-      date: "",
+      date: new Date().toISOString().split("T")[0], // YYYY-MM-DD
       account: ""
     }})
   }

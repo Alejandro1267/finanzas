@@ -1,7 +1,14 @@
 import { Colors } from "@/constants/Colors";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
@@ -14,37 +21,25 @@ export function RecordModal() {
   const {
     showRecordModal,
     setShowRecordModal,
-    setAlertMessage,
     currentRecord,
-    setCurrentRecord,
     addRecord,
     createEmptyRecord,
   } = useFinanceStore();
 
   const handleSubmit = () => {
-    // const numAmount = Number.parseFloat(currentRecord?.amount || "");
-    // if (isNaN(numAmount) || numAmount <= 0) {
-    // setAlertMessage("Ingresa un monto válido");
-    // return;
-    // }
-
     if (!currentRecord?.account) {
-      setAlertMessage("Por favor selecciona una cuenta");
-      // Alert.alert("Error", "Por favor selecciona una cuenta");
+      Alert.alert("Error", "Por favor selecciona una cuenta");
       return;
     }
 
-    console.log("currentRecord", currentRecord);
-    addRecord(currentRecord);
+    addRecord({ ...currentRecord, type: activeTab });
+    console.log("currentRecord", { ...currentRecord, type: activeTab });
 
     handleClose();
   };
 
   const handleClose = () => {
     setShowRecordModal(false);
-    // setAmount("");
-    // setDescription("");
-    // setSelectedAccountId("");
     setActiveTab("income");
   };
 
