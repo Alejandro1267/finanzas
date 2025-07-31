@@ -1,3 +1,4 @@
+import { AlertMessage } from "@/components/finance/AlertMessage";
 import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -24,6 +25,7 @@ export default function TabTwoScreen() {
     >
       <RecordsList />
       <RecordModal />
+      <AlertMessage />
     </ParallaxScrollView>
   );
 }

@@ -11,26 +11,30 @@ type RecordType = "income" | "expense";
 export function RecordModal() {
   const [activeTab, setActiveTab] = useState<RecordType>("income");
 
-  const { showRecordModal, setShowRecordModal, setAlertMessage, accounts, currentRecord, addRecord, createEmptyRecord } =
-    useFinanceStore();
-
-    // const handleSubmit = () => {
-    //   console.log(currentRecord);
-    // }
+  const {
+    showRecordModal,
+    setShowRecordModal,
+    setAlertMessage,
+    currentRecord,
+    setCurrentRecord,
+    addRecord,
+    createEmptyRecord,
+  } = useFinanceStore();
 
   const handleSubmit = () => {
     // const numAmount = Number.parseFloat(currentRecord?.amount || "");
     // if (isNaN(numAmount) || numAmount <= 0) {
-      // setAlertMessage("Ingresa un monto válido");
-      // return;
+    // setAlertMessage("Ingresa un monto válido");
+    // return;
     // }
-    console.log(currentRecord);
 
     if (!currentRecord?.account) {
       setAlertMessage("Por favor selecciona una cuenta");
+      // Alert.alert("Error", "Por favor selecciona una cuenta");
       return;
     }
 
+    console.log("currentRecord", currentRecord);
     addRecord(currentRecord);
 
     handleClose();
@@ -106,7 +110,10 @@ export function RecordModal() {
       {/* Trigger del Modal */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => { createEmptyRecord(); setShowRecordModal(true) }}
+        onPress={() => {
+          createEmptyRecord();
+          setShowRecordModal(true);
+        }}
       >
         <IconSymbol name="plus" size={24} color="white" />
       </TouchableOpacity>

@@ -29,6 +29,7 @@ type FinanceState = {
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
+  setCurrentRecord: (record: Record | null) => void
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
@@ -104,6 +105,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   // Actions
   setCurrentAccount: (account: Account | null) => {
     set({ currentAccount: account })
+  },
+  setCurrentRecord: (record: Record | null) => {
+    set({ currentRecord: record })
   },
   setShowAccountModal: (show: boolean) => {
     set({ showAccountModal: show })
