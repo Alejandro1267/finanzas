@@ -15,12 +15,7 @@ export function ExpenseForm() {
 
   return (
     <View>
-      <DateInput
-        // value={currentRecord?.date || new Date()}
-        value={new Date()}
-        // onChange={(date) => setRecordField("date", date)}
-        onChange={(date) => console.log(date)}
-      />
+      <DateInput />
       <TextInput
         style={styles.input}
         placeholder="Monto"
