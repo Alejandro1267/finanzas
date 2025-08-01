@@ -27,7 +27,7 @@ type FinanceState = {
   showAccountModal: boolean
   showRecordModal: boolean
   alertMessage: string
-  validationErrors: ValidationErrors
+  recordErrors: ValidationErrors
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -35,7 +35,7 @@ type FinanceState = {
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
-  setValidationErrors: (errors: ValidationErrors) => void
+  setRecordErrors: (errors: ValidationErrors) => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -45,7 +45,7 @@ type FinanceState = {
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   createEmptyAccount: () => void
   createEmptyRecord: () => void
-  clearValidationErrors: () => void
+  clearrecordErrors: () => void
 
 }
 
@@ -105,7 +105,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   showAccountModal:  false,
   showRecordModal: false,
   alertMessage: "",
-  validationErrors: {},
+  recordErrors: {},
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -124,8 +124,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     set({ alertMessage: message })
     setTimeout(() => set({ alertMessage: "" }), 3000)
   },
-  setValidationErrors: (errors: ValidationErrors) => {
-    set({ validationErrors: errors })
+  setRecordErrors: (errors: ValidationErrors) => {
+    set({ recordErrors: errors })
   },
 
   // Functions
@@ -188,8 +188,8 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       account: ""
     }})
   },
-  clearValidationErrors: () => {
-    set({ validationErrors: {} })
+  clearrecordErrors: () => {
+    set({ recordErrors: {} })
   },
 
 

@@ -19,8 +19,8 @@ export function RecordModal() {
     currentRecord,
     addRecord,
     createEmptyRecord,
-    setValidationErrors,
-    clearValidationErrors,
+    setRecordErrors,
+    clearrecordErrors,
   } = useFinanceStore();
 
   const handleSubmit = () => {
@@ -28,7 +28,7 @@ export function RecordModal() {
     //   Alert.alert("Error", "Por favor selecciona una cuenta");
     //   return;
     // }
-    clearValidationErrors();
+    clearrecordErrors();
 
     const record = recordSchema.safeParse({
       ...currentRecord,
@@ -43,7 +43,7 @@ export function RecordModal() {
         }
       });
 
-      setValidationErrors(errors);
+      setRecordErrors(errors);
       console.log("Errores de validación:", errors);
       return;
     }
@@ -57,7 +57,7 @@ export function RecordModal() {
   const handleClose = () => {
     setShowRecordModal(false);
     setActiveTab("income");
-    clearValidationErrors();
+    clearrecordErrors();
   };
 
   const renderTabButton = (type: RecordType, label: string, icon: string) => (

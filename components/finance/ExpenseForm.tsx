@@ -10,13 +10,13 @@ export function ExpenseForm() {
     accounts,
     currentRecord,
     setRecordField,
-    validationErrors,
-    setValidationErrors,
+    recordErrors,
+    setRecordErrors,
   } = useFinanceStore();
 
   const clearFieldError = (fieldName: string) => {
-    const { [fieldName]: removedError, ...remainingErrors } = validationErrors;
-    setValidationErrors(remainingErrors);
+    const { [fieldName]: removedError, ...remainingErrors } = recordErrors;
+    setRecordErrors(remainingErrors);
   };
 
   return (
@@ -29,17 +29,17 @@ export function ExpenseForm() {
             setRecordField("date", date);
             clearFieldError("date");
           }}
-          hasError={!!validationErrors.date}
+          hasError={!!recordErrors.date}
         />
-        {validationErrors.date && (
-          <Text style={styles.errorText}>{validationErrors.date}</Text>
+        {recordErrors.date && (
+          <Text style={styles.errorText}>{recordErrors.date}</Text>
         )}
       </View>
 
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
         <TextInput
-          style={[styles.input, validationErrors.amount && styles.inputError]}
+          style={[styles.input, recordErrors.amount && styles.inputError]}
           placeholder="Monto"
           value={currentRecord?.amount.toString() || ""}
           onChangeText={(value) => {
@@ -50,18 +50,15 @@ export function ExpenseForm() {
           keyboardType="numeric"
           placeholderTextColor={Colors.slate[400]}
         />
-        {validationErrors.amount && (
-          <Text style={styles.errorText}>{validationErrors.amount}</Text>
+        {recordErrors.amount && (
+          <Text style={styles.errorText}>{recordErrors.amount}</Text>
         )}
       </View>
 
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Descripción:</Text>
         <TextInput
-          style={[
-            styles.input,
-            validationErrors.description && styles.inputError,
-          ]}
+          style={[styles.input, recordErrors.description && styles.inputError]}
           placeholder="Descripción"
           value={currentRecord?.description || ""}
           onChangeText={(value) => {
@@ -71,8 +68,8 @@ export function ExpenseForm() {
           }}
           placeholderTextColor={Colors.slate[400]}
         />
-        {validationErrors.description && (
-          <Text style={styles.errorText}>{validationErrors.description}</Text>
+        {recordErrors.description && (
+          <Text style={styles.errorText}>{recordErrors.description}</Text>
         )}
       </View>
 
@@ -89,11 +86,11 @@ export function ExpenseForm() {
             name: `${account.name} (${formatNumber$(account.balance)})`,
             color: account.color,
           }))}
-          hasError={!!validationErrors.account}
+          hasError={!!recordErrors.account}
         />
-        {validationErrors.account && (
+        {recordErrors.account && (
           <Text style={[styles.errorText, styles.viewContainer]}>
-            {validationErrors.account}
+            {recordErrors.account}
           </Text>
         )}
       </View>
