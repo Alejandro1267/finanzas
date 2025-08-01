@@ -99,9 +99,6 @@ export function IncomeForm() {
           </Text>
         )}
       </View>
-      {/* <Text style={styles.distributionText}>
-        Se distribuirá automáticamente según los porcentajes configurados
-      </Text> */}
     </ScrollView>
   );
 }
@@ -120,13 +117,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
     color: Colors.slate[800],
-  },
-  distributionText: {
-    fontSize: 14,
-    color: Colors.slate[500],
-    textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 20,
   },
   viewContainer: {
     marginBottom: 16,
