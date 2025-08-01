@@ -76,7 +76,7 @@ export function ExpenseForm() {
         )}
       </View>
 
-      <View>
+      <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
         <PickerInput
           value={currentRecord?.account || ""}
