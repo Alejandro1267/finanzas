@@ -12,9 +12,14 @@ import {
 type DateInputProps = {
   date?: string;
   onDateChange?: (date: string) => void;
+  hasError?: boolean;
 };
 
-export function DateInput({ date, onDateChange }: DateInputProps) {
+export function DateInput({
+  date,
+  onDateChange,
+  hasError = false,
+}: DateInputProps) {
   const [currentDate, setCurrentDate] = useState(
     date ? new Date(date) : new Date()
   );
@@ -35,7 +40,10 @@ export function DateInput({ date, onDateChange }: DateInputProps) {
 
   return (
     <View>
-      <TouchableOpacity onPress={() => setShow(true)} style={styles.input}>
+      <TouchableOpacity
+        onPress={() => setShow(true)}
+        style={[styles.input, hasError && styles.inputError]}
+      >
         <Text style={styles.inputText}>
           {currentDate.toLocaleDateString("es-MX", {
             day: "2-digit",
@@ -72,5 +80,8 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 16,
+  },
+  inputError: {
+    borderColor: Colors.redT[500],
   },
 });

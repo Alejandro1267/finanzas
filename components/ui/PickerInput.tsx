@@ -20,6 +20,7 @@ type PickerInputProps = {
   onValueChange: (value: string) => void;
   items: PickerItem[];
   placeholder?: string;
+  hasError?: boolean;
 };
 
 export function PickerInput({
@@ -27,6 +28,7 @@ export function PickerInput({
   onValueChange,
   items,
   placeholder = "Selecciona una Opción",
+  hasError = false,
 }: PickerInputProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -50,7 +52,7 @@ export function PickerInput({
   return (
     <>
       <TouchableOpacity
-        style={styles.input}
+        style={[styles.input, hasError && styles.inputError]}
         onPress={() => setModalVisible(true)}
       >
         <View style={styles.selectedContainer}>
@@ -171,5 +173,8 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: Colors.slate[800],
+  },
+  inputError: {
+    borderColor: Colors.redT[500],
   },
 });

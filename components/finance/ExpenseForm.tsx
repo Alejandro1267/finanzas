@@ -16,6 +16,7 @@ export function ExpenseForm() {
         <DateInput
           date={currentRecord?.date}
           onDateChange={(date) => setRecordField("date", date)}
+          hasError={!!validationErrors.date}
         />
         {validationErrors.date && (
           <Text style={styles.errorText}>{validationErrors.date}</Text>
@@ -25,7 +26,7 @@ export function ExpenseForm() {
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, validationErrors.amount && styles.inputError]}
           placeholder="Monto"
           value={currentRecord?.amount.toString() || ""}
           onChangeText={(value) => {
@@ -43,7 +44,7 @@ export function ExpenseForm() {
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Descripción:</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, validationErrors.amount && styles.inputError]}
           placeholder="Descripción"
           value={currentRecord?.description || ""}
           onChangeText={(value) => {
@@ -67,6 +68,7 @@ export function ExpenseForm() {
             name: `${account.name} (${formatNumber$(account.balance)})`,
             color: account.color,
           }))}
+          hasError={!!validationErrors.account}
         />
         {validationErrors.account && (
           <Text style={[styles.errorText, styles.viewContainer]}>
@@ -128,9 +130,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   errorText: {
-    color: Colors.red,
+    color: Colors.redT[500],
     fontSize: 16,
     marginTop: 4,
+  },
+  inputError: {
+    borderColor: Colors.redT[500],
   },
   viewContainer: {
     marginBottom: 16,
