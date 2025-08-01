@@ -45,7 +45,7 @@ type FinanceState = {
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   createEmptyAccount: () => void
   createEmptyRecord: () => void
-  clearrecordErrors: () => void
+  clearRecordErrors: () => void
 
 }
 
@@ -188,7 +188,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       account: ""
     }})
   },
-  clearrecordErrors: () => {
+  clearRecordErrors: () => {
     set({ recordErrors: {} })
   },
 

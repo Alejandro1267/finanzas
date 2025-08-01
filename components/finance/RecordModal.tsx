@@ -20,15 +20,11 @@ export function RecordModal() {
     addRecord,
     createEmptyRecord,
     setRecordErrors,
-    clearrecordErrors,
+    clearRecordErrors,
   } = useFinanceStore();
 
   const handleSubmit = () => {
-    // if (!currentRecord?.account) {
-    //   Alert.alert("Error", "Por favor selecciona una cuenta");
-    //   return;
-    // }
-    clearrecordErrors();
+    clearRecordErrors();
 
     const record = recordSchema.safeParse({
       ...currentRecord,
@@ -57,7 +53,7 @@ export function RecordModal() {
   const handleClose = () => {
     setShowRecordModal(false);
     setActiveTab("income");
-    clearrecordErrors();
+    clearRecordErrors();
   };
 
   const renderTabButton = (type: RecordType, label: string, icon: string) => (
