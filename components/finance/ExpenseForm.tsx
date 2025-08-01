@@ -1,23 +1,17 @@
 import { Colors } from "@/constants/Colors";
+import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { DateInput } from "../ui/DateInput";
+import { PickerInput } from "../ui/PickerInput";
 
 export function ExpenseForm() {
   const { accounts, currentRecord, setRecordField } = useFinanceStore();
 
   return (
-    // <View>
     <ScrollView>
       <View>
-        <Text style={styles.selectAccountText}>Seleccionar Fecha:</Text>
+        <Text style={styles.selectAccountText}>Fecha:</Text>
         <DateInput
           date={currentRecord?.date}
           onDateChange={(date) => setRecordField("date", date)}
@@ -25,7 +19,7 @@ export function ExpenseForm() {
       </View>
 
       <View>
-        <Text style={styles.selectAccountText}>Seleccionar Importe:</Text>
+        <Text style={styles.selectAccountText}>Importe:</Text>
         <TextInput
           style={styles.input}
           placeholder="Monto"
@@ -40,7 +34,7 @@ export function ExpenseForm() {
       </View>
 
       <View>
-        <Text style={styles.selectAccountText}>Seleccionar Descripción:</Text>
+        <Text style={styles.selectAccountText}>Descripción:</Text>
         <TextInput
           style={styles.input}
           placeholder="Descripción"
@@ -55,31 +49,15 @@ export function ExpenseForm() {
 
       <View>
         <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
-        <ScrollView
-          style={styles.accountSelector}
-          showsVerticalScrollIndicator={false}
-        >
-          {accounts.map((account) => (
-            <TouchableOpacity
-              key={account.id}
-              style={[
-                styles.accountOption,
-                currentRecord?.account === account.id && styles.selectedAccount,
-              ]}
-              onPress={() => setRecordField("account", account.id)}
-            >
-              <View
-                style={[
-                  styles.colorIndicator,
-                  { backgroundColor: account.color },
-                ]}
-              />
-              <Text style={styles.accountOptionText}>
-                {account.name} (${account.balance.toFixed(2)})
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <PickerInput
+          value={currentRecord?.account || ""}
+          onValueChange={(value) => setRecordField("account", value)}
+          items={accounts.map((account) => ({
+            id: account.id,
+            name: `${account.name} (${formatNumber$(account.balance)})`,
+            color: account.color,
+          }))}
+        />
       </View>
     </ScrollView>
   );
