@@ -20,7 +20,7 @@ export function ExpenseForm() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView>
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Fecha:</Text>
         <DateInput
@@ -43,7 +43,6 @@ export function ExpenseForm() {
           placeholder="Monto"
           value={currentRecord?.amount.toString() || ""}
           onChangeText={(value) => {
-            console.log(value);
             setRecordField("amount", Number(value));
             clearFieldError("amount");
           }}
@@ -62,7 +61,6 @@ export function ExpenseForm() {
           placeholder="Descripción"
           value={currentRecord?.description || ""}
           onChangeText={(value) => {
-            console.log(value);
             setRecordField("description", value);
             clearFieldError("description");
           }}
@@ -99,17 +97,11 @@ export function ExpenseForm() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // padding: 16,
-    // gap: 32,
-  },
   input: {
     borderWidth: 1,
     borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
-    // marginBottom: 16,
-    // marginTop: 16,
     fontSize: 16,
     color: Colors.slate[800],
   },
@@ -119,33 +111,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: Colors.slate[800],
   },
-  accountSelector: {
-    maxHeight: 160,
-    marginBottom: 20,
-  },
-  accountOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: "#f8fafc",
-  },
-  selectedAccount: {
-    backgroundColor: "#dbeafe",
-    borderWidth: 2,
-    borderColor: "#3b82f6",
-  },
-  colorIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginRight: 12,
-  },
-  accountOptionText: {
-    fontSize: 16,
-    color: Colors.slate[800],
-    flex: 1,
+  viewContainer: {
+    marginBottom: 16,
   },
   errorText: {
     color: Colors.redT[500],
@@ -154,8 +121,5 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: Colors.redT[500],
-  },
-  viewContainer: {
-    marginBottom: 16,
   },
 });

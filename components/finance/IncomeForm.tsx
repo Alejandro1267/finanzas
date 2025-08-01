@@ -1,96 +1,117 @@
 import { Colors } from "@/constants/Colors";
+import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
-import { useState } from "react";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { DateInput } from "../ui/DateInput";
+import { PickerInput } from "../ui/PickerInput";
 
 export function IncomeForm() {
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
+  const {
+    recordErrors,
+    setRecordErrors,
+    currentRecord,
+    setRecordField,
+    accounts,
+  } = useFinanceStore();
 
-  const { showRecordModal, setShowRecordModal, setAlertMessage } =
-    useFinanceStore();
-
-  const addIncome = () => {
-    console.log("addIncome");
-  };
-
-  const handleSubmit = () => {
-    if (!amount || !description) {
-      setAlertMessage("Por favor completa todos los campos");
-      return;
-    }
-
-    const numAmount = Number.parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setAlertMessage("Ingresa un monto válido");
-      return;
-    }
-
-    // addIncome(numAmount, description);
-    addIncome();
-    setAmount("");
-    setDescription("");
-  };
-
-  const handleClose = () => {
-    setShowRecordModal(false);
-    setAmount("");
-    setDescription("");
+  const clearFieldError = (fieldName: string) => {
+    const { [fieldName]: removedError, ...remainingErrors } = recordErrors;
+    setRecordErrors(remainingErrors);
   };
 
   return (
-    <>
-      <TextInput
-        style={styles.input}
-        placeholder="Monto"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric"
-        placeholderTextColor={Colors.slate[400]}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Descripción"
-        value={description}
-        onChangeText={setDescription}
-        placeholderTextColor={Colors.slate[400]}
-      />
-      <Text style={styles.distributionText}>
+    <ScrollView>
+      <View style={styles.viewContainer}>
+        <Text style={styles.selectAccountText}>Fecha:</Text>
+        <DateInput
+          date={currentRecord?.date}
+          onDateChange={(date) => {
+            setRecordField("date", date);
+            clearFieldError("date");
+          }}
+          hasError={!!recordErrors.date}
+        />
+        {recordErrors.date && (
+          <Text style={styles.errorText}>{recordErrors.date}</Text>
+        )}
+      </View>
+
+      <View style={styles.viewContainer}>
+        <Text style={styles.selectAccountText}>Importe:</Text>
+        <TextInput
+          style={[styles.input, recordErrors.amount && styles.inputError]}
+          placeholder="Monto"
+          value={currentRecord?.amount.toString() || ""}
+          onChangeText={(value) => {
+            setRecordField("amount", Number(value));
+            clearFieldError("amount");
+          }}
+          keyboardType="numeric"
+          placeholderTextColor={Colors.slate[400]}
+        />
+        {recordErrors.amount && (
+          <Text style={styles.errorText}>{recordErrors.amount}</Text>
+        )}
+      </View>
+
+      <View style={styles.viewContainer}>
+        <Text style={styles.selectAccountText}>Descripción:</Text>
+        <TextInput
+          style={[styles.input, recordErrors.description && styles.inputError]}
+          placeholder="Descripción"
+          value={currentRecord?.description || ""}
+          onChangeText={(value) => {
+            setRecordField("description", value);
+            clearFieldError("description");
+          }}
+          placeholderTextColor={Colors.slate[400]}
+        />
+        {recordErrors.description && (
+          <Text style={styles.errorText}>{recordErrors.description}</Text>
+        )}
+      </View>
+
+      <View style={styles.viewContainer}>
+        <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
+        <PickerInput
+          value={currentRecord?.account || "1"}
+          onValueChange={(value) => {
+            setRecordField("account", value);
+            clearFieldError("account");
+          }}
+          items={[
+            {
+              id: "1",
+              name: "Distribuir Automáticamente",
+              // color: Colors.white,
+            },
+            ...accounts.map((account) => ({
+              id: account.id,
+              name: `${account.name} (${formatNumber$(account.balance)})`,
+              color: account.color,
+            })),
+          ]}
+          hasError={!!recordErrors.account}
+        />
+        {recordErrors.account && (
+          <Text style={[styles.errorText, styles.viewContainer]}>
+            {recordErrors.account}
+          </Text>
+        )}
+      </View>
+      {/* <Text style={styles.distributionText}>
         Se distribuirá automáticamente según los porcentajes configurados
-      </Text>
-    </>
+      </Text> */}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: Colors.modalBackground,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  modalContent: {
-    backgroundColor: Colors.white,
-    padding: 24,
-    borderRadius: 12,
-    width: "100%",
-    maxWidth: 400,
-    maxHeight: "80%",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: Colors.slate[800],
-  },
   input: {
     borderWidth: 1,
     borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
-    marginBottom: 16,
     fontSize: 16,
     color: Colors.slate[800],
   },
@@ -100,55 +121,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: Colors.slate[800],
   },
-  accountSelector: {
-    maxHeight: 160,
-    marginBottom: 20,
-  },
-  accountOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: "#f8fafc",
-  },
-  selectedAccount: {
-    backgroundColor: "#dbeafe",
-    borderWidth: 2,
-    borderColor: "#3b82f6",
-  },
-  colorIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginRight: 12,
-  },
-  accountOptionText: {
-    fontSize: 16,
-    color: Colors.slate[800],
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  cancelButton: {
-    backgroundColor: Colors.slate[500],
-  },
-  confirmButton: {
-    backgroundColor: Colors.green,
-  },
-  buttonText: {
-    color: Colors.white,
-    fontWeight: "bold",
-    fontSize: 16,
-  },
   distributionText: {
     fontSize: 14,
     color: Colors.slate[500],
@@ -156,118 +128,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 20,
   },
-
-  // Tabs
-  tabContainer: {
-    flexDirection: "row",
-    backgroundColor: Colors.slate[100],
-    borderRadius: 8,
-    padding: 4,
-    marginBottom: 20,
-  },
-  tabButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    gap: 8,
-  },
-  activeTabButton: {
-    backgroundColor: Colors.blue,
-  },
-  tabButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.slate[600],
-  },
-  activeTabButtonText: {
-    color: "white",
-  },
-
-  // Form
-  formContainer: {
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: Colors.slate[500],
-    textAlign: "center",
+  viewContainer: {
     marginBottom: 16,
-    lineHeight: 20,
   },
-  //   accountSelector: {
-  //     maxHeight: 120,
-  //     marginBottom: 16,
-  //   },
-  //   accountOption: {
-  //     flexDirection: "row",
-  //     alignItems: "center",
-  //     padding: 12,
-  //     borderRadius: 8,
-  //     marginBottom: 8,
-  //     backgroundColor: Colors.slate[50],
-  //   },
-  //   selectedAccount: {
-  //     backgroundColor: "#dbeafe",
-  //     borderWidth: 2,
-  //     borderColor: Colors.blue,
-  //   },
-  //   colorIndicator: {
-  //     width: 20,
-  //     height: 20,
-  //     borderRadius: 10,
-  //     marginRight: 12,
-  //   },
-  //   accountOptionText: {
-  //     fontSize: 16,
-  //     color: Colors.slate[800],
-  //     flex: 1,
-  //   },
-
-  // Buttons
-  //   buttonContainer: {
-  //     flexDirection: "row",
-  //     gap: 12,
-  //   },
-  //   button: {
-  //     flex: 1,
-  //     paddingVertical: 12,
-  //     borderRadius: 8,
-  //     alignItems: "center",
-  //   },
-  //   cancelButton: {
-  //     backgroundColor: Colors.slate[500],
-  //   },
-  incomeButton: {
-    backgroundColor: Colors.green,
+  errorText: {
+    color: Colors.redT[500],
+    fontSize: 16,
+    marginTop: 4,
   },
-  expenseButton: {
-    backgroundColor: Colors.red,
-  },
-  //   buttonText: {
-  //     color: "white",
-  //     fontWeight: "bold",
-  //     fontSize: 16,
-  //   },
-
-  // FAB
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: Colors.blue,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+  inputError: {
+    borderColor: Colors.redT[500],
   },
 });

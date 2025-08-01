@@ -55,7 +55,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   currentRecord: null,
   accounts: [
     {
-      id: "1",
+      id: "4",
       name: "Gastos Básicos",
       percentage: 50,
       balance: 0,
