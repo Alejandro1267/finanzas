@@ -6,8 +6,18 @@ import { DateInput } from "../ui/DateInput";
 import { PickerInput } from "../ui/PickerInput";
 
 export function ExpenseForm() {
-  const { accounts, currentRecord, setRecordField, validationErrors } =
-    useFinanceStore();
+  const {
+    accounts,
+    currentRecord,
+    setRecordField,
+    validationErrors,
+    setValidationErrors,
+  } = useFinanceStore();
+
+  const clearFieldError = (fieldName: string) => {
+    const { [fieldName]: removedError, ...remainingErrors } = validationErrors;
+    setValidationErrors(remainingErrors);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -15,7 +25,10 @@ export function ExpenseForm() {
         <Text style={styles.selectAccountText}>Fecha:</Text>
         <DateInput
           date={currentRecord?.date}
-          onDateChange={(date) => setRecordField("date", date)}
+          onDateChange={(date) => {
+            setRecordField("date", date);
+            clearFieldError("date");
+          }}
           hasError={!!validationErrors.date}
         />
         {validationErrors.date && (
@@ -32,6 +45,7 @@ export function ExpenseForm() {
           onChangeText={(value) => {
             console.log(value);
             setRecordField("amount", Number(value));
+            clearFieldError("amount");
           }}
           keyboardType="numeric"
           placeholderTextColor={Colors.slate[400]}
@@ -53,6 +67,7 @@ export function ExpenseForm() {
           onChangeText={(value) => {
             console.log(value);
             setRecordField("description", value);
+            clearFieldError("description");
           }}
           placeholderTextColor={Colors.slate[400]}
         />
@@ -65,7 +80,10 @@ export function ExpenseForm() {
         <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
         <PickerInput
           value={currentRecord?.account || ""}
-          onValueChange={(value) => setRecordField("account", value)}
+          onValueChange={(value) => {
+            setRecordField("account", value);
+            clearFieldError("account");
+          }}
           items={accounts.map((account) => ({
             id: account.id,
             name: `${account.name} (${formatNumber$(account.balance)})`,
