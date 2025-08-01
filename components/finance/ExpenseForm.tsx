@@ -44,7 +44,10 @@ export function ExpenseForm() {
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Descripción:</Text>
         <TextInput
-          style={[styles.input, validationErrors.amount && styles.inputError]}
+          style={[
+            styles.input,
+            validationErrors.description && styles.inputError,
+          ]}
           placeholder="Descripción"
           value={currentRecord?.description || ""}
           onChangeText={(value) => {
