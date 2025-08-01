@@ -1,14 +1,9 @@
 import { Colors } from "@/constants/Colors";
+import { recordSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
+import { ValidationErrors } from "@/types";
 import { useState } from "react";
-import {
-  Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
@@ -24,16 +19,37 @@ export function RecordModal() {
     currentRecord,
     addRecord,
     createEmptyRecord,
+    setValidationErrors,
+    clearValidationErrors,
   } = useFinanceStore();
 
   const handleSubmit = () => {
-    if (!currentRecord?.account) {
-      Alert.alert("Error", "Por favor selecciona una cuenta");
+    // if (!currentRecord?.account) {
+    //   Alert.alert("Error", "Por favor selecciona una cuenta");
+    //   return;
+    // }
+    clearValidationErrors();
+
+    const record = recordSchema.safeParse({
+      ...currentRecord,
+      type: activeTab,
+    });
+
+    if (!record.success) {
+      const errors: ValidationErrors = {};
+      record.error.issues.forEach((issue) => {
+        if (issue.path.length > 0) {
+          errors[issue.path[0] as string] = issue.message;
+        }
+      });
+
+      setValidationErrors(errors);
+      console.log("Errores de validación:", errors);
       return;
     }
 
-    addRecord({ ...currentRecord, type: activeTab });
-    console.log("currentRecord", { ...currentRecord, type: activeTab });
+    addRecord({ ...record.data, id: Date.now().toString() });
+    console.log("addedRecord", record.data);
 
     handleClose();
   };
@@ -41,6 +57,7 @@ export function RecordModal() {
   const handleClose = () => {
     setShowRecordModal(false);
     setActiveTab("income");
+    clearValidationErrors();
   };
 
   const renderTabButton = (type: RecordType, label: string, icon: string) => (

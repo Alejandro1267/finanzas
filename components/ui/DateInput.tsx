@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
-    marginBottom: 16,
+    // marginBottom: 16,
     fontSize: 16,
     color: Colors.slate[800],
   },

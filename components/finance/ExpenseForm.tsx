@@ -6,19 +6,23 @@ import { DateInput } from "../ui/DateInput";
 import { PickerInput } from "../ui/PickerInput";
 
 export function ExpenseForm() {
-  const { accounts, currentRecord, setRecordField } = useFinanceStore();
+  const { accounts, currentRecord, setRecordField, validationErrors } =
+    useFinanceStore();
 
   return (
-    <ScrollView>
-      <View>
+    <ScrollView style={styles.container}>
+      <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Fecha:</Text>
         <DateInput
           date={currentRecord?.date}
           onDateChange={(date) => setRecordField("date", date)}
         />
+        {validationErrors.date && (
+          <Text style={styles.errorText}>{validationErrors.date}</Text>
+        )}
       </View>
 
-      <View>
+      <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
         <TextInput
           style={styles.input}
@@ -29,11 +33,14 @@ export function ExpenseForm() {
             setRecordField("amount", Number(value));
           }}
           keyboardType="numeric"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={Colors.slate[400]}
         />
+        {validationErrors.amount && (
+          <Text style={styles.errorText}>{validationErrors.amount}</Text>
+        )}
       </View>
 
-      <View>
+      <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Descripción:</Text>
         <TextInput
           style={styles.input}
@@ -43,8 +50,11 @@ export function ExpenseForm() {
             console.log(value);
             setRecordField("description", value);
           }}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={Colors.slate[400]}
         />
+        {validationErrors.description && (
+          <Text style={styles.errorText}>{validationErrors.description}</Text>
+        )}
       </View>
 
       <View>
@@ -58,18 +68,28 @@ export function ExpenseForm() {
             color: account.color,
           }))}
         />
+        {validationErrors.account && (
+          <Text style={[styles.errorText, styles.viewContainer]}>
+            {validationErrors.account}
+          </Text>
+        )}
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    // padding: 16,
+    // gap: 32,
+  },
   input: {
     borderWidth: 1,
     borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
-    marginBottom: 16,
+    // marginBottom: 16,
+    // marginTop: 16,
     fontSize: 16,
     color: Colors.slate[800],
   },
@@ -106,5 +126,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.slate[800],
     flex: 1,
+  },
+  errorText: {
+    color: Colors.red,
+    fontSize: 16,
+    marginTop: 4,
+  },
+  viewContainer: {
+    marginBottom: 16,
   },
 });

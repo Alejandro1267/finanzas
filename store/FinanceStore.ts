@@ -1,3 +1,4 @@
+import { ValidationErrors } from "@/types"
 import { create } from "zustand"
 
 export type Account = {
@@ -26,6 +27,7 @@ type FinanceState = {
   showAccountModal: boolean
   showRecordModal: boolean
   alertMessage: string
+  validationErrors: ValidationErrors
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -33,6 +35,7 @@ type FinanceState = {
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
+  setValidationErrors: (errors: ValidationErrors) => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -42,6 +45,7 @@ type FinanceState = {
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   createEmptyAccount: () => void
   createEmptyRecord: () => void
+  clearValidationErrors: () => void
 
 }
 
@@ -101,6 +105,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   showAccountModal:  false,
   showRecordModal: false,
   alertMessage: "",
+  validationErrors: {},
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -119,7 +124,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     set({ alertMessage: message })
     setTimeout(() => set({ alertMessage: "" }), 3000)
   },
-
+  setValidationErrors: (errors: ValidationErrors) => {
+    set({ validationErrors: errors })
+  },
 
   // Functions
   addAccount: (account: Account) => {
@@ -180,6 +187,10 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       date: new Date().toISOString().split("T")[0], // YYYY-MM-DD
       account: ""
     }})
-  }
+  },
+  clearValidationErrors: () => {
+    set({ validationErrors: {} })
+  },
+
 
 }))
