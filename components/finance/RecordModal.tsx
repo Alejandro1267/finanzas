@@ -3,7 +3,7 @@ import { recordSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
 import { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
@@ -21,6 +21,7 @@ export function RecordModal() {
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
+    accounts,
   } = useFinanceStore();
 
   const handleSubmit = () => {
@@ -29,6 +30,7 @@ export function RecordModal() {
     const record = recordSchema.safeParse({
       ...currentRecord,
       type: activeTab,
+      ...(activeTab === "income" && currentRecord?.account === "" && { account: "1" }),
     });
 
     if (!record.success) {
@@ -44,11 +46,68 @@ export function RecordModal() {
       return;
     }
 
-    addRecord({ ...record.data, id: Date.now().toString() });
-    console.log("addedRecord", record.data);
+    // Verificar si es distribución automática para ingresos
+    if (activeTab === "income" && record.data.account === "1") {
+      handleAutomaticDistribution(record.data)
+    } else {
+      // Registro normal
+      addRecord({ ...record.data, id: Date.now().toString() })
+      console.log("addedRecord", record.data)
+    }
 
     handleClose();
   };
+
+  const handleAutomaticDistribution = (baseRecord: any) => {
+    // Filtrar cuentas que tienen porcentaje definido (excluyendo la cuenta "1" de distribución automática)
+    const accountsWithPercentage = accounts.filter(
+      (account) => account.id !== "1" && account.percentage && account.percentage > 0,
+    )
+
+    if (accountsWithPercentage.length === 0) {
+      // console.warn("No hay cuentas con porcentaje definido para la distribución")
+      Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
+      return;
+    }
+
+    // Verificar que los porcentajes sumen 100% (opcional pero recomendado)
+    const totalPercentage = accountsWithPercentage.reduce((sum, account) => sum + (account.percentage || 0), 0)
+
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+      Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`)
+      return;
+    }
+
+    const totalAmount = baseRecord.amount
+
+    // Crear un registro por cada cuenta
+    accountsWithPercentage.forEach((account, index) => {
+      const accountPercentage = account.percentage || 0
+      let distributedAmount = (totalAmount * accountPercentage) / 100
+
+      // Para el último registro, ajustar por posibles diferencias de redondeo
+      if (index === accountsWithPercentage.length - 1) {
+        const alreadyDistributed = accountsWithPercentage
+          .slice(0, index)
+          .reduce((sum, acc) => sum + (totalAmount * (acc.percentage || 0)) / 100, 0)
+        distributedAmount = totalAmount - alreadyDistributed
+      }
+
+      // Redondear a 2 decimales
+      distributedAmount = Math.round(distributedAmount * 100) / 100
+
+      const distributedRecord = {
+        ...baseRecord,
+        id: `${Date.now()}-${account.id}`, // ID único para cada registro
+        account: account.id,
+        amount: distributedAmount,
+        description: `${baseRecord.description} (${accountPercentage}% - ${account.name})`,
+      }
+
+      addRecord(distributedRecord)
+      console.log(`Registro distribuido para ${account.name}:`, distributedRecord)
+    })
+  }
 
   const handleClose = () => {
     setShowRecordModal(false);

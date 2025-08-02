@@ -99,7 +99,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       amount: 250,
       description: "Sueldo",
       date: "2025-07-28",
-      account: "1",
+      account: "2",
     },
   ],
   showAccountModal:  false,
