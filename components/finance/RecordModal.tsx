@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { useFinance } from "@/hooks/useFinance";
 import { RecordDraft, recordSchema } from "@/schemas";
 import { Record, useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
@@ -17,12 +18,13 @@ export function RecordModal() {
     showRecordModal,
     setShowRecordModal,
     currentRecord,
-    addRecord,
+    // addRecord,
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
     accounts,
   } = useFinanceStore();
+  const { addRecord } = useFinance();
 
   const handleSubmit = () => {
     clearRecordErrors();
@@ -114,7 +116,7 @@ export function RecordModal() {
         id: `${Date.now()}-${account.id}`,
         account: account.id,
         amount,
-        description: `${baseRecord.description} (${account.percentage}% - ${account.name})`,
+        description: `${baseRecord.description} (${account.percentage}%)`,
       }
   
       addRecord(newRecord)

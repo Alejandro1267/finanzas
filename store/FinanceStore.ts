@@ -45,6 +45,7 @@ type FinanceState = {
   createEmptyAccount: () => void
   createEmptyRecord: () => void
   clearRecordErrors: () => void
+  updateAccountBalance: (account: string, newBalance: number) => void
 
 }
 
@@ -152,6 +153,12 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   clearRecordErrors: () => {
     set({ recordErrors: {} })
+  },
+  updateAccountBalance: (account: string, newBalance: number) => {
+    const updatedAccounts = get().accounts.map((acc) =>
+      acc.id === account ? { ...acc, balance: newBalance } : acc
+    )
+    set({ accounts: updatedAccounts })
   },
 
 }))
