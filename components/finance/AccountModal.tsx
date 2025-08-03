@@ -2,6 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { accountSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
+import { useEffect, useState } from "react";
 import {
   Modal,
   StyleSheet,
@@ -27,6 +28,70 @@ export default function AccountModal() {
     totalBalance,
     setTotalBalance,
   } = useFinanceStore();
+
+  // Estado local para el valor del porcentaje en el TextInput
+  const [displayPercentageValue, setDisplayPercentageValue] = useState(
+    currentAccount?.percentage?.toString() || "" // Start with empty string for better UX if 0
+  );
+
+  // Sincronizar el estado local con el valor del store cuando currentAccount cambie
+  useEffect(() => {
+    const externalPercentage = currentAccount?.percentage;
+    if (externalPercentage !== undefined && !isNaN(externalPercentage)) {
+      // Asegurarse de que el valor externo también esté dentro del rango y sin decimales
+      const clampedExternalPercentage = Math.max(
+        0,
+        Math.min(100, Math.floor(externalPercentage))
+      );
+      // Solo actualiza si el valor actual del display es diferente al valor externo clamped
+      if (Number(displayPercentageValue) !== clampedExternalPercentage) {
+        setDisplayPercentageValue(clampedExternalPercentage.toString());
+      }
+    } else {
+      // Si currentAccount.percentage es undefined o NaN, o al abrir el modal para una nueva cuenta
+      setDisplayPercentageValue(""); // Mostrar vacío para que el usuario escriba
+      setAccountField("percentage", 0); // Asegurar que el valor subyacente sea 0
+    }
+  }, [currentAccount?.percentage, showAccountModal]);
+
+  // Nueva función para manejar el cambio del input de porcentaje
+  const handlePercentageChange = (text: string) => {
+    // 1. Filtrar para permitir SOLO dígitos. Esto elimina negativos y decimales al escribir.
+    const cleanedText = text.replace(/[^0-9]/g, "");
+
+    // 2. Actualizar el estado local del display con el texto limpio.
+    // Esto asegura que el TextInput solo muestre dígitos.
+    setDisplayPercentageValue(cleanedText);
+
+    // 3. Si el texto limpio está vacío, el valor numérico es 0.
+    if (cleanedText === "") {
+      setAccountField("percentage", 0);
+      clearFieldError("percentage");
+      return;
+    }
+
+    // 4. Convertir a número entero.
+    let numValue = parseInt(cleanedText, 10);
+
+    // 5. Si la conversión resulta en NaN (aunque con [^0-9] es menos probable),
+    // o si no es un número finito, no actualizamos el campo real.
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      return;
+    }
+
+    // 6. Clampar el valor entre 0 y 100.
+    const clampedValue = Math.max(0, Math.min(100, numValue));
+
+    // 7. Actualizar el campo 'percentage' en el store con el valor validado.
+    setAccountField("percentage", clampedValue);
+    clearFieldError("percentage");
+
+    // 8. IMPORTANTE: Si el valor original (numValue) era diferente al valor clamped,
+    // actualiza el displayPercentageValue para que el TextInput muestre el valor clamped.
+    if (numValue !== clampedValue) {
+      setDisplayPercentageValue(clampedValue.toString());
+    }
+  };
 
   const handleAddAccount = () => {
     clearAccountErrors();
@@ -105,12 +170,22 @@ export default function AccountModal() {
 
             <View style={styles.viewContainer}>
               <Text style={styles.selectAccountText}>Porcentaje de Ingreso</Text>
-              <TextInput
+              {/* <TextInput
                 style={[styles.input, accountErrors.percentage && styles.inputError]}
                 placeholder="Porcentaje (%)"
                 keyboardType="numeric"
                 value={currentAccount?.percentage.toString() || "0"}
                 onChangeText={(value) => { setAccountField("percentage", Number(value)); clearFieldError("percentage") }}
+              /> */}
+              <TextInput
+                style={[
+                  styles.input,
+                  accountErrors.percentage && styles.inputError,
+                ]}
+                placeholder="Porcentaje (%)"
+                keyboardType="numeric" // Muestra teclado numérico, pero la lógica filtra
+                value={displayPercentageValue} // Usa el estado local para el display
+                onChangeText={handlePercentageChange} // Usa la nueva función de manejo
               />
               {accountErrors.percentage && (
                 <Text style={styles.errorText}>{accountErrors.percentage}</Text>
