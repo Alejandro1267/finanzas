@@ -52,12 +52,16 @@ export function ExpenseForm() {
         /> */}
         <CurrencyInput
           value={currentRecord?.amount || 0}
-          onChangeValue={(value) => setRecordField("amount", value || 0)}
+          onChangeValue={(value: number) => {
+            setRecordField("amount", value || 0);
+            clearFieldError("amount")
+          }}
           prefix="$"
           delimiter=","
           separator="."
           precision={2}
-          style={styles.input}
+          minValue={0}
+          style={[styles.input, recordErrors.amount && styles.inputError]}
         />
         {recordErrors.amount && (
           <Text style={styles.errorText}>{recordErrors.amount}</Text>

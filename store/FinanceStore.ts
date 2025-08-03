@@ -13,7 +13,7 @@ export type Record = {
   id: string
   type: "income" | "expense"
   amount: number
-  description?: string
+  description: string
   date: string
   account: string
 }

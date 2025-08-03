@@ -2,6 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import CurrencyInput from "react-native-currency-input";
 import { DateInput } from "../ui/DateInput";
 import { PickerInput } from "../ui/PickerInput";
 
@@ -38,7 +39,7 @@ export function IncomeForm() {
 
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
-        <TextInput
+        {/* <TextInput
           style={[styles.input, recordErrors.amount && styles.inputError]}
           placeholder="Monto"
           value={currentRecord?.amount.toString() || ""}
@@ -48,7 +49,17 @@ export function IncomeForm() {
           }}
           keyboardType="numeric"
           placeholderTextColor={Colors.slate[400]}
-        />
+        /> */}
+        <CurrencyInput
+                  value={currentRecord?.amount || 0}
+                  onChangeValue={(value: number) => setRecordField("amount", value || 0)}
+                  prefix="$"
+                  delimiter=","
+                  separator="."
+                  precision={2}
+                  minValue={0}
+                  style={[styles.input, recordErrors.amount && styles.inputError]}
+                />
         {recordErrors.amount && (
           <Text style={styles.errorText}>{recordErrors.amount}</Text>
         )}
