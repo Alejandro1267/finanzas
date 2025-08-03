@@ -24,21 +24,14 @@ export default function AccountModal() {
     clearAccountErrors,
     setAccountErrors,
     accountErrors,
+    totalBalance,
+    setTotalBalance,
   } = useFinanceStore();
 
   const handleAddAccount = () => {
     clearAccountErrors();
 
-    // if (!currentAccount?.name || !currentAccount?.percentage) {
-    //   Alert.alert("Error", "Por favor completa todos los campos");
-    //   return;
-    // }
-
-    const account = accountSchema.safeParse({
-      ...currentAccount,
-      // percentage: Number(currentAccount?.percentage),
-      // balance: Number(currentAccount?.balance),
-    })
+    const account = accountSchema.safeParse(currentAccount)
 
     if (!account.success) {
       const errors: ValidationErrors = {};
@@ -60,6 +53,7 @@ export default function AccountModal() {
       balance: account.data.balance,
       color: account.data.color || Colors.blue,
     });
+    setTotalBalance(totalBalance + account.data.balance)
     setShowAccountModal(false);
     clearAccountErrors();
   };
@@ -110,56 +104,54 @@ export default function AccountModal() {
             </View>
 
             <View style={styles.viewContainer}>
-            <Text style={styles.selectAccountText}>Porcentaje de Ingreso</Text>
-            <TextInput
-              style={[styles.input, accountErrors.percentage && styles.inputError]}
-              placeholder="Porcentaje (%)"
-              keyboardType="numeric"
-              value={currentAccount?.percentage.toString() || "0"}
-              onChangeText={(value) => { setAccountField("percentage", Number(value)); clearFieldError("percentage") }}
-            />
-            {accountErrors.percentage && (
-              <Text style={styles.errorText}>{accountErrors.percentage}</Text>
-            )}
+              <Text style={styles.selectAccountText}>Porcentaje de Ingreso</Text>
+              <TextInput
+                style={[styles.input, accountErrors.percentage && styles.inputError]}
+                placeholder="Porcentaje (%)"
+                keyboardType="numeric"
+                value={currentAccount?.percentage.toString() || "0"}
+                onChangeText={(value) => { setAccountField("percentage", Number(value)); clearFieldError("percentage") }}
+              />
+              {accountErrors.percentage && (
+                <Text style={styles.errorText}>{accountErrors.percentage}</Text>
+              )}
             </View>
 
             <View style={styles.viewContainer}>
-            <Text style={styles.selectAccountText}>Saldo Inicial</Text>
-            {/* <TextInput
-              style={[styles.input, accountErrors.balance && styles.inputError]}
-              placeholder="Saldo inicial"
-              keyboardType="numeric"
-              value={currentAccount?.balance.toString() || "0"}
-              onChangeText={(value) => { setAccountField("balance", Number(value)); clearFieldError("balance") }}
-            /> */}
-            <CurrencyInput
-              value={currentAccount?.balance || 0}
-              onChangeValue={(value: number) => {
-                setAccountField("balance", value || 0);
-                clearFieldError("balance");
-              }}
-              prefix="$"
-              delimiter=","
-              separator="."
-              precision={2}
-              minValue={0}
-              style={[
-                styles.input,
-                accountErrors.balance && styles.inputError
-              ]}
-            />
-            {accountErrors.balance && (
-              <Text style={styles.errorText}>{accountErrors.balance}</Text>
-            )}
+              <Text style={styles.selectAccountText}>Saldo Inicial</Text>
+              {/* <TextInput
+                style={[styles.input, accountErrors.balance && styles.inputError]}
+                placeholder="Saldo inicial"
+                keyboardType="numeric"
+                value={currentAccount?.balance.toString() || "0"}
+                onChangeText={(value) => { setAccountField("balance", Number(value)); clearFieldError("balance") }}
+              /> */}
+              <CurrencyInput
+                value={currentAccount?.balance || 0}
+                onChangeValue={(value: number) => {
+                  setAccountField("balance", value || 0);
+                  clearFieldError("balance");
+                }}
+                prefix="$"
+                delimiter=","
+                separator="."
+                precision={2}
+                style={[
+                  styles.input,
+                  accountErrors.balance && styles.inputError
+                ]}
+              />
+              {accountErrors.balance && (
+                <Text style={styles.errorText}>{accountErrors.balance}</Text>
+               )}
             </View>
 
-            {/* <Text>Color</Text> */}
             <View style={styles.viewContainer}>
               <Text style={styles.selectAccountText}>
                 Color de la cuenta
               </Text>
               <View>
-                {/* Dividir los colores en filas de 5 */}
+                {/* Dividir los colores en filas de 6 */}
                 {Array.from({
                   length: Math.ceil(COLOR_PALETTE.length / 6),
                 }).map((_, rowIndex) => (
