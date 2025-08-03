@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
-import { recordSchema } from "@/schemas";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { RecordDraft, recordSchema } from "@/schemas";
+import { Record, useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
 import { useState } from "react";
 import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -56,56 +56,69 @@ export function RecordModal() {
     }
 
     handleClose();
-  };
-
-  const handleAutomaticDistribution = (baseRecord: any) => {
-    // Filtrar cuentas que tienen porcentaje definido (excluyendo la cuenta "1" de distribución automática)
-    const accountsWithPercentage = accounts.filter(
-      (account) => account.id !== "1" && account.percentage && account.percentage > 0,
+  };  
+  
+  function distribuirPorcentajes(montoCentavos: number, porcentajes: number[]): number[] {
+    const distribucion = porcentajes.map(p =>
+      Math.floor((montoCentavos * p) / 100)
     )
-
-    if (accountsWithPercentage.length === 0) {
-      // console.warn("No hay cuentas con porcentaje definido para la distribución")
-      Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
-      return;
+  
+    const totalDistribuido = distribucion.reduce((a, b) => a + b, 0)
+    let diferencia = montoCentavos - totalDistribuido
+  
+    const residuos = porcentajes.map((p, i) => ({
+      index: i,
+      residuo: (montoCentavos * p) % 100,
+    }))
+  
+    residuos.sort((a, b) => b.residuo - a.residuo)
+  
+    for (let i = 0; i < residuos.length && diferencia > 0; i++) {
+      distribucion[residuos[i].index] += 1
+      diferencia--
     }
-
-    // Verificar que los porcentajes sumen 100% (opcional pero recomendado)
-    const totalPercentage = accountsWithPercentage.reduce((sum, account) => sum + (account.percentage || 0), 0)
-
+  
+    return distribucion
+  }
+  
+  function handleAutomaticDistribution(
+    baseRecord: RecordDraft,
+  ) {
+    const accountsWithPercentage = accounts.filter(
+      (account) => account.id !== "1" && account.percentage && account.percentage > 0
+    )
+  
+    if (accountsWithPercentage.length === 0) {
+      Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
+      return
+    }
+  
+    const totalPercentage = accountsWithPercentage.reduce(
+      (sum, account) => sum + (account.percentage || 0), 0
+    )
+  
     if (Math.abs(totalPercentage - 100) > 0.01) {
       Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`)
-      return;
+      return
     }
-
-    const totalAmount = baseRecord.amount
-
-    // Crear un registro por cada cuenta
+  
+    const totalCentavos = Math.round(baseRecord.amount * 100)
+    const porcentajes = accountsWithPercentage.map(a => a.percentage || 0)
+    const distribucionCentavos = distribuirPorcentajes(totalCentavos, porcentajes)
+  
     accountsWithPercentage.forEach((account, index) => {
-      const accountPercentage = account.percentage || 0
-      let distributedAmount = (totalAmount * accountPercentage) / 100
-
-      // Para el último registro, ajustar por posibles diferencias de redondeo
-      if (index === accountsWithPercentage.length - 1) {
-        const alreadyDistributed = accountsWithPercentage
-          .slice(0, index)
-          .reduce((sum, acc) => sum + (totalAmount * (acc.percentage || 0)) / 100, 0)
-        distributedAmount = totalAmount - alreadyDistributed
-      }
-
-      // Redondear a 2 decimales
-      distributedAmount = Math.round(distributedAmount * 100) / 100
-
-      const distributedRecord = {
+      const amount = distribucionCentavos[index] / 100
+  
+      const newRecord: Record = {
         ...baseRecord,
-        id: `${Date.now()}-${account.id}`, // ID único para cada registro
+        id: `${Date.now()}-${account.id}`,
         account: account.id,
-        amount: distributedAmount,
-        description: `${baseRecord.description} (${accountPercentage}% - ${account.name})`,
+        amount,
+        description: `${baseRecord.description} (${account.percentage}% - ${account.name})`,
       }
-
-      addRecord(distributedRecord)
-      console.log(`Registro distribuido para ${account.name}:`, distributedRecord)
+  
+      addRecord(newRecord)
+      console.log(`Registro distribuido para ${account.name}:`, newRecord)
     })
   }
 
