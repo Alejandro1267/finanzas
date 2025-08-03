@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const accountSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  // id: z.string(),
+  name: z.string().min(1, "El nombre es requerido"),
   percentage: z.number(),
   balance: z.number(),
-  color: z.string(),
+  color: z.string().min(1, "El color es requerido"),
 });
 
 export type AccountDraft = z.infer<typeof accountSchema>;

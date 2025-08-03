@@ -28,6 +28,7 @@ type FinanceState = {
   showRecordModal: boolean
   alertMessage: string
   recordErrors: ValidationErrors
+  accountErrors: ValidationErrors
   totalBalance: number
 
   // Actions
@@ -37,6 +38,7 @@ type FinanceState = {
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
   setRecordErrors: (errors: ValidationErrors) => void
+  setAccountErrors: (errors: ValidationErrors) => void
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   setTotalBalance: (balance: number) => void
@@ -47,6 +49,7 @@ type FinanceState = {
   createEmptyAccount: () => void
   createEmptyRecord: () => void
   clearRecordErrors: () => void
+  clearAccountErrors: () => void
   updateAccountBalance: (account: string, newBalance: number) => void
 
 }
@@ -83,6 +86,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   showRecordModal: false,
   alertMessage: "",
   recordErrors: {},
+  accountErrors: {},
   totalBalance: 0,
 
   // Actions
@@ -104,6 +108,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   setRecordErrors: (errors: ValidationErrors) => {
     set({ recordErrors: errors })
+  },
+  setAccountErrors: (errors: ValidationErrors) => {
+    set({ accountErrors: errors })
   },
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) =>
     set((state) => {
@@ -159,6 +166,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   clearRecordErrors: () => {
     set({ recordErrors: {} })
+  },
+  clearAccountErrors: () => {
+    set({ accountErrors: {} })
   },
   updateAccountBalance: (account: string, newBalance: number) => {
     const updatedAccounts = get().accounts.map((acc) =>

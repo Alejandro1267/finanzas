@@ -21,7 +21,6 @@ export function RecordModal() {
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
-    accounts,
   } = useFinanceStore();
   const { addRecord, handleAutomaticDistribution } = useFinance();
 

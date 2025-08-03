@@ -1,14 +1,16 @@
 import { Colors } from "@/constants/Colors";
+import { accountSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
+import { ValidationErrors } from "@/types";
 import {
-  Alert,
   Modal,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import CurrencyInput from "react-native-currency-input";
 import { IconSymbol } from "../ui/IconSymbol";
 
 export default function AccountModal() {
@@ -19,37 +21,67 @@ export default function AccountModal() {
     setAccountField,
     addAccount,
     createEmptyAccount,
+    clearAccountErrors,
+    setAccountErrors,
+    accountErrors,
   } = useFinanceStore();
 
   const handleAddAccount = () => {
-    if (!currentAccount?.name || !currentAccount?.percentage) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+    clearAccountErrors();
+
+    // if (!currentAccount?.name || !currentAccount?.percentage) {
+    //   Alert.alert("Error", "Por favor completa todos los campos");
+    //   return;
+    // }
+
+    const account = accountSchema.safeParse({
+      ...currentAccount,
+      // percentage: Number(currentAccount?.percentage),
+      // balance: Number(currentAccount?.balance),
+    })
+
+    if (!account.success) {
+      const errors: ValidationErrors = {};
+      account.error.issues.forEach((issue) => {
+        if (issue.path.length > 0) {
+          errors[issue.path[0] as string] = issue.message;
+        }
+      });
+    
+      setAccountErrors(errors);
+      console.log("Errores de validación:", errors);
       return;
     }
 
     addAccount({
-      id: "11",
-      name: currentAccount?.name || "",
-      percentage: currentAccount?.percentage || 0,
-      balance: currentAccount?.balance || 0,
-      color: currentAccount?.color || Colors.blue,
+      id: Date.now().toString(),
+      name: account.data.name,
+      percentage: account.data.percentage,
+      balance: account.data.balance,
+      color: account.data.color || Colors.blue,
     });
     setShowAccountModal(false);
+    clearAccountErrors();
+  };
+
+  const clearFieldError = (fieldName: string) => {
+    const { [fieldName]: removedError, ...remainingErrors } = accountErrors;
+    setAccountErrors(remainingErrors);
   };
 
   const COLOR_PALETTE = [
-    Colors.blue, // Azul
-    Colors.cyan, // Cian
-    Colors.darkGreen, // Verde Oscuro
-    Colors.lightGreen, // Verde Claro
-    Colors.yellow, // Amarillo
-    Colors.orange, // Naranja
-    Colors.red, // Rojo
-    Colors.pink, // Rosa
-    Colors.purple, // Morado
-    Colors.brown, // Café
-    Colors.gray, // Gris
-    Colors.navyBlue, // Negro
+    Colors.blue,
+    Colors.cyan,
+    Colors.darkGreen,
+    Colors.lightGreen,
+    Colors.yellow,
+    Colors.orange,
+    Colors.red,
+    Colors.pink,
+    Colors.purple,
+    Colors.brown,
+    Colors.gray,
+    Colors.navyBlue,
   ];
 
   return (
@@ -64,35 +96,66 @@ export default function AccountModal() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Nueva Cuenta</Text>
 
-            <Text>Nombre de la Cuenta</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre"
-              value={currentAccount?.name || ""}
-              onChangeText={(value) => setAccountField("name", value)}
-            />
+            <View style={styles.viewContainer}>
+              <Text style={styles.selectAccountText}>Nombre de la Cuenta</Text>
+              <TextInput
+                style={[styles.input, accountErrors.name && styles.inputError]}
+                placeholder="Nombre"
+                value={currentAccount?.name || ""}
+                onChangeText={(value) => { setAccountField("name", value); clearFieldError("name") }}
+              />
+              {accountErrors.name && (
+                <Text style={styles.errorText}>{accountErrors.name}</Text>
+              )}
+            </View>
 
-            <Text>Porcentaje de Ingreso</Text>
+            <View style={styles.viewContainer}>
+            <Text style={styles.selectAccountText}>Porcentaje de Ingreso</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, accountErrors.percentage && styles.inputError]}
               placeholder="Porcentaje (%)"
               keyboardType="numeric"
               value={currentAccount?.percentage.toString() || "0"}
-              onChangeText={(value) => setAccountField("percentage", Number(value))}
+              onChangeText={(value) => { setAccountField("percentage", Number(value)); clearFieldError("percentage") }}
             />
+            {accountErrors.percentage && (
+              <Text style={styles.errorText}>{accountErrors.percentage}</Text>
+            )}
+            </View>
 
-            <Text>Saldo Inicial</Text>
-            <TextInput
-              style={styles.input}
+            <View style={styles.viewContainer}>
+            <Text style={styles.selectAccountText}>Saldo Inicial</Text>
+            {/* <TextInput
+              style={[styles.input, accountErrors.balance && styles.inputError]}
               placeholder="Saldo inicial"
               keyboardType="numeric"
               value={currentAccount?.balance.toString() || "0"}
-              onChangeText={(value) => setAccountField("balance", Number(value))}
+              onChangeText={(value) => { setAccountField("balance", Number(value)); clearFieldError("balance") }}
+            /> */}
+            <CurrencyInput
+              value={currentAccount?.balance || 0}
+              onChangeValue={(value: number) => {
+                setAccountField("balance", value || 0);
+                clearFieldError("balance");
+              }}
+              prefix="$"
+              delimiter=","
+              separator="."
+              precision={2}
+              minValue={0}
+              style={[
+                styles.input,
+                accountErrors.balance && styles.inputError
+              ]}
             />
+            {accountErrors.balance && (
+              <Text style={styles.errorText}>{accountErrors.balance}</Text>
+            )}
+            </View>
 
             {/* <Text>Color</Text> */}
-            <View style={{ marginBottom: 15 }}>
-              <Text style={{ marginBottom: 10, fontWeight: "500" }}>
+            <View style={styles.viewContainer}>
+              <Text style={styles.selectAccountText}>
                 Color de la cuenta
               </Text>
               <View>
@@ -108,7 +171,7 @@ export default function AccountModal() {
                       (color) => (
                         <TouchableOpacity
                           key={color}
-                          onPress={() => setAccountField("color", color)}
+                          onPress={() => { setAccountField("color", color); clearFieldError("color") }}
                           style={[
                             styles.colorCircle,
                             {
@@ -127,13 +190,16 @@ export default function AccountModal() {
                     )}
                   </View>
                 ))}
+                {accountErrors.color && (
+                  <Text style={styles.errorText}>{accountErrors.color}</Text>
+                )}
               </View>
             </View>
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
-                onPress={() => setShowAccountModal(false)}
+                onPress={() => { setShowAccountModal(false); clearAccountErrors() }}
               >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -184,11 +250,11 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.slate[100],
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 15,
+    borderColor: Colors.slate[200],
+    padding: 12,
+    borderRadius: 8,
     fontSize: 16,
+    color: Colors.slate[800],
   },
   buttonContainer: {
     flexDirection: "row",
@@ -234,5 +300,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+  },
+  errorText: {
+    color: Colors.redT[500],
+    fontSize: 16,
+    marginTop: 4,
+  },
+  inputError: {
+    borderColor: Colors.redT[500],
+  },
+  viewContainer: {
+    marginBottom: 16,
+  },
+  selectAccountText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+    color: Colors.slate[800],
   },
 });
