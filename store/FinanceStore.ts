@@ -54,53 +54,28 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   currentRecord: null,
   accounts: [
     {
-      id: "4",
+      id: "2",
       name: "Gastos Básicos",
       percentage: 50,
       balance: 0,
       color: "#FF6B6B"
     },
     {
-      id: "2",
+      id: "3",
       name: "Ahorros",
       percentage: 30,
       balance: 0,
       color: "#4ECDC4"
     },
     {
-      id: "3",
+      id: "4",
       name: "Galletas",
       percentage: 20,
       balance: 0,
       color: "#45B7D1"
     },
   ],
-  records: [
-    {
-      id: "1",
-      type: "income",
-      amount: 100,
-      description: "Regalo",
-      date: "2025-07-28",
-      account: "3",
-    },
-    {
-      id: "2",
-      type: "expense",
-      amount: 50,
-      description: "Galletas",
-      date: "2025-07-28",
-      account: "3",
-    },
-    {
-      id: "3",
-      type: "income",
-      amount: 250,
-      description: "Sueldo",
-      date: "2025-07-28",
-      account: "2",
-    },
-  ],
+  records: [],
   showAccountModal:  false,
   showRecordModal: false,
   alertMessage: "",
@@ -178,6 +153,5 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   clearRecordErrors: () => {
     set({ recordErrors: {} })
   },
-
 
 }))

@@ -7,7 +7,10 @@ export function AccountsList() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cuentas</Text>
+      {accounts.length > 0
+        ? <Text style={styles.title}>Cuentas</Text>
+        : <Text style={styles.title}>No hay cuentas</Text>
+      }
       {accounts.map((account) => (
         <View key={account.id} style={styles.accountCard}>
           <View

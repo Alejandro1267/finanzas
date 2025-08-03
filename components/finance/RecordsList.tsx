@@ -7,7 +7,10 @@ export function RecordsList() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registros Recientes</Text>
+      {records.length > 0
+        ? <Text style={styles.title}>Registros</Text>
+        : <Text style={styles.title}>No hay registros</Text>
+      }
       {records.slice(0, 10).map((record) => (
         <View key={record.id} style={styles.recordCard}>
           <View style={styles.recordInfo}>

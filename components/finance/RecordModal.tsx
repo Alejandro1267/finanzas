@@ -12,7 +12,7 @@ type RecordType = "income" | "expense";
 
 export function RecordModal() {
   const [activeTab, setActiveTab] = useState<RecordType>("income");
-
+ 
   const {
     showRecordModal,
     setShowRecordModal,
