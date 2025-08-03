@@ -8,6 +8,7 @@ import { StyleSheet } from "react-native";
 
 export default function Registros() {
   return (
+    <>
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
       headerImage={
@@ -20,9 +21,11 @@ export default function Registros() {
       }
     >
       <RecordsList />
-      <RecordModal />
       <AlertMessage />
     </ParallaxScrollView>
+    
+    <RecordModal />
+    </>
   );
 }
 
