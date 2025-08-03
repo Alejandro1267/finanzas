@@ -1,48 +1,50 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import AccountModal from "@/components/finance/AccountModal";
 import { AccountsList } from "@/components/finance/AccountsList";
-import { AlertMessage } from "@/components/finance/AlertMessage";
 import { Header } from "@/components/finance/Header";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Colors } from "@/constants/Colors";
-import { useFinanceStore } from "@/store/FinanceStore";
 
-export default function TabTwoScreen() {
-  const { setAlertMessage } = useFinanceStore();
-
+export default function Cuentas() {
   return (
-    <ParallaxScrollView
+    <ScrollView>
+      <Header />
+      <View style={styles.content}>
+    {/* <ParallaxScrollView
       headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color={Colors.green}
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
+          <IconSymbol
+            size={310}
+            color={Colors.green}
+            name="chevron.left.forwardslash.chevron.right"
+            style={styles.headerImage}
+          />
       }
-    >
-      <AlertMessage />
-      <TouchableOpacity
-        onPress={() => {
-          setAlertMessage("Alerta");
-        }}
-      >
-        <Text>Mostrar Alerta</Text>
-      </TouchableOpacity>
-      <Header />
+    > */}
       <AccountsList />
       <AccountModal />
-    </ParallaxScrollView>
+      </View>
+    {/* </ParallaxScrollView> */}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    bottom: -90,
-    left: -35,
+  // headerImage: {
+    // bottom: -90,
+    // left: -35,
+    // position: "absolute",
+  // },
+  header: {
     position: "absolute",
+    top: -100,
+    left: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: 32,
+    gap: 16,
+    overflow: 'hidden',
   },
 });

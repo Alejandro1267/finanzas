@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   accountDetails: {
     fontSize: 14,
-    color: Colors.slate[500],
+    color: Colors.slate[600],
     marginTop: 4,
   },
 });
