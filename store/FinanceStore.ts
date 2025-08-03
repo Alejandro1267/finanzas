@@ -28,6 +28,7 @@ type FinanceState = {
   showRecordModal: boolean
   alertMessage: string
   recordErrors: ValidationErrors
+  totalBalance: number
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -36,12 +37,13 @@ type FinanceState = {
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
   setRecordErrors: (errors: ValidationErrors) => void
+  setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
+  setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
+  setTotalBalance: (balance: number) => void
 
   // Functions
   addAccount: (account: Account) => void
   addRecord: (record: Record) => void
-  setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
-  setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   createEmptyAccount: () => void
   createEmptyRecord: () => void
   clearRecordErrors: () => void
@@ -81,6 +83,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   showRecordModal: false,
   alertMessage: "",
   recordErrors: {},
+  totalBalance: 0,
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -101,14 +104,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   setRecordErrors: (errors: ValidationErrors) => {
     set({ recordErrors: errors })
-  },
-
-  // Functions
-  addAccount: (account: Account) => {
-    set({ accounts: [...get().accounts, account] })
-  },
-  addRecord: (record: Record) => {
-    set({ records: [...get().records, record] })
   },
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) =>
     set((state) => {
@@ -132,6 +127,17 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
         },
       }
     }),
+  setTotalBalance: (balance: number) => {
+    set({ totalBalance: balance })
+  },
+
+  // Functions
+  addAccount: (account: Account) => {
+    set({ accounts: [...get().accounts, account] })
+  },
+  addRecord: (record: Record) => {
+    set({ records: [...get().records, record] })
+  },
   createEmptyAccount: () => {
     set({ currentAccount: {
       id: "",

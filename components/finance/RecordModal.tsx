@@ -1,10 +1,10 @@
 import { Colors } from "@/constants/Colors";
 import { useFinance } from "@/hooks/useFinance";
-import { RecordDraft, recordSchema } from "@/schemas";
-import { Record, useFinanceStore } from "@/store/FinanceStore";
+import { recordSchema } from "@/schemas";
+import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
 import { useState } from "react";
-import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
@@ -18,13 +18,12 @@ export function RecordModal() {
     showRecordModal,
     setShowRecordModal,
     currentRecord,
-    // addRecord,
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
     accounts,
   } = useFinanceStore();
-  const { addRecord } = useFinance();
+  const { addRecord, handleAutomaticDistribution } = useFinance();
 
   const handleSubmit = () => {
     clearRecordErrors();
@@ -59,70 +58,6 @@ export function RecordModal() {
 
     handleClose();
   };  
-  
-  function distribuirPorcentajes(montoCentavos: number, porcentajes: number[]): number[] {
-    const distribucion = porcentajes.map(p =>
-      Math.floor((montoCentavos * p) / 100)
-    )
-  
-    const totalDistribuido = distribucion.reduce((a, b) => a + b, 0)
-    let diferencia = montoCentavos - totalDistribuido
-  
-    const residuos = porcentajes.map((p, i) => ({
-      index: i,
-      residuo: (montoCentavos * p) % 100,
-    }))
-  
-    residuos.sort((a, b) => b.residuo - a.residuo)
-  
-    for (let i = 0; i < residuos.length && diferencia > 0; i++) {
-      distribucion[residuos[i].index] += 1
-      diferencia--
-    }
-  
-    return distribucion
-  }
-  
-  function handleAutomaticDistribution(
-    baseRecord: RecordDraft,
-  ) {
-    const accountsWithPercentage = accounts.filter(
-      (account) => account.id !== "1" && account.percentage && account.percentage > 0
-    )
-  
-    if (accountsWithPercentage.length === 0) {
-      Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
-      return
-    }
-  
-    const totalPercentage = accountsWithPercentage.reduce(
-      (sum, account) => sum + (account.percentage || 0), 0
-    )
-  
-    if (Math.abs(totalPercentage - 100) > 0.01) {
-      Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`)
-      return
-    }
-  
-    const totalCentavos = Math.round(baseRecord.amount * 100)
-    const porcentajes = accountsWithPercentage.map(a => a.percentage || 0)
-    const distribucionCentavos = distribuirPorcentajes(totalCentavos, porcentajes)
-  
-    accountsWithPercentage.forEach((account, index) => {
-      const amount = distribucionCentavos[index] / 100
-  
-      const newRecord: Record = {
-        ...baseRecord,
-        id: `${Date.now()}-${account.id}`,
-        account: account.id,
-        amount,
-        description: `${baseRecord.description} (${account.percentage}%)`,
-      }
-  
-      addRecord(newRecord)
-      console.log(`Registro distribuido para ${account.name}:`, newRecord)
-    })
-  }
 
   const handleClose = () => {
     setShowRecordModal(false);
