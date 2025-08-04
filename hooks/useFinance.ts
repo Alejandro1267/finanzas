@@ -62,6 +62,13 @@ export function useFinance() {
       // Actualizar balance de la cuenta
       const delta = record.type === "income" ? record.amount : -record.amount
       const newBalance = account.balance + delta
+
+      // Actualizar balance en la base de datos
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [newBalance, account.id]
+      );
+      
       updateAccountBalance(account.id, newBalance)
     
       if (updateTotal) {
@@ -159,14 +166,36 @@ export function useFinance() {
         
         console.log(`Registro distribuido insertado para ${account.name}:`, insertedRecord);
 
-        // Actualizar balance de la cuenta (sin updateTotal para evitar duplicar)
-        await addRecord({
-          type: baseRecord.type,
-          amount: amount,
+        // Agregar el registro al store con el ID real de la base de datos
+        addRecordStore({
+          id: insertedRecord.id.toString(),
+          type: insertedRecord.type,
+          amount: insertedRecord.amount,
           description: insertedRecord.description,
-          date: baseRecord.date,
-          account: account.id
-        }, false);
+          date: insertedRecord.date,
+          account: insertedRecord.account,
+        });
+
+        // Actualizar balance de la cuenta
+        const delta = baseRecord.type === "income" ? amount : -amount
+        const newBalance = account.balance + delta
+
+        // Actualizar balance en la base de datos
+        await db.runAsync(
+          'UPDATE accounts SET balance = ? WHERE id = ?',
+          [newBalance, account.id]
+        );
+
+        updateAccountBalance(account.id, newBalance)
+
+        // Actualizar balance de la cuenta (sin updateTotal para evitar duplicar)
+        // await addRecord({
+        //   type: baseRecord.type,
+        //   amount: amount,
+        //   description: insertedRecord.description,
+        //   date: baseRecord.date,
+        //   account: account.id
+        // }, false);
       }
       
     } catch (error) {

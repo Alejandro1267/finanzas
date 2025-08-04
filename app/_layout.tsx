@@ -17,7 +17,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  const { setAccounts, setRecords } = useFinanceStore();
+  const { setAccounts, setRecords, setTotalBalance } = useFinanceStore();
 
   useEffect(() => {
     const initializeDatabase = async () => {
@@ -51,6 +51,13 @@ export default function RootLayout() {
           }))
         );
         console.log("accounts", accounts);
+
+        const totalBalance = accounts.reduce(
+          (sum, account) => sum + account.balance,
+          0
+        );
+        setTotalBalance(totalBalance);
+        console.log("Total balance calculated:", totalBalance);
 
         const records = (await db.getAllAsync(
           `SELECT * FROM records`
