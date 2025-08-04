@@ -88,14 +88,14 @@ export function IncomeForm() {
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
         <PickerInput
-          value={currentRecord?.account || "1"}
+          value={currentRecord?.account || "distribute"}
           onValueChange={(value) => {
             setRecordField("account", value);
             clearFieldError("account");
           }}
           items={[
             {
-              id: "1",
+              id: "distribute",
               name: "Distribuir Automáticamente",
               // color: Colors.white,
             },

@@ -13,7 +13,7 @@ type RecordType = "income" | "expense";
 
 export function RecordModal() {
   const [activeTab, setActiveTab] = useState<RecordType>("income");
- 
+
   const {
     showRecordModal,
     setShowRecordModal,
@@ -30,7 +30,8 @@ export function RecordModal() {
     const record = recordSchema.safeParse({
       ...currentRecord,
       type: activeTab,
-      ...(activeTab === "income" && currentRecord?.account === "" && { account: "1" }),
+      ...(activeTab === "income" &&
+        currentRecord?.account === "" && { account: "distribute" }),
     });
 
     if (!record.success) {
@@ -47,16 +48,16 @@ export function RecordModal() {
     }
 
     // Verificar si es distribución automática para ingresos
-    if (activeTab === "income" && record.data.account === "1") {
-      handleAutomaticDistribution(record.data)
+    if (activeTab === "income" && record.data.account === "distribute") {
+      handleAutomaticDistribution(record.data);
     } else {
       // Registro normal
-      addRecord({ ...record.data, id: Date.now().toString() })
-      console.log("addedRecord", record.data)
+      addRecord({ ...record.data, id: Date.now().toString() });
+      console.log("addedRecord", record.data);
     }
 
     handleClose();
-  };  
+  };
 
   const handleClose = () => {
     setShowRecordModal(false);
