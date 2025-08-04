@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -29,7 +30,8 @@ export function RecordsList() {
                 : styles.expenseAmount,
             ]}
           >
-            {record.type === "income" ? "" : "- "}${record.amount.toFixed(2)}
+            {record.type === "income" ? "" : "- "}
+            {formatNumber$(record.amount)}
           </Text>
         </View>
       ))}

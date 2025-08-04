@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -25,19 +26,19 @@ export function Header() {
         <View style={styles.column}>
           <Text style={styles.columnLabel}>Ingresos</Text>
           <Text style={[styles.columnValue, styles.incomeValue]}>
-            ${totalIncome.toFixed(2)}
+            {formatNumber$(totalIncome)}
           </Text>
         </View>
         <View style={styles.column}>
           <Text style={styles.columnLabel}>Egresos</Text>
           <Text style={[styles.columnValue, styles.expenseValue]}>
-            ${totalExpenses.toFixed(2)}
+            {formatNumber$(totalExpenses)}
           </Text>
         </View>
         <View style={styles.column}>
           <Text style={styles.columnLabel}>Balance Total</Text>
           <Text style={[styles.columnValue, styles.balanceValue]}>
-            ${totalBalance.toFixed(2)}
+            {formatNumber$(totalBalance)}
           </Text>
         </View>
       </View>

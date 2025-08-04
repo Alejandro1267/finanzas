@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -7,10 +8,11 @@ export function AccountsList() {
 
   return (
     <View style={styles.container}>
-      {accounts.length > 0
-        ? <Text style={styles.title}>Cuentas</Text>
-        : <Text style={styles.title}>No hay cuentas</Text>
-      }
+      {accounts.length > 0 ? (
+        <Text style={styles.title}>Cuentas</Text>
+      ) : (
+        <Text style={styles.title}>No hay cuentas</Text>
+      )}
       {accounts.map((account) => (
         <View key={account.id} style={styles.accountCard}>
           <View
@@ -19,7 +21,7 @@ export function AccountsList() {
           <View style={styles.accountInfo}>
             <Text style={styles.accountName}>{account.name}</Text>
             <Text style={styles.accountDetails}>
-              {account.percentage}% • ${account.balance.toFixed(2)}
+              {account.percentage}% • {formatNumber$(account.balance)}
             </Text>
           </View>
         </View>
