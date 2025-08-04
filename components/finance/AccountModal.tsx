@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/Colors";
-import { accountSchema } from "@/schemas";
+import { useFinance } from "@/hooks/useFinance";
 import { useFinanceStore } from "@/store/FinanceStore";
-import { ValidationErrors } from "@/types";
 import { useEffect, useState } from "react";
 import {
   Modal,
@@ -9,7 +8,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 import { IconSymbol } from "../ui/IconSymbol";
@@ -20,14 +19,12 @@ export default function AccountModal() {
     setShowAccountModal,
     currentAccount,
     setAccountField,
-    addAccount,
     createEmptyAccount,
     clearAccountErrors,
     setAccountErrors,
     accountErrors,
-    totalBalance,
-    setTotalBalance,
   } = useFinanceStore();
+  const { addAccount } = useFinance();
 
   // Estado local para el valor del porcentaje en el TextInput
   const [displayPercentageValue, setDisplayPercentageValue] = useState(
@@ -93,36 +90,6 @@ export default function AccountModal() {
     }
   };
 
-  const handleAddAccount = () => {
-    clearAccountErrors();
-
-    const account = accountSchema.safeParse(currentAccount)
-
-    if (!account.success) {
-      const errors: ValidationErrors = {};
-      account.error.issues.forEach((issue) => {
-        if (issue.path.length > 0) {
-          errors[issue.path[0] as string] = issue.message;
-        }
-      });
-    
-      setAccountErrors(errors);
-      console.log("Errores de validación:", errors);
-      return;
-    }
-
-    addAccount({
-      id: Date.now().toString(),
-      name: account.data.name,
-      percentage: account.data.percentage,
-      balance: account.data.balance,
-      color: account.data.color || Colors.blue,
-    });
-    setTotalBalance(totalBalance + account.data.balance)
-    setShowAccountModal(false);
-    clearAccountErrors();
-  };
-
   const clearFieldError = (fieldName: string) => {
     const { [fieldName]: removedError, ...remainingErrors } = accountErrors;
     setAccountErrors(remainingErrors);
@@ -161,7 +128,10 @@ export default function AccountModal() {
                 style={[styles.input, accountErrors.name && styles.inputError]}
                 placeholder="Nombre"
                 value={currentAccount?.name || ""}
-                onChangeText={(value) => { setAccountField("name", value); clearFieldError("name") }}
+                onChangeText={(value) => {
+                  setAccountField("name", value);
+                  clearFieldError("name");
+                }}
               />
               {accountErrors.name && (
                 <Text style={styles.errorText}>{accountErrors.name}</Text>
@@ -169,7 +139,9 @@ export default function AccountModal() {
             </View>
 
             <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>Porcentaje de Ingreso</Text>
+              <Text style={styles.selectAccountText}>
+                Porcentaje de Ingreso
+              </Text>
               {/* <TextInput
                 style={[styles.input, accountErrors.percentage && styles.inputError]}
                 placeholder="Porcentaje (%)"
@@ -213,18 +185,16 @@ export default function AccountModal() {
                 precision={2}
                 style={[
                   styles.input,
-                  accountErrors.balance && styles.inputError
+                  accountErrors.balance && styles.inputError,
                 ]}
               />
               {accountErrors.balance && (
                 <Text style={styles.errorText}>{accountErrors.balance}</Text>
-               )}
+              )}
             </View>
 
             <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>
-                Color de la cuenta
-              </Text>
+              <Text style={styles.selectAccountText}>Color de la cuenta</Text>
               <View>
                 {/* Dividir los colores en filas de 6 */}
                 {Array.from({
@@ -238,7 +208,10 @@ export default function AccountModal() {
                       (color) => (
                         <TouchableOpacity
                           key={color}
-                          onPress={() => { setAccountField("color", color); clearFieldError("color") }}
+                          onPress={() => {
+                            setAccountField("color", color);
+                            clearFieldError("color");
+                          }}
                           style={[
                             styles.colorCircle,
                             {
@@ -266,14 +239,17 @@ export default function AccountModal() {
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
-                onPress={() => { setShowAccountModal(false); clearAccountErrors() }}
+                onPress={() => {
+                  setShowAccountModal(false);
+                  clearAccountErrors();
+                }}
               >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.button, styles.addButton]}
-                onPress={handleAddAccount}
+                onPress={addAccount}
               >
                 <Text style={styles.buttonText}>Agregar</Text>
               </TouchableOpacity>
