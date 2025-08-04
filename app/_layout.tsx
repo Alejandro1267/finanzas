@@ -44,7 +44,12 @@ export default function RootLayout() {
         const accounts = (await db.getAllAsync(
           `SELECT * FROM accounts`
         )) as Account[];
-        setAccounts(accounts);
+        setAccounts(
+          accounts.map((acc) => ({
+            ...acc,
+            id: acc.id.toString(),
+          }))
+        );
         console.log("accounts", accounts);
 
         const records = (await db.getAllAsync(
