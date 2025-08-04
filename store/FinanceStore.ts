@@ -30,6 +30,9 @@ type FinanceState = {
   recordErrors: ValidationErrors
   accountErrors: ValidationErrors
   totalBalance: number
+  recordMode: "edit" | "new"
+  accountMode: "edit" | "new"
+  activeTab: "income" | "expense"
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -44,6 +47,9 @@ type FinanceState = {
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   setTotalBalance: (balance: number) => void
+  setRecordMode: (mode: "edit" | "new") => void
+  setAccountMode: (mode: "edit" | "new") => void
+  setActiveTab: (tab: "income" | "expense") => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -68,6 +74,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   recordErrors: {},
   accountErrors: {},
   totalBalance: 0,
+  recordMode: "new",
+  accountMode: "new",
+  activeTab: "income",
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -123,7 +132,16 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   setTotalBalance: (balance: number) => {
     set({ totalBalance: balance })
   },
-
+  setRecordMode: (mode: "edit" | "new") => {
+    set({ recordMode: mode })
+  },
+  setAccountMode: (mode: "edit" | "new") => {
+    set({ accountMode: mode })
+  },
+  setActiveTab: (tab: "income" | "expense") => {
+    set({ activeTab: tab })
+  },
+  
   // Functions
   addAccount: (account: Account) => {
     set({ accounts: [...get().accounts, account] })

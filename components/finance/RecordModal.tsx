@@ -3,7 +3,6 @@ import { useFinance } from "@/hooks/useFinance";
 import { recordSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
-import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
@@ -12,8 +11,6 @@ import { IncomeForm } from "./IncomeForm";
 type RecordType = "income" | "expense";
 
 export function RecordModal() {
-  const [activeTab, setActiveTab] = useState<RecordType>("income");
-
   const {
     showRecordModal,
     setShowRecordModal,
@@ -21,6 +18,8 @@ export function RecordModal() {
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
+    activeTab,
+    setActiveTab,
   } = useFinanceStore();
   const { addRecord, handleAutomaticDistribution } = useFinance();
 

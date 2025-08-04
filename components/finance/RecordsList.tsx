@@ -1,10 +1,17 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function RecordsList() {
-  const { records, accounts } = useFinanceStore();
+  const {
+    records,
+    accounts,
+    setRecordMode,
+    setCurrentRecord,
+    setShowRecordModal,
+    setActiveTab,
+  } = useFinanceStore();
 
   return (
     <View style={styles.container}>
@@ -14,7 +21,17 @@ export function RecordsList() {
         <Text style={styles.title}>No hay registros</Text>
       )}
       {records.map((record) => (
-        <View key={record.id} style={styles.recordCard}>
+        <TouchableOpacity
+          key={record.id}
+          activeOpacity={0.8}
+          style={styles.recordCard}
+          onPress={() => {
+            setRecordMode("edit");
+            setCurrentRecord(record);
+            setShowRecordModal(true);
+            setActiveTab(record.type);
+          }}
+        >
           <View style={styles.recordInfo}>
             <Text style={styles.description}>{record.description}</Text>
             <Text style={styles.date}>{record.date}</Text>
@@ -33,7 +50,7 @@ export function RecordsList() {
             {record.type === "income" ? "" : "- "}
             {formatNumber$(record.amount)}
           </Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
