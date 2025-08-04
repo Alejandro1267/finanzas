@@ -181,23 +181,25 @@ export function useFinance() {
         const newBalance = account.balance + delta
 
         // Actualizar balance en la base de datos
-        await db.runAsync(
-          'UPDATE accounts SET balance = ? WHERE id = ?',
-          [newBalance, account.id]
-        );
+        // await db.runAsync(
+        //   'UPDATE accounts SET balance = ? WHERE id = ?',
+        //   [newBalance, account.id]
+        // );
+
+        console.log(`Updating balance for account ${account.id}: ${account.balance} + ${delta} = ${newBalance}`);
+
+        // Actualizar balance en la base de datos
+        if (account.id && !isNaN(newBalance)) {
+          await db.runAsync(
+            'UPDATE accounts SET balance = ? WHERE id = ?',
+            [newBalance, account.id]
+          );
+        } else {
+          console.error(`Invalid data for balance update: accountId=${account.id}, newBalance=${newBalance}`);
+        }
 
         updateAccountBalance(account.id, newBalance)
-
-        // Actualizar balance de la cuenta (sin updateTotal para evitar duplicar)
-        // await addRecord({
-        //   type: baseRecord.type,
-        //   amount: amount,
-        //   description: insertedRecord.description,
-        //   date: baseRecord.date,
-        //   account: account.id
-        // }, false);
       }
-      
     } catch (error) {
       console.error("Error in automatic distribution:", error);
       Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
