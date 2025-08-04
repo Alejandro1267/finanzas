@@ -17,6 +17,8 @@ export function useFinance() {
     currentAccount,
     setShowAccountModal,
     setAccountErrors,
+    records,
+    setRecords,
   } = useFinanceStore()
 
   async function addRecord(record: RecordDraft, updateTotal: boolean = true) {
@@ -265,5 +267,60 @@ export function useFinance() {
     }
   };
 
-  return { addRecord, handleAutomaticDistribution, addAccount }
+  async function deleteRecord(recordId: string) {
+    try {
+      // Abrir la base de datos
+      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      
+      // Obtener el registro antes de eliminarlo para revertir balances
+      const recordToDelete = await db.getFirstAsync(
+        'SELECT * FROM records WHERE id = ?',
+        [recordId]
+      ) as Record;
+      
+      if (!recordToDelete) {
+        Alert.alert("Error", "Registro no encontrado.");
+        return;
+      }
+
+      // Encontrar la cuenta afectada
+      const account = accounts.find(acc => acc.id === recordToDelete.account);
+      if (!account) {
+        Alert.alert("Error", "Cuenta no encontrada.");
+        return;
+      }
+
+      // Calcular el delta a revertir (opuesto al original)
+      const originalDelta = recordToDelete.type === "income" ? recordToDelete.amount : -recordToDelete.amount;
+      const revertDelta = -originalDelta;
+      const newBalance = account.balance + revertDelta;
+
+      // Eliminar el registro de la base de datos
+      await db.runAsync(
+        'DELETE FROM records WHERE id = ?',
+        [recordId]
+      );
+
+      // Actualizar balance de la cuenta en la base de datos
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [newBalance, account.id]
+      );
+
+      // Actualizar balance en el store
+      updateAccountBalance(account.id, newBalance);
+
+      // Actualizar balance total
+      setTotalBalance(totalBalance + revertDelta);
+
+      // Eliminar el registro del store
+      const updatedRecords = records.filter(record => record.id !== recordId);
+      setRecords(updatedRecords);
+
+    } catch (error) {
+      console.error("Error deleting record from database:", error);
+      Alert.alert("Error", "No se pudo eliminar el registro de la base de datos");
+    }
+  }
+
 }
