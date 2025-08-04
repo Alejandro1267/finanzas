@@ -34,6 +34,8 @@ type FinanceState = {
   // Actions
   setCurrentAccount: (account: Account | null) => void
   setCurrentRecord: (record: Record | null) => void
+  setAccounts: (accounts: Account[]) => void
+  setRecords: (records: Record[]) => void
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
@@ -58,29 +60,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   // Initial State
   currentAccount: null,
   currentRecord: null,
-  accounts: [
-    {
-      id: "2",
-      name: "Gastos Básicos",
-      percentage: 50,
-      balance: 0,
-      color: "#FF6B6B"
-    },
-    {
-      id: "3",
-      name: "Ahorros",
-      percentage: 30,
-      balance: 0,
-      color: "#4ECDC4"
-    },
-    {
-      id: "4",
-      name: "Galletas",
-      percentage: 20,
-      balance: 0,
-      color: "#45B7D1"
-    },
-  ],
+  accounts: [],
   records: [],
   showAccountModal:  false,
   showRecordModal: false,
@@ -95,6 +75,12 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   setCurrentRecord: (record: Record | null) => {
     set({ currentRecord: record })
+  },
+  setAccounts: (accounts: Account[]) => {
+    set({ accounts })
+  },
+  setRecords: (records: Record[]) => {
+    set({ records })
   },
   setShowAccountModal: (show: boolean) => {
     set({ showAccountModal: show })
