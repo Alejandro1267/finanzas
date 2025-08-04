@@ -323,4 +323,26 @@ export function useFinance() {
     }
   }
 
+  async function editRecord(recordId: string, newRecord: RecordDraft) {
+    try {
+      // 1. Eliminar el registro antiguo (revierte balances automáticamente)
+      await deleteRecord(recordId);
+      
+      // 2. Agregar el nuevo registro usando la lógica existente
+      if (newRecord.account === "distribute") {
+        // Distribución automática
+        await handleAutomaticDistribution(newRecord);
+      } else {
+        // Registro individual
+        await addRecord(newRecord);
+      }
+
+      console.log("Record edited successfully:", newRecord);
+    } catch (error) {
+      console.error("Error editing record:", error);
+      Alert.alert("Error", "No se pudo editar el registro");
+    }
+  }
+
+  return { addRecord, handleAutomaticDistribution, addAccount, deleteRecord, editRecord }
 }

@@ -20,8 +20,9 @@ export function RecordModal() {
     clearRecordErrors,
     activeTab,
     setActiveTab,
+    recordMode,
   } = useFinanceStore();
-  const { addRecord, handleAutomaticDistribution } = useFinance();
+  const { addRecord, handleAutomaticDistribution, editRecord } = useFinance();
 
   const handleSubmit = () => {
     clearRecordErrors();
@@ -46,14 +47,32 @@ export function RecordModal() {
       return;
     }
 
-    // Verificar si es distribución automática para ingresos
-    if (activeTab === "income" && record.data.account === "distribute") {
-      handleAutomaticDistribution(record.data);
+    if (recordMode === "edit") {
+      // Modo edición: usar delete + insert
+      if (currentRecord?.id) {
+        editRecord(currentRecord.id, record.data);
+        console.log("Record edited:", record.data);
+      }
     } else {
-      // Registro normal
-      addRecord(record.data);
-      console.log("addedRecord", record.data);
+      // Modo nuevo: crear registro
+      // Verificar si es distribución automática para ingresos
+      if (activeTab === "income" && record.data.account === "distribute") {
+        handleAutomaticDistribution(record.data);
+      } else {
+        // Registro normal
+        addRecord(record.data);
+        console.log("addedRecord", record.data);
+      }
     }
+
+    // Verificar si es distribución automática para ingresos
+    // if (activeTab === "income" && record.data.account === "distribute") {
+    //   handleAutomaticDistribution(record.data);
+    // } else {
+    //   // Registro normal
+    //   addRecord(record.data);
+    //   console.log("addedRecord", record.data);
+    // }
 
     handleClose();
   };
