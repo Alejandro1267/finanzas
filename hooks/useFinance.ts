@@ -19,21 +19,58 @@ export function useFinance() {
     setAccountErrors,
   } = useFinanceStore()
 
-  function addRecord(record: Record, updateTotal: boolean = true) {
+  async function addRecord(record: RecordDraft, updateTotal: boolean = true) {
     const account = accounts.find(acc => acc.id === record.account)
     if (!account) {
-      alert("Cuenta no encontrada.")
+      Alert.alert("Error", "Cuenta no encontrada.")
       return
     }
 
-    const delta = record.type === "income" ? record.amount : -record.amount
-    const newBalance = account.balance + delta
+    try {
+      // Abrir la base de datos
+      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      
+      // Insertar el nuevo registro en la base de datos
+      await db.runAsync(
+        'INSERT INTO records (type, amount, description, date, account) VALUES (?, ?, ?, ?, ?)',
+        [
+          record.type,
+          record.amount,
+          record.description,
+          record.date,
+          record.account
+        ]
+      );
+      
+      // Obtener el registro recién insertado con su ID generado
+      const insertedRecord = await db.getFirstAsync(
+        'SELECT * FROM records WHERE rowid = last_insert_rowid()'
+      ) as Record;
+      
+      console.log("Registro insertado en DB:", insertedRecord);
+      
+      // Agregar el registro al store con el ID real de la base de datos
+      addRecordStore({
+        id: insertedRecord.id.toString(),
+        type: insertedRecord.type,
+        amount: insertedRecord.amount,
+        description: insertedRecord.description,
+        date: insertedRecord.date,
+        account: insertedRecord.account,
+      });
 
-    addRecordStore(record)
-    updateAccountBalance(account.id, newBalance)
-  
-    if (updateTotal) {
-      setTotalBalance(totalBalance + delta)
+      // Actualizar balance de la cuenta
+      const delta = record.type === "income" ? record.amount : -record.amount
+      const newBalance = account.balance + delta
+      updateAccountBalance(account.id, newBalance)
+    
+      if (updateTotal) {
+        setTotalBalance(totalBalance + delta)
+      }
+      
+    } catch (error) {
+      console.error("Error adding record to database:", error);
+      Alert.alert("Error", "No se pudo agregar el registro a la base de datos");
     }
   }
 
@@ -60,7 +97,7 @@ export function useFinance() {
     return distribution
   }
     
-  function handleAutomaticDistribution(
+  async function handleAutomaticDistribution(
     baseRecord: RecordDraft,
   ) {
     const accountsWithPercentage = accounts.filter(
@@ -93,21 +130,49 @@ export function useFinance() {
     console.log("totalDelta", totalDelta)
 
     setTotalBalance(totalBalance + totalDelta)
-  
-    accountsWithPercentage.forEach((account, index) => {
-      const amount = distributionCents[index] / 100
-  
-      const newRecord: Record = {
-        ...baseRecord,
-        id: `${Date.now()}-${account.id}`,
-        account: account.id,
-        amount,
-        description: `${baseRecord.description} (${account.percentage}%)`,
+
+    try {
+      // Abrir la base de datos
+      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      
+      // Insertar cada registro distribuido
+      for (let index = 0; index < accountsWithPercentage.length; index++) {
+        const account = accountsWithPercentage[index];
+        const amount = distributionCents[index] / 100;
+        
+        // Insertar el registro en la base de datos
+        await db.runAsync(
+          'INSERT INTO records (type, amount, description, date, account) VALUES (?, ?, ?, ?, ?)',
+          [
+            baseRecord.type,
+            amount,
+            `${baseRecord.description} (${account.percentage}%)`,
+            baseRecord.date,
+            account.id
+          ]
+        );
+        
+        // Obtener el registro recién insertado
+        const insertedRecord = await db.getFirstAsync(
+          'SELECT * FROM records WHERE rowid = last_insert_rowid()'
+        ) as Record;
+        
+        console.log(`Registro distribuido insertado para ${account.name}:`, insertedRecord);
+
+        // Actualizar balance de la cuenta (sin updateTotal para evitar duplicar)
+        await addRecord({
+          type: baseRecord.type,
+          amount: amount,
+          description: insertedRecord.description,
+          date: baseRecord.date,
+          account: account.id
+        }, false);
       }
-  
-      addRecord(newRecord, false)
-      console.log(`Registro distribuido para ${account.name}:`, newRecord)
-    })
+      
+    } catch (error) {
+      console.error("Error in automatic distribution:", error);
+      Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
+    }
   }
 
   const addAccount = async () => {
@@ -127,18 +192,6 @@ export function useFinance() {
       console.log("Errores de validación:", errors);
       return;
     }
-
-    // addAccountStore({
-    //   id: Date.now().toString(),
-    //   name: account.data.name,
-    //   percentage: account.data.percentage,
-    //   balance: account.data.balance,
-    //   color: account.data.color || Colors.blue,
-    // });
-    // setTotalBalance(totalBalance + account.data.balance)
-    // setShowAccountModal(false);
-    // clearAccountErrors();
-
 
     try {
       // Abrir la base de datos

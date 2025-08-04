@@ -52,7 +52,7 @@ export function RecordModal() {
       handleAutomaticDistribution(record.data);
     } else {
       // Registro normal
-      addRecord({ ...record.data, id: Date.now().toString() });
+      addRecord(record.data);
       console.log("addedRecord", record.data);
     }
 
