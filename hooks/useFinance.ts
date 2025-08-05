@@ -532,37 +532,86 @@ export function useFinance() {
   }
 
   async function deleteAccount(accountId: string, transferToAccountId?: string) {
-    // Eliminar la cuenta del store
-    setAccounts(accounts.filter(account => account.id !== accountId))
+    let db: SQLite.SQLiteDatabase | null = null;
+    try {
+      // Abrir la base de datos
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
-    if (transferToAccountId) {
-      // Transferir el balance de la cuenta eliminada a la cuenta destino
-      const transferToAccount = accounts.find(account => account.id === transferToAccountId)
-      if (transferToAccount) {
-        const delta = accounts.find(account => account.id === accountId)?.balance || 0
-        const newBalance = transferToAccount.balance + delta
-        updateAccountBalance(transferToAccountId, newBalance)
+      if (transferToAccountId) {
+        // TRANSFERENCIA: Actualizar registros en la base de datos
+        await db.runAsync(
+          'UPDATE records SET account = ? WHERE account = ?',
+          [transferToAccountId, accountId]
+        );
+
+        // Actualizar balance de la cuenta destino en la base de datos
+        const transferToAccount = accounts.find(account => account.id === transferToAccountId);
+        if (transferToAccount) {
+          const delta = accounts.find(account => account.id === accountId)?.balance || 0;
+          const newBalance = transferToAccount.balance + delta;
+
+          await db.runAsync(
+            'UPDATE accounts SET balance = ? WHERE id = ?',
+            [newBalance, transferToAccountId]
+          );
+
+          // Actualizar cuentas en el store: eliminar cuenta original y actualizar balance de destino
+          const updatedAccounts = accounts
+            .filter(account => account.id !== accountId) // Eliminar cuenta original
+            .map(account =>
+              account.id === transferToAccountId
+                ? { ...account, balance: newBalance } // Actualizar balance de cuenta destino
+                : account
+            );
+          setAccounts(updatedAccounts);
+        }
+
+        // Cambiar todos los records que tenían el accountId eliminado al transferToAccountId en el store
+        const updatedRecords = records.map(record =>
+          record.account === accountId
+            ? { ...record, account: transferToAccountId }
+            : record
+        );
+        setRecords(updatedRecords);
+
+      } else {
+        // ELIMINACIÓN: Eliminar todos los registros de la cuenta en la base de datos
+        await db.runAsync(
+          'DELETE FROM records WHERE account = ?',
+          [accountId]
+        );
+
+        // Calcular el impacto total de los registros eliminados en el totalBalance
+        const recordsToDelete = records.filter(record => record.account === accountId);
+        const totalDelta = recordsToDelete.reduce((sum, record) => {
+          return record.type === "income" ? sum - record.amount : sum + record.amount;
+        }, 0);
+
+        // Eliminar registros del store
+        const filteredRecords = records.filter(record => record.account !== accountId);
+        setRecords(filteredRecords);
+        setTotalBalance(totalBalance + totalDelta);
+        setAccounts(accounts.filter(account => account.id !== accountId));
       }
 
-      // Cambiar todos los records que tenían el accountId eliminado al transferToAccountId
-      const updatedRecords = records.map(record => 
-        record.account === accountId 
-          ? { ...record, account: transferToAccountId }
-          : record
-      )
-      setRecords(updatedRecords)
-    } else {
-      // Si no hay transferToAccountId, eliminar todos los records que tenían el accountId
-      const recordsToDelete = records.filter(record => record.account === accountId)
-      const filteredRecords = records.filter(record => record.account !== accountId)
-      
-      // Calcular el impacto total de los registros eliminados en el totalBalance
-      const totalDelta = recordsToDelete.reduce((sum, record) => {
-        return record.type === "income" ? sum - record.amount : sum + record.amount
-      }, 0)
-      
-      setRecords(filteredRecords)
-      setTotalBalance(totalBalance + totalDelta)
+      // Eliminar la cuenta de la base de datos
+      await db.runAsync(
+        'DELETE FROM accounts WHERE id = ?',
+        [accountId]
+      );
+
+      console.log("Cuenta eliminada de DB:", accountId);
+    } catch (error) {
+      console.error("Error deleting account from database:", error);
+      Alert.alert("Error", "No se pudo eliminar la cuenta de la base de datos");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   }
 
@@ -589,22 +638,52 @@ export function useFinance() {
       return;
     }
 
-    // Actualizar la cuenta en el store
-    const updatedAccounts = accounts.map(acc => 
-      acc.id === currentAccount.id 
-        ? { 
-            ...acc, 
-            name: account.data.name,
-            percentage: account.data.percentage,
-            color: account.data.color || Colors.blue,
-            balance: acc.balance
-          }
-        : acc
-    );
+    let db: SQLite.SQLiteDatabase | null = null;
+    try {
+      // Abrir la base de datos
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
-    setAccounts(updatedAccounts);
-    setShowAccountModal(false);
-    clearAccountErrors();
+      // Actualizar la cuenta en la base de datos
+      await db.runAsync(
+        'UPDATE accounts SET name = ?, percentage = ?, color = ? WHERE id = ?',
+        [
+          account.data.name,
+          account.data.percentage,
+          account.data.color || Colors.blue,
+          currentAccount.id
+        ]
+      );
+
+      console.log("Cuenta actualizada en DB:", currentAccount.id);
+
+      // Actualizar la cuenta en el store
+      const updatedAccounts = accounts.map(acc =>
+        acc.id === currentAccount.id
+          ? {
+              ...acc,
+              name: account.data.name,
+              percentage: account.data.percentage,
+              color: account.data.color || Colors.blue,
+              balance: acc.balance
+            }
+          : acc
+      );
+
+      setAccounts(updatedAccounts);
+      setShowAccountModal(false);
+      clearAccountErrors();
+    } catch (error) {
+      console.error("Error updating account in database:", error);
+      Alert.alert("Error", "No se pudo actualizar la cuenta en la base de datos");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
+    }
   }
 
   return {
