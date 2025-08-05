@@ -1,10 +1,11 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useFinanceStore } from "@/store/FinanceStore";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function AccountsList() {
-  const { accounts } = useFinanceStore();
+  const { accounts, setCurrentAccount, setShowAccountModal, setAccountMode } =
+    useFinanceStore();
 
   return (
     <View style={styles.container}>
@@ -14,7 +15,15 @@ export function AccountsList() {
         <Text style={styles.title}>No hay cuentas</Text>
       )}
       {accounts.map((account) => (
-        <View key={account.id} style={styles.accountCard}>
+        <TouchableOpacity
+          key={account.id}
+          style={styles.accountCard}
+          onPress={() => {
+            setAccountMode("edit");
+            setCurrentAccount(account);
+            setShowAccountModal(true);
+          }}
+        >
           <View
             style={[styles.colorIndicator, { backgroundColor: account.color }]}
           />
@@ -24,7 +33,7 @@ export function AccountsList() {
               {account.percentage}% • {formatNumber$(account.balance)}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );

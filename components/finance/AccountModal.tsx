@@ -3,6 +3,7 @@ import { useFinance } from "@/hooks/useFinance";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -23,6 +24,8 @@ export default function AccountModal() {
     clearAccountErrors,
     setAccountErrors,
     accountErrors,
+    accountMode,
+    setAccountMode,
   } = useFinanceStore();
   const { addAccount } = useFinance();
 
@@ -95,6 +98,38 @@ export default function AccountModal() {
     setAccountErrors(remainingErrors);
   };
 
+  const handleDelete = async () => {
+    if (currentAccount?.id) {
+      Alert.alert(
+        "Eliminar Cuenta",
+        "Quieres eliminar los registros de esta cuenta o transferirlos a otra cuenta?",
+        [
+          {
+            text: "Transferir",
+            style: "default",
+            onPress: async () => {
+              // await deleteRecord(currentRecord.id);
+              console.log("Transferir Registros");
+              setShowAccountModal(false);
+              clearAccountErrors();
+            },
+          },
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: async () => {
+              // await deleteRecord(currentRecord.id);
+              console.log("Eliminar Cuenta");
+              setShowAccountModal(false);
+              clearAccountErrors();
+            },
+          },
+        ]
+      );
+    }
+  };
+
   const COLOR_PALETTE = [
     Colors.blue,
     Colors.cyan,
@@ -120,7 +155,20 @@ export default function AccountModal() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nueva Cuenta</Text>
+            {accountMode === "new" ? (
+              <Text style={styles.modalTitleNew}>Nueva Cuenta</Text>
+            ) : (
+              <View style={styles.header}>
+                <Text style={styles.modalTitleEdit}>Editar Cuenta</Text>
+                <TouchableOpacity onPress={handleDelete}>
+                  <IconSymbol
+                    name="trash"
+                    style={styles.deleteButton}
+                    color={Colors.red}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
 
             <View style={styles.viewContainer}>
               <Text style={styles.selectAccountText}>Nombre de la Cuenta</Text>
@@ -164,34 +212,31 @@ export default function AccountModal() {
               )}
             </View>
 
-            <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>Saldo Inicial</Text>
-              {/* <TextInput
-                style={[styles.input, accountErrors.balance && styles.inputError]}
-                placeholder="Saldo inicial"
-                keyboardType="numeric"
-                value={currentAccount?.balance.toString() || "0"}
-                onChangeText={(value) => { setAccountField("balance", Number(value)); clearFieldError("balance") }}
-              /> */}
-              <CurrencyInput
-                value={currentAccount?.balance || 0}
-                onChangeValue={(value: number) => {
-                  setAccountField("balance", value || 0);
-                  clearFieldError("balance");
-                }}
-                prefix="$"
-                delimiter=","
-                separator="."
-                precision={2}
-                style={[
-                  styles.input,
-                  accountErrors.balance && styles.inputError,
-                ]}
-              />
-              {accountErrors.balance && (
-                <Text style={styles.errorText}>{accountErrors.balance}</Text>
-              )}
-            </View>
+            {accountMode === "edit" ? (
+              <></>
+            ) : (
+              <View style={styles.viewContainer}>
+                <Text style={styles.selectAccountText}>Saldo Inicial</Text>
+                <CurrencyInput
+                  value={currentAccount?.balance || 0}
+                  onChangeValue={(value: number) => {
+                    setAccountField("balance", value || 0);
+                    clearFieldError("balance");
+                  }}
+                  prefix="$"
+                  delimiter=","
+                  separator="."
+                  precision={2}
+                  style={[
+                    styles.input,
+                    accountErrors.balance && styles.inputError,
+                  ]}
+                />
+                {accountErrors.balance && (
+                  <Text style={styles.errorText}>{accountErrors.balance}</Text>
+                )}
+              </View>
+            )}
 
             <View style={styles.viewContainer}>
               <Text style={styles.selectAccountText}>Color de la cuenta</Text>
@@ -262,6 +307,7 @@ export default function AccountModal() {
         onPress={() => {
           setShowAccountModal(true);
           createEmptyAccount();
+          setAccountMode("new");
         }}
       >
         <IconSymbol name="plus" size={24} color={Colors.white} />
@@ -285,11 +331,19 @@ const styles = StyleSheet.create({
     width: "90%",
     maxWidth: 400,
   },
-  modalTitle: {
+  modalTitleNew: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: Colors.greenT[600],
+  },
+  modalTitleEdit: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: Colors.sky[600],
   },
   input: {
     borderWidth: 1,
@@ -319,6 +373,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
+  },
+  deleteButton: {
+    marginBottom: 20,
   },
   colorCircle: {
     width: 36,
@@ -360,5 +417,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 12,
     color: Colors.slate[800],
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
 });
