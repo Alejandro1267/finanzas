@@ -150,9 +150,13 @@ export function useFinance() {
 
     setTotalBalance(totalBalance + totalDelta)
 
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
       // Abrir la base de datos
-      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
 
       // Insertar cada registro distribuido
       for (let index = 0; index < accountsWithPercentage.length; index++) {
@@ -192,12 +196,6 @@ export function useFinance() {
         const delta = baseRecord.type === "income" ? amount : -amount
         const newBalance = account.balance + delta
 
-        // Actualizar balance en la base de datos
-        // await db.runAsync(
-        //   'UPDATE accounts SET balance = ? WHERE id = ?',
-        //   [newBalance, account.id]
-        // );
-
         console.log(`Updating balance for account ${account.id}: ${account.balance} + ${delta} = ${newBalance}`);
 
         // Actualizar balance en la base de datos
@@ -212,9 +210,22 @@ export function useFinance() {
 
         updateAccountBalance(account.id, newBalance)
       }
+
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+      console.log("✅ Distribución automática completada exitosamente");
+
     } catch (error) {
       console.error("Error in automatic distribution:", error);
       Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   }
 
