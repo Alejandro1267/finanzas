@@ -66,6 +66,13 @@ export function RecordModal() {
       // Modo nuevo: crear registro
       // Verificar si es distribución automática para ingresos
       if (activeTab === "income" && record.data.account === "distribute") {
+        if (record.data.amount < 1) {
+          Alert.alert(
+            "Error",
+            "El importe para distribuir automáticamente debe ser al menos 1"
+          );
+          return;
+        }
         handleAutomaticDistribution(record.data);
       } else {
         // Registro normal
@@ -73,16 +80,6 @@ export function RecordModal() {
         console.log("addedRecord", record.data);
       }
     }
-
-    // Verificar si es distribución automática para ingresos
-    // if (activeTab === "income" && record.data.account === "distribute") {
-    //   handleAutomaticDistribution(record.data);
-    // } else {
-    //   // Registro normal
-    //   addRecord(record.data);
-    //   console.log("addedRecord", record.data);
-    // }
-
     handleClose();
   };
 
