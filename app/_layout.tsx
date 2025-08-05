@@ -21,8 +21,11 @@ export default function RootLayout() {
 
   useEffect(() => {
     const initializeDatabase = async () => {
+      let db: SQLite.SQLiteDatabase | null = null;
       try {
-        const db = await SQLite.openDatabaseAsync("finanzas.db");
+        db = await SQLite.openDatabaseAsync("finanzas.db", {
+          useNewConnection: true,
+        });
         await db.execAsync(`
           CREATE TABLE IF NOT EXISTS accounts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,6 +77,14 @@ export default function RootLayout() {
         console.log("Database initialized");
       } catch (error) {
         console.error("Error initializing database:", error);
+      } finally {
+        if (db) {
+          try {
+            await db.closeAsync();
+          } catch (closeError) {
+            console.error("Error closing database:", closeError);
+          }
+        }
       }
     };
     initializeDatabase();

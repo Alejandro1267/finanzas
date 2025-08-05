@@ -28,9 +28,10 @@ export function useFinance() {
       return
     }
 
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
       // Abrir la base de datos
-      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
       // Insertar el nuevo registro en la base de datos
       await db.runAsync(
@@ -80,6 +81,14 @@ export function useFinance() {
     } catch (error) {
       console.error("Error adding record to database:", error);
       Alert.alert("Error", "No se pudo agregar el registro a la base de datos");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   }
 
@@ -226,9 +235,10 @@ export function useFinance() {
       return;
     }
 
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
       // Abrir la base de datos
-      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
       // Insertar la nueva cuenta en la base de datos
       await db.runAsync(
@@ -264,13 +274,22 @@ export function useFinance() {
     } catch (error) {
       console.error("Error adding account to database:", error);
       Alert.alert("Error", "No se pudo agregar la cuenta a la base de datos");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   };
 
   async function deleteRecord(recordId: string) {
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
       // Abrir la base de datos
-      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
       // Obtener el registro antes de eliminarlo para revertir balances
       const recordToDelete = await db.getFirstAsync(
@@ -320,10 +339,19 @@ export function useFinance() {
     } catch (error) {
       console.error("Error deleting record from database:", error);
       Alert.alert("Error", "No se pudo eliminar el registro de la base de datos");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   }
 
   async function editRecord(recordId: string, newRecord: RecordDraft) {
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
       // 1. Encontrar el registro original en el store
       const originalRecord = records.find(record => record.id === recordId);
@@ -352,7 +380,7 @@ export function useFinance() {
       setRecords(updatedRecords);
 
       // Eliminar de la base de datos
-      const db = await SQLite.openDatabaseAsync("finanzas.db");
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
       await db.runAsync('DELETE FROM records WHERE id = ?', [recordId]);
 
       // 6. Agregar el nuevo registro(s) al store Y a la DB
@@ -491,6 +519,14 @@ export function useFinance() {
     } catch (error) {
       console.error("Error editing record:", error);
       Alert.alert("Error", "No se pudo editar el registro");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   }
 
