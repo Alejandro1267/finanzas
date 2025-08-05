@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import AccountModal from "@/components/finance/AccountModal";
 import { AccountsList } from "@/components/finance/AccountsList";
 import { Header } from "@/components/finance/Header";
+import { TransferModal } from "@/components/finance/TransferModal";
 import { useFinanceStore } from "@/store/FinanceStore";
 
 export default function Cuentas() {
@@ -12,7 +13,7 @@ export default function Cuentas() {
       <ScrollView>
         <Header />
         <View style={styles.content}>
-        {/* <ParallaxScrollView
+          {/* <ParallaxScrollView
           headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
           headerImage={
             <IconSymbol
@@ -28,15 +29,16 @@ export default function Cuentas() {
         {/* </ParallaxScrollView> */}
       </ScrollView>
       <AccountModal />
+      <TransferModal />
     </>
   );
 }
 
 const styles = StyleSheet.create({
   // headerImage: {
-    // bottom: -90,
-    // left: -35,
-    // position: "absolute",
+  // bottom: -90,
+  // left: -35,
+  // position: "absolute",
   // },
   header: {
     position: "absolute",
@@ -49,6 +51,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 32,
     gap: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 });

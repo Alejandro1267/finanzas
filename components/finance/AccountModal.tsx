@@ -26,8 +26,9 @@ export default function AccountModal() {
     accountErrors,
     accountMode,
     setAccountMode,
+    setShowTransferModal,
   } = useFinanceStore();
-  const { addAccount } = useFinance();
+  const { addAccount, deleteAccount } = useFinance();
 
   // Estado local para el valor del porcentaje en el TextInput
   const [displayPercentageValue, setDisplayPercentageValue] = useState(
@@ -98,6 +99,14 @@ export default function AccountModal() {
     setAccountErrors(remainingErrors);
   };
 
+  const handleDeleteOnly = async () => {
+    if (currentAccount?.id) {
+      await deleteAccount(currentAccount.id);
+      setShowAccountModal(false);
+      clearAccountErrors();
+    }
+  };
+
   const handleDelete = async () => {
     if (currentAccount?.id) {
       Alert.alert(
@@ -107,23 +116,13 @@ export default function AccountModal() {
           {
             text: "Transferir",
             style: "default",
-            onPress: async () => {
-              // await deleteRecord(currentRecord.id);
-              console.log("Transferir Registros");
-              setShowAccountModal(false);
-              clearAccountErrors();
-            },
+            onPress: () => setShowTransferModal(true),
           },
           { text: "Cancelar", style: "cancel" },
           {
             text: "Eliminar",
             style: "destructive",
-            onPress: async () => {
-              // await deleteRecord(currentRecord.id);
-              console.log("Eliminar Cuenta");
-              setShowAccountModal(false);
-              clearAccountErrors();
-            },
+            onPress: handleDeleteOnly,
           },
         ]
       );

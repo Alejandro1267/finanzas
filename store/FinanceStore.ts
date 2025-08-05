@@ -26,6 +26,7 @@ type FinanceState = {
   records: Record[]
   showAccountModal: boolean
   showRecordModal: boolean
+  showTransferModal: boolean
   alertMessage: string
   recordErrors: ValidationErrors
   accountErrors: ValidationErrors
@@ -41,6 +42,7 @@ type FinanceState = {
   setRecords: (records: Record[]) => void
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
+  setShowTransferModal: (show: boolean) => void
   setAlertMessage: (message: string) => void
   setRecordErrors: (errors: ValidationErrors) => void
   setAccountErrors: (errors: ValidationErrors) => void
@@ -70,6 +72,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   records: [],
   showAccountModal:  false,
   showRecordModal: false,
+  showTransferModal: false,
   alertMessage: "",
   recordErrors: {},
   accountErrors: {},
@@ -96,6 +99,9 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   setShowRecordModal: (show: boolean) => {
     set({ showRecordModal: show })
+  },
+  setShowTransferModal: (show: boolean) => {
+    set({ showTransferModal: show })
   },
   setAlertMessage: (message: string) => {
     set({ alertMessage: message })
