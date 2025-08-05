@@ -3,7 +3,14 @@ import { useFinance } from "@/hooks/useFinance";
 import { recordSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
@@ -20,9 +27,11 @@ export function RecordModal() {
     clearRecordErrors,
     activeTab,
     setActiveTab,
+    setRecordMode,
     recordMode,
   } = useFinanceStore();
-  const { addRecord, handleAutomaticDistribution, editRecord } = useFinance();
+  const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
+    useFinance();
 
   const handleSubmit = () => {
     clearRecordErrors();
@@ -83,6 +92,26 @@ export function RecordModal() {
     clearRecordErrors();
   };
 
+  const handleDelete = async () => {
+    if (currentRecord?.id) {
+      Alert.alert(
+        "Eliminar Registro",
+        "¿Estás seguro de que quieres eliminar este registro?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: async () => {
+              await deleteRecord(currentRecord.id);
+              handleClose();
+            },
+          },
+        ]
+      );
+    }
+  };
+
   const renderTabButton = (type: RecordType, label: string, icon: string) => (
     <TouchableOpacity
       style={[styles.tabButton, activeTab === type && styles.activeTabButton]}
@@ -110,7 +139,20 @@ export function RecordModal() {
         <View style={styles.overlay}>
           <View style={styles.modalContent}>
             {/* Header */}
-            <Text style={styles.title}>Nuevo Registro</Text>
+            {recordMode === "new" ? (
+              <Text style={styles.titleNew}>Nuevo Registro</Text>
+            ) : (
+              <View style={styles.header}>
+                <Text style={styles.titleEdit}>Editar Registro</Text>
+                <TouchableOpacity onPress={handleDelete}>
+                  <IconSymbol
+                    name="trash"
+                    style={styles.deleteButton}
+                    color={Colors.red}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
 
             {/* Tabs */}
             <View style={styles.tabContainer}>
@@ -134,7 +176,11 @@ export function RecordModal() {
                 onPress={handleSubmit}
               >
                 <Text style={styles.buttonText}>
-                  {activeTab === "income" ? "Agregar Ingreso" : "Agregar Gasto"}
+                  {recordMode === "new"
+                    ? activeTab === "income"
+                      ? "Agregar Ingreso"
+                      : "Agregar Gasto"
+                    : "Guardar Cambios"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -146,6 +192,7 @@ export function RecordModal() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => {
+          setRecordMode("new");
           createEmptyRecord();
           setShowRecordModal(true);
         }}
@@ -172,12 +219,19 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     maxHeight: "80%",
   },
-  title: {
+  titleNew: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: Colors.slate[800],
+    color: Colors.greenT[600],
+  },
+  titleEdit: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: Colors.sky[600],
   },
   buttonContainer: {
     flexDirection: "row",
@@ -232,6 +286,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  deleteButton: {
+    marginBottom: 20,
+  },
 
   // FAB
   fab: {
@@ -249,5 +306,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
 });

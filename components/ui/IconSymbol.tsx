@@ -24,6 +24,7 @@ const MAPPING = {
   circle: "wallet",
   plus: "add",
   "list.bullet": "list-alt",
+  trash: "delete",
 } as IconMapping;
 
 /**
