@@ -44,13 +44,6 @@ export default function RootLayout() {
           );
         `);
 
-        // Limpiar registros de prueba (temporal)
-        // await db.execAsync(`
-        //   DELETE FROM records;
-        //   UPDATE accounts SET balance = 0;
-        // `);
-        // console.log("Test records and balances cleared");
-
         const accounts = (await db.getAllAsync(
           `SELECT * FROM accounts`
         )) as Account[];

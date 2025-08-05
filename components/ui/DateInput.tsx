@@ -20,9 +20,14 @@ export function DateInput({
   onDateChange,
   hasError = false,
 }: DateInputProps) {
-  const [currentDate, setCurrentDate] = useState(
-    date ? new Date(date) : new Date()
-  );
+  const [currentDate, setCurrentDate] = useState(() => {
+    if (date) {
+      // Crear fecha en zona horaria local en lugar de UTC
+      const [year, month, day] = date.split("-").map(Number);
+      return new Date(year, month - 1, day); // month - 1 porque los meses van de 0-11
+    }
+    return new Date();
+  });
   const [show, setShow] = useState(false);
 
   const onChange = (event: any, selectedDate?: Date) => {
