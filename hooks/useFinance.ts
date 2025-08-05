@@ -553,8 +553,16 @@ export function useFinance() {
       setRecords(updatedRecords)
     } else {
       // Si no hay transferToAccountId, eliminar todos los records que tenían el accountId
+      const recordsToDelete = records.filter(record => record.account === accountId)
       const filteredRecords = records.filter(record => record.account !== accountId)
+      
+      // Calcular el impacto total de los registros eliminados en el totalBalance
+      const totalDelta = recordsToDelete.reduce((sum, record) => {
+        return record.type === "income" ? sum - record.amount : sum + record.amount
+      }, 0)
+      
       setRecords(filteredRecords)
+      setTotalBalance(totalBalance + totalDelta)
     }
   }
 
