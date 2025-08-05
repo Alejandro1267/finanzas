@@ -566,6 +566,47 @@ export function useFinance() {
     }
   }
 
+  async function updateAccount() {
+    clearAccountErrors();
+
+    const account = accountSchema.safeParse(currentAccount);
+
+    if (!account.success) {
+      const errors: ValidationErrors = {};
+      account.error.issues.forEach((issue) => {
+        if (issue.path.length > 0) {
+          errors[issue.path[0] as string] = issue.message;
+        }
+      });
+
+      setAccountErrors(errors);
+      console.log("Errores de validación:", errors);
+      return;
+    }
+
+    if (!currentAccount?.id) {
+      Alert.alert("Error", "No se puede actualizar la cuenta: ID no encontrado");
+      return;
+    }
+
+    // Actualizar la cuenta en el store
+    const updatedAccounts = accounts.map(acc => 
+      acc.id === currentAccount.id 
+        ? { 
+            ...acc, 
+            name: account.data.name,
+            percentage: account.data.percentage,
+            color: account.data.color || Colors.blue,
+            balance: acc.balance
+          }
+        : acc
+    );
+
+    setAccounts(updatedAccounts);
+    setShowAccountModal(false);
+    clearAccountErrors();
+  }
+
   return {
     addRecord,
     handleAutomaticDistribution,
@@ -573,5 +614,6 @@ export function useFinance() {
     deleteRecord,
     editRecord,
     deleteAccount,
+    updateAccount,
   }
 }

@@ -28,7 +28,7 @@ export default function AccountModal() {
     setAccountMode,
     setShowTransferModal,
   } = useFinanceStore();
-  const { addAccount, deleteAccount } = useFinance();
+  const { addAccount, deleteAccount, updateAccount } = useFinance();
 
   // Estado local para el valor del porcentaje en el TextInput
   const [displayPercentageValue, setDisplayPercentageValue] = useState(
@@ -202,9 +202,9 @@ export default function AccountModal() {
                   accountErrors.percentage && styles.inputError,
                 ]}
                 placeholder="Porcentaje (%)"
-                keyboardType="numeric" // Muestra teclado numérico, pero la lógica filtra
+                keyboardType="numeric"
                 value={displayPercentageValue} // Usa el estado local para el display
-                onChangeText={handlePercentageChange} // Usa la nueva función de manejo
+                onChangeText={handlePercentageChange} // Usa la función de manejo
               />
               {accountErrors.percentage && (
                 <Text style={styles.errorText}>{accountErrors.percentage}</Text>
@@ -291,12 +291,21 @@ export default function AccountModal() {
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.button, styles.addButton]}
-                onPress={addAccount}
-              >
-                <Text style={styles.buttonText}>Agregar</Text>
-              </TouchableOpacity>
+              {accountMode === "new" ? (
+                <TouchableOpacity
+                  style={[styles.button, styles.addButton]}
+                  onPress={addAccount}
+                >
+                  <Text style={styles.buttonText}>Agregar Cuenta</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.button, styles.addButton]}
+                  onPress={updateAccount}
+                >
+                  <Text style={styles.buttonText}>Guardar Cambios</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
