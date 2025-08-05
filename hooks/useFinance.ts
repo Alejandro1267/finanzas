@@ -19,6 +19,7 @@ export function useFinance() {
     setAccountErrors,
     records,
     setRecords,
+    setAccounts,
   } = useFinanceStore()
 
   async function addRecord(record: RecordDraft, updateTotal: boolean = true) {
@@ -530,5 +531,39 @@ export function useFinance() {
     }
   }
 
-  return { addRecord, handleAutomaticDistribution, addAccount, deleteRecord, editRecord }
+  async function deleteAccount(accountId: string, transferToAccountId?: string) {
+    // Eliminar la cuenta del store
+    setAccounts(accounts.filter(account => account.id !== accountId))
+
+    if (transferToAccountId) {
+      // Transferir el balance de la cuenta eliminada a la cuenta destino
+      const transferToAccount = accounts.find(account => account.id === transferToAccountId)
+      if (transferToAccount) {
+        const delta = accounts.find(account => account.id === accountId)?.balance || 0
+        const newBalance = transferToAccount.balance + delta
+        updateAccountBalance(transferToAccountId, newBalance)
+      }
+
+      // Cambiar todos los records que tenían el accountId eliminado al transferToAccountId
+      const updatedRecords = records.map(record => 
+        record.account === accountId 
+          ? { ...record, account: transferToAccountId }
+          : record
+      )
+      setRecords(updatedRecords)
+    } else {
+      // Si no hay transferToAccountId, eliminar todos los records que tenían el accountId
+      const filteredRecords = records.filter(record => record.account !== accountId)
+      setRecords(filteredRecords)
+    }
+  }
+
+  return {
+    addRecord,
+    handleAutomaticDistribution,
+    addAccount,
+    deleteRecord,
+    editRecord,
+    deleteAccount,
+  }
 }
