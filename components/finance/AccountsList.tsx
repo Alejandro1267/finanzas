@@ -35,9 +35,18 @@ export function AccountsList() {
           />
           <View style={styles.accountInfo}>
             <Text style={styles.accountName}>{account.name}</Text>
-            <Text style={styles.accountDetails}>
-              {account.percentage}% • {formatNumber$(account.balance)}
-            </Text>
+            <View style={styles.accountDetailsContainer}>
+              <Text style={styles.accountDetails}>{account.percentage}% •</Text>
+              <Text
+                style={
+                  account.balance < 0
+                    ? styles.accountBalance
+                    : styles.accountDetails
+                }
+              >
+                {formatNumber$(account.balance)}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
       ))}
@@ -92,5 +101,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.slate[600],
     marginTop: 4,
+  },
+  accountBalance: {
+    fontSize: 14,
+    color: Colors.red,
+    marginTop: 4,
+  },
+  accountDetailsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
 });
