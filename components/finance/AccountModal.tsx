@@ -111,7 +111,7 @@ export default function AccountModal() {
     if (currentAccount?.id) {
       Alert.alert(
         "Eliminar Cuenta",
-        "Quieres eliminar los registros de esta cuenta o transferirlos a otra cuenta?",
+        "¿Quieres eliminar los registros de esta cuenta o transferirlos a otra cuenta?",
         [
           {
             text: "Transferir",

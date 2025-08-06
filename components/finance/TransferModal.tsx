@@ -42,6 +42,11 @@ export function TransferModal() {
     setSelectedTransferAccountId("");
   };
 
+  const otherAccounts = accounts.filter(
+    (account) => account.id !== currentAccount?.id
+  );
+  const hasOtherAccounts = otherAccounts.length > 0;
+
   return (
     <Modal
       animationType="slide"
@@ -52,11 +57,16 @@ export function TransferModal() {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitleEdit}>Transferir Registros</Text>
-          <Text style={styles.transferDescription}>
-            Selecciona la cuenta a la que quieres transferir todos los registros
-            de "{currentAccount?.name}":
-          </Text>
-
+          {!hasOtherAccounts ? (
+            <Text style={styles.transferDescription}>
+              No hay mas cuentas para transferir
+            </Text>
+          ) : (
+            <Text style={styles.transferDescription}>
+              Selecciona la cuenta a la que quieres transferir todos los
+              registros de "{currentAccount?.name}":
+            </Text>
+          )}
           <FlatList
             data={accounts.filter(
               (account) => account.id !== currentAccount?.id
