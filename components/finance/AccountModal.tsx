@@ -35,9 +35,21 @@ export default function AccountModal() {
     currentAccount?.percentage?.toString() || "" // Start with empty string for better UX if 0
   );
 
+  useEffect(() => {
+    if (accountMode === "new") {
+      setDisplayPercentageValue("");
+    }
+    if (accountMode === "edit" && currentAccount?.percentage === 0) {
+      setDisplayPercentageValue("0");
+    } else {
+      setDisplayPercentageValue("");
+    }
+  }, [showAccountModal]);
+
   // Sincronizar el estado local con el valor del store cuando currentAccount cambie
   useEffect(() => {
     const externalPercentage = currentAccount?.percentage;
+
     if (externalPercentage !== undefined && !isNaN(externalPercentage)) {
       // Asegurarse de que el valor externo también esté dentro del rango y sin decimales
       const clampedExternalPercentage = Math.max(
