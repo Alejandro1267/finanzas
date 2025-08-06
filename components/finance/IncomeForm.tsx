@@ -39,17 +39,6 @@ export function IncomeForm() {
 
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
-        {/* <TextInput
-          style={[styles.input, recordErrors.amount && styles.inputError]}
-          placeholder="Monto"
-          value={currentRecord?.amount.toString() || ""}
-          onChangeText={(value) => {
-            setRecordField("amount", Number(value));
-            clearFieldError("amount");
-          }}
-          keyboardType="numeric"
-          placeholderTextColor={Colors.slate[400]}
-        /> */}
         <CurrencyInput
           value={currentRecord?.amount || 0}
           onChangeValue={(value: number) => {
@@ -97,7 +86,6 @@ export function IncomeForm() {
             {
               id: "distribute",
               name: "Distribuir Automáticamente",
-              // color: Colors.white,
             },
             ...accounts.map((account) => ({
               id: account.id,

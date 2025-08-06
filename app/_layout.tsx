@@ -44,19 +44,6 @@ export default function RootLayout() {
           );
         `);
 
-        // Limpiar registros de prueba (temporal)
-        // await db.execAsync(`
-        //   DELETE FROM records;
-        //   UPDATE accounts SET balance = 0;
-        // `);
-        // console.log("Test records and balances cleared");
-
-        // Limpiar cuentas de prueba (temporal)
-        // await db.execAsync(`
-        //   DELETE FROM accounts;
-        // `);
-        // console.log("Test accounts cleared");
-
         const accounts = (await db.getAllAsync(
           `SELECT * FROM accounts`
         )) as Account[];
@@ -73,7 +60,6 @@ export default function RootLayout() {
           0
         );
         setTotalBalance(totalBalance);
-        console.log("Total balance calculated:", totalBalance);
 
         const records = (await db.getAllAsync(
           `SELECT * FROM records`
@@ -97,7 +83,6 @@ export default function RootLayout() {
   }, []);
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 

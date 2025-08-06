@@ -149,27 +149,12 @@ const styles = StyleSheet.create({
     width: "90%",
     maxWidth: 400,
   },
-  modalTitleNew: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: Colors.greenT[600],
-  },
   modalTitleEdit: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
     color: Colors.sky[600],
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.slate[200],
-    padding: 12,
-    borderRadius: 8,
-    fontSize: 16,
-    color: Colors.slate[800],
   },
   buttonContainer: {
     flexDirection: "row",
@@ -192,9 +177,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  deleteButton: {
-    marginBottom: 20,
-  },
   colorCircle: {
     width: 36,
     height: 36,
@@ -203,86 +185,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.slate[200],
   },
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: Colors.green,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-    shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  errorText: {
-    color: Colors.redT[500],
-    fontSize: 16,
-    marginTop: 4,
-  },
-  inputError: {
-    borderColor: Colors.redT[500],
-  },
-  viewContainer: {
-    marginBottom: 16,
-  },
-  selectAccountText: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 12,
-    color: Colors.slate[800],
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
   transferDescription: {
     fontSize: 16,
     marginBottom: 20,
     color: Colors.slate[600],
   },
-
   accountItem: {
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.slate[200],
   },
-
   selectedAccountItem: {
     backgroundColor: Colors.sky[100],
   },
-
   accountItemContent: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   accountInfo: {
     flex: 1,
     marginLeft: 12,
   },
-
   accountName: {
     fontSize: 16,
     fontWeight: "600",
     color: Colors.slate[800],
   },
-
   accountBalance: {
     fontSize: 14,
     color: Colors.slate[600],
   },
-
   accountsList: {
     maxHeight: 200,
   },
-
   disabledButton: {
     backgroundColor: Colors.slate[200],
   },

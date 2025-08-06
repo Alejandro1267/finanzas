@@ -57,13 +57,11 @@ export function RecordModal() {
     }
 
     if (recordMode === "edit") {
-      // Modo edición: usar delete + insert
       if (currentRecord?.id) {
         editRecord(currentRecord.id, record.data);
         console.log("Record edited:", record.data);
       }
     } else {
-      // Modo nuevo: crear registro
       // Verificar si es distribución automática para ingresos
       if (activeTab === "income" && record.data.account === "distribute") {
         if (record.data.amount < 1) {

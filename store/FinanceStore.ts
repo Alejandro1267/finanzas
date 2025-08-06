@@ -28,7 +28,6 @@ type FinanceState = {
   showAccountModal: boolean
   showRecordModal: boolean
   showTransferModal: boolean
-  alertMessage: string
   recordErrors: ValidationErrors
   accountErrors: ValidationErrors
   totalBalance: number
@@ -44,7 +43,6 @@ type FinanceState = {
   setShowAccountModal: (show: boolean) => void
   setShowRecordModal: (show: boolean) => void
   setShowTransferModal: (show: boolean) => void
-  setAlertMessage: (message: string) => void
   setRecordErrors: (errors: ValidationErrors) => void
   setAccountErrors: (errors: ValidationErrors) => void
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
@@ -74,7 +72,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   showAccountModal:  false,
   showRecordModal: false,
   showTransferModal: false,
-  alertMessage: "",
   recordErrors: {},
   accountErrors: {},
   totalBalance: 0,
@@ -103,10 +100,6 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   },
   setShowTransferModal: (show: boolean) => {
     set({ showTransferModal: show })
-  },
-  setAlertMessage: (message: string) => {
-    set({ alertMessage: message })
-    setTimeout(() => set({ alertMessage: "" }), 3000)
   },
   setRecordErrors: (errors: ValidationErrors) => {
     set({ recordErrors: errors })

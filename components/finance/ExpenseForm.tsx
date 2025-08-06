@@ -39,22 +39,11 @@ export function ExpenseForm() {
 
       <View style={styles.viewContainer}>
         <Text style={styles.selectAccountText}>Importe:</Text>
-        {/* <TextInput
-          style={[styles.input, recordErrors.amount && styles.inputError]}
-          placeholder="Importe"
-          value={currentRecord?.amount.toString() || ""}
-          onChangeText={(value) => {
-            setRecordField("amount", Number(value));
-            clearFieldError("amount");
-          }}
-          keyboardType="numeric"
-          placeholderTextColor={Colors.slate[400]}
-        /> */}
         <CurrencyInput
           value={currentRecord?.amount || 0}
           onChangeValue={(value: number) => {
             setRecordField("amount", value || 0);
-            clearFieldError("amount")
+            clearFieldError("amount");
           }}
           prefix="$"
           delimiter=","

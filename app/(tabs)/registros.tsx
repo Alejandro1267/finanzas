@@ -1,4 +1,3 @@
-import { AlertMessage } from "@/components/finance/AlertMessage";
 import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -9,22 +8,20 @@ import { StyleSheet } from "react-native";
 export default function Registros() {
   return (
     <>
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color={Colors.green}
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }
-    >
-      <RecordsList />
-      <AlertMessage />
-    </ParallaxScrollView>
-    
-    <RecordModal />
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
+        headerImage={
+          <IconSymbol
+            size={310}
+            color={Colors.green}
+            name="chevron.left.forwardslash.chevron.right"
+            style={styles.headerImage}
+          />
+        }
+      >
+        <RecordsList />
+      </ParallaxScrollView>
+      <RecordModal />
     </>
   );
 }

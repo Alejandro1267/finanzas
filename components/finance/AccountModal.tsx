@@ -32,7 +32,7 @@ export default function AccountModal() {
 
   // Estado local para el valor del porcentaje en el TextInput
   const [displayPercentageValue, setDisplayPercentageValue] = useState(
-    currentAccount?.percentage?.toString() || "" // Start with empty string for better UX if 0
+    currentAccount?.percentage?.toString() || ""
   );
 
   useEffect(() => {
@@ -201,13 +201,6 @@ export default function AccountModal() {
               <Text style={styles.selectAccountText}>
                 Porcentaje de Ingreso
               </Text>
-              {/* <TextInput
-                style={[styles.input, accountErrors.percentage && styles.inputError]}
-                placeholder="Porcentaje (%)"
-                keyboardType="numeric"
-                value={currentAccount?.percentage.toString() || "0"}
-                onChangeText={(value) => { setAccountField("percentage", Number(value)); clearFieldError("percentage") }}
-              /> */}
               <TextInput
                 style={[
                   styles.input,
