@@ -51,6 +51,12 @@ export default function RootLayout() {
         // `);
         // console.log("Test records and balances cleared");
 
+        // Limpiar cuentas de prueba (temporal)
+        // await db.execAsync(`
+        //   DELETE FROM accounts;
+        // `);
+        // console.log("Test accounts cleared");
+
         const accounts = (await db.getAllAsync(
           `SELECT * FROM accounts`
         )) as Account[];

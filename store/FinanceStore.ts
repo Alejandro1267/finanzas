@@ -1,3 +1,4 @@
+import { fechaLocal } from "@/helpers"
 import { ValidationErrors } from "@/types"
 import { create } from "zustand"
 
@@ -170,7 +171,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
       type: "income",
       amount: 0,
       description: "",
-      date: new Date().toISOString().split("T")[0], // YYYY-MM-DD
+      date: fechaLocal(), // YYYY-MM-DD
       account: ""
     }})
   },

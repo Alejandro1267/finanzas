@@ -11,3 +11,8 @@ export const formatNumber$ = (value: number): string => {
     // Devolver el número completo con los 3 decimales
     return `$ ${parts[0]}.${parts[1]}`;
   };
+
+export const fechaLocal = () => {
+  const fechaLocal = new Date().toLocaleDateString("en-CA");
+  return fechaLocal;
+}
