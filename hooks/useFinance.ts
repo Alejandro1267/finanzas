@@ -252,6 +252,9 @@ export function useFinance() {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
+
       // Insertar la nueva cuenta en la base de datos
       await db.runAsync(
         'INSERT INTO accounts (name, percentage, balance, color) VALUES (?, ?, ?, ?)',
@@ -270,6 +273,43 @@ export function useFinance() {
 
       console.log("Cuenta insertada en DB:", insertedAccount);
 
+      // Si el saldo inicial es mayor a 0, crear un registro de "Saldo inicial"
+      if (insertedAccount.balance > 0) {
+        const today = new Date().toLocaleDateString('en-CA'); // Formato YYYY-MM-DD en zona local
+        
+        // Insertar registro de saldo inicial en la base de datos
+        await db.runAsync(
+          'INSERT INTO records (type, amount, description, date, account) VALUES (?, ?, ?, ?, ?)',
+          [
+            'income',
+            insertedAccount.balance,
+            `Saldo inicial de ${insertedAccount.name}`,
+            today,
+            insertedAccount.id.toString()
+          ]
+        );
+
+        // Obtener el registro recién insertado
+        const insertedRecord = await db.getFirstAsync(
+          'SELECT * FROM records WHERE rowid = last_insert_rowid()'
+        ) as Record;
+
+        console.log("Registro de saldo inicial creado:", insertedRecord);
+
+        // Agregar el registro al store
+        addRecordStore({
+          id: insertedRecord.id.toString(),
+          type: insertedRecord.type,
+          amount: insertedRecord.amount,
+          description: insertedRecord.description,
+          date: insertedRecord.date,
+          account: insertedRecord.account,
+        });
+      }
+
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
       // Agregar la cuenta al store con el ID real de la base de datos
       addAccountStore({
         id: insertedAccount.id.toString(),
@@ -285,6 +325,17 @@ export function useFinance() {
 
     } catch (error) {
       console.error("Error adding account to database:", error);
+
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
+      
       Alert.alert("Error", "No se pudo agregar la cuenta a la base de datos");
     } finally {
       if (db) {
