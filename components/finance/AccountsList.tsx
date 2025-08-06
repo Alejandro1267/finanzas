@@ -10,7 +10,13 @@ export function AccountsList() {
   return (
     <View style={styles.container}>
       {accounts.length > 0 ? (
-        <Text style={styles.title}>Cuentas</Text>
+        <>
+          <Text style={styles.title}>Cuentas</Text>
+          <Text style={styles.titlePercentage}>
+            Porcentaje Total:{" "}
+            {accounts.reduce((acc, account) => acc + account.percentage, 0)}%
+          </Text>
+        </>
       ) : (
         <Text style={styles.title}>No hay cuentas</Text>
       )}
@@ -46,7 +52,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 12,
+    color: Colors.slate[800],
+  },
+  titlePercentage: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
     color: Colors.slate[800],
   },
   accountCard: {
