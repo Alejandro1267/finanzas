@@ -4,10 +4,8 @@ import AccountModal from "@/components/finance/AccountModal";
 import { AccountsList } from "@/components/finance/AccountsList";
 import { Header } from "@/components/finance/Header";
 import { TransferModal } from "@/components/finance/TransferModal";
-import { useFinanceStore } from "@/store/FinanceStore";
 
 export default function Cuentas() {
-  const { setShowAccountModal, createEmptyAccount } = useFinanceStore();
   return (
     <>
       <ScrollView>

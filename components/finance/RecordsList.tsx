@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -12,13 +13,14 @@ export function RecordsList() {
     setShowRecordModal,
     setActiveTab,
   } = useFinanceStore();
+  const text = useThemeColor({}, "text");
 
   return (
     <View style={styles.container}>
       {records.length > 0 ? (
-        <Text style={styles.title}>Registros</Text>
+        <Text style={[styles.title, { color: text }]}>Registros</Text>
       ) : (
-        <Text style={styles.title}>No hay registros</Text>
+        <Text style={[styles.title, { color: text }]}>No hay registros</Text>
       )}
       {records.map((record) => (
         <TouchableOpacity
@@ -64,7 +66,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
-    color: Colors.slate[800],
   },
   recordCard: {
     flexDirection: "row",

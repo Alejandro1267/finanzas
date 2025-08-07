@@ -1,14 +1,12 @@
 import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Colors } from "@/constants/Colors";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
 export default function Registros() {
   return (
     <>
-      <ParallaxScrollView
+      <ScrollView style={styles.container}>
+        {/* <ParallaxScrollView
         headerBackgroundColor={{ light: "#C8E6C9", dark: "#237D32" }}
         headerImage={
           <IconSymbol
@@ -18,9 +16,10 @@ export default function Registros() {
             style={styles.headerImage}
           />
         }
-      >
+      > */}
         <RecordsList />
-      </ParallaxScrollView>
+        {/* </ParallaxScrollView> */}
+      </ScrollView>
       <RecordModal />
     </>
   );
@@ -31,5 +30,10 @@ const styles = StyleSheet.create({
     bottom: -90,
     left: -35,
     position: "absolute",
+  },
+  container: {
+    flex: 1,
+    marginTop: 36,
+    padding: 32,
   },
 });
