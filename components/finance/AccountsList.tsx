@@ -1,18 +1,22 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function AccountsList() {
   const { accounts, setCurrentAccount, setShowAccountModal, setAccountMode } =
     useFinanceStore();
+  const text = useThemeColor({}, "text");
+  const backgroundCard = useThemeColor({}, "backgroundCard");
+  const detailText = useThemeColor({}, "detailText");
 
   return (
     <View style={styles.container}>
       {accounts.length > 0 ? (
         <>
-          <Text style={styles.title}>Cuentas</Text>
-          <Text style={styles.titlePercentage}>
+          <Text style={[styles.title, { color: text }]}>Cuentas</Text>
+          <Text style={[styles.titlePercentage, { color: text }]}>
             Porcentaje Total:{" "}
             {accounts.reduce((acc, account) => acc + account.percentage, 0)}%
           </Text>
@@ -23,7 +27,7 @@ export function AccountsList() {
       {accounts.map((account) => (
         <TouchableOpacity
           key={account.id}
-          style={styles.accountCard}
+          style={[styles.accountCard, { backgroundColor: backgroundCard }]}
           onPress={() => {
             setAccountMode("edit");
             setCurrentAccount(account);
@@ -34,14 +38,18 @@ export function AccountsList() {
             style={[styles.colorIndicator, { backgroundColor: account.color }]}
           />
           <View style={styles.accountInfo}>
-            <Text style={styles.accountName}>{account.name}</Text>
+            <Text style={[styles.accountName, { color: text }]}>
+              {account.name}
+            </Text>
             <View style={styles.accountDetailsContainer}>
-              <Text style={styles.accountDetails}>{account.percentage}% •</Text>
+              <Text style={[styles.accountDetails, { color: detailText }]}>
+                {account.percentage}% •
+              </Text>
               <Text
                 style={
                   account.balance < 0
                     ? styles.accountBalance
-                    : styles.accountDetails
+                    : [styles.accountDetails, { color: detailText }]
                 }
               >
                 {formatNumber$(account.balance)}
@@ -62,18 +70,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 12,
-    color: Colors.slate[800],
   },
   titlePercentage: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 12,
-    color: Colors.slate[800],
   },
   accountCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.white,
     padding: 16,
     marginBottom: 12,
     borderRadius: 8,
@@ -95,11 +100,9 @@ const styles = StyleSheet.create({
   accountName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.slate[800],
   },
   accountDetails: {
     fontSize: 14,
-    color: Colors.slate[600],
     marginTop: 4,
   },
   accountBalance: {

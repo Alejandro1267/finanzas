@@ -19,6 +19,7 @@ export const ThemeColors = {
     titleNew: "#2AA63E",
     titleEdit: "#2984D1",
     borderColor: "#E2E8F0",
+    detailText: "#45556C"
   },
   dark: {
     text: "#E2E8F0",
@@ -32,6 +33,7 @@ export const ThemeColors = {
     titleNew: "#B9F8CF",
     titleEdit: "#B8E6FE",
     borderColor: "#45556C",
+    detailText: "#CAD5E2"
   },
 };
 
