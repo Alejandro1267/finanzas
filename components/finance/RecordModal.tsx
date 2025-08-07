@@ -123,7 +123,7 @@ export function RecordModal() {
 
   const handleClose = () => {
     setShowRecordModal(false);
-    setActiveTab("income");
+    setActiveTab("expense");
     clearRecordErrors();
   };
 
