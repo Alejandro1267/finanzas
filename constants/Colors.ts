@@ -18,6 +18,7 @@ export const ThemeColors = {
     // accountColor: "#1F3A93",
     titleNew: "#2AA63E",
     titleEdit: "#2984D1",
+    borderColor: "#E2E8F0",
   },
   dark: {
     text: "#E2E8F0",
@@ -30,6 +31,7 @@ export const ThemeColors = {
     // accountColor: "#1C398E",
     titleNew: "#B9F8CF",
     titleEdit: "#B8E6FE",
+    borderColor: "#45556C",
   },
 };
 

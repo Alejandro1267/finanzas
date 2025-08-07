@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import {
@@ -29,6 +30,8 @@ export function DateInput({
     return new Date();
   });
   const [show, setShow] = useState(false);
+  const text = useThemeColor({}, "text");
+  const borderColor = useThemeColor({}, "borderColor");
 
   const onChange = (event: any, selectedDate?: Date) => {
     setShow(Platform.OS === "ios"); // Mantener abierto en iOS
@@ -47,9 +50,13 @@ export function DateInput({
     <View>
       <TouchableOpacity
         onPress={() => setShow(true)}
-        style={[styles.input, hasError && styles.inputError]}
+        style={[
+          styles.input,
+          { borderColor: borderColor },
+          hasError && styles.inputError,
+        ]}
       >
-        <Text style={styles.inputText}>
+        <Text style={[styles.inputText, { color: text }]}>
           {currentDate.toLocaleDateString("es-MX", {
             day: "2-digit",
             month: "long",
@@ -76,11 +83,9 @@ export function DateInput({
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
     fontSize: 16,
-    color: Colors.slate[800],
   },
   inputText: {
     fontSize: 16,
