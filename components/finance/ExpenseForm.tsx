@@ -73,7 +73,7 @@ export function ExpenseForm() {
         <TextInput
           style={[
             styles.input,
-            { borderColor: borderColor },
+            { borderColor: borderColor, color: text },
             recordErrors.description && styles.inputError,
           ]}
           placeholder="Descripción"
@@ -82,7 +82,7 @@ export function ExpenseForm() {
             setRecordField("description", value);
             clearFieldError("description");
           }}
-          placeholderTextColor={Colors.slate[400]}
+          placeholderTextColor={Colors.gray}
         />
         {recordErrors.description && (
           <Text style={styles.errorText}>{recordErrors.description}</Text>

@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   placeholderText: {
-    color: Colors.slate[400],
+    color: Colors.gray,
   },
   colorCircle: {
     width: 16,
