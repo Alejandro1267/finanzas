@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { useFinance } from "@/hooks/useFinance";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useEffect, useState } from "react";
 import {
@@ -29,6 +30,31 @@ export default function AccountModal() {
     setShowTransferModal,
   } = useFinanceStore();
   const { addAccount, deleteAccount, updateAccount } = useFinance();
+  const text = useThemeColor({}, "text");
+  const background = useThemeColor({}, "backgroundCard");
+  const titleNew = useThemeColor({}, "titleNew");
+  const titleEdit = useThemeColor({}, "titleEdit");
+  const borderColor = useThemeColor({}, "borderColor");
+  const cancelButton = useThemeColor(
+    { light: Colors.red, dark: Colors.redT[200] },
+    "text"
+  );
+  const confirmButton = useThemeColor(
+    { light: Colors.green, dark: Colors.greenT[200] },
+    "text"
+  );
+  const cancelText = useThemeColor(
+    { light: Colors.white, dark: Colors.redT[700] },
+    "text"
+  );
+  const confirmText = useThemeColor(
+    { light: Colors.white, dark: Colors.greenT[700] },
+    "text"
+  );
+  const blackWhite = useThemeColor(
+    { light: Colors.black, dark: Colors.white },
+    "text"
+  );
 
   // Estado local para el valor del porcentaje en el TextInput
   const [displayPercentageValue, setDisplayPercentageValue] = useState(
@@ -165,12 +191,16 @@ export default function AccountModal() {
         onRequestClose={() => setShowAccountModal(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: background }]}>
             {accountMode === "new" ? (
-              <Text style={styles.modalTitleNew}>Nueva Cuenta</Text>
+              <Text style={[styles.modalTitleNew, { color: titleNew }]}>
+                Nueva Cuenta
+              </Text>
             ) : (
               <View style={styles.header}>
-                <Text style={styles.modalTitleEdit}>Editar Cuenta</Text>
+                <Text style={[styles.modalTitleEdit, { color: titleEdit }]}>
+                  Editar Cuenta
+                </Text>
                 <TouchableOpacity onPress={handleDelete}>
                   <IconSymbol
                     name="trash"
@@ -182,10 +212,17 @@ export default function AccountModal() {
             )}
 
             <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>Nombre de la Cuenta</Text>
+              <Text style={[styles.selectAccountText, { color: text }]}>
+                Nombre de la Cuenta
+              </Text>
               <TextInput
-                style={[styles.input, accountErrors.name && styles.inputError]}
+                style={[
+                  styles.input,
+                  { borderColor: borderColor, color: text },
+                  accountErrors.name && styles.inputError,
+                ]}
                 placeholder="Nombre"
+                placeholderTextColor={Colors.gray}
                 value={currentAccount?.name || ""}
                 onChangeText={(value) => {
                   setAccountField("name", value);
@@ -198,18 +235,20 @@ export default function AccountModal() {
             </View>
 
             <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>
+              <Text style={[styles.selectAccountText, { color: text }]}>
                 Porcentaje de Ingreso
               </Text>
               <TextInput
                 style={[
                   styles.input,
+                  { borderColor: borderColor, color: text },
                   accountErrors.percentage && styles.inputError,
                 ]}
                 placeholder="Porcentaje (%)"
                 keyboardType="numeric"
                 value={displayPercentageValue} // Usa el estado local para el display
                 onChangeText={handlePercentageChange} // Usa la función de manejo
+                placeholderTextColor={Colors.gray}
               />
               {accountErrors.percentage && (
                 <Text style={styles.errorText}>{accountErrors.percentage}</Text>
@@ -220,7 +259,9 @@ export default function AccountModal() {
               <></>
             ) : (
               <View style={styles.viewContainer}>
-                <Text style={styles.selectAccountText}>Saldo Inicial</Text>
+                <Text style={[styles.selectAccountText, { color: text }]}>
+                  Saldo Inicial
+                </Text>
                 <CurrencyInput
                   value={currentAccount?.balance || 0}
                   onChangeValue={(value: number) => {
@@ -233,6 +274,7 @@ export default function AccountModal() {
                   precision={2}
                   style={[
                     styles.input,
+                    { borderColor: borderColor, color: text },
                     accountErrors.balance && styles.inputError,
                   ]}
                 />
@@ -243,7 +285,9 @@ export default function AccountModal() {
             )}
 
             <View style={styles.viewContainer}>
-              <Text style={styles.selectAccountText}>Color de la cuenta</Text>
+              <Text style={[styles.selectAccountText, { color: text }]}>
+                Color de la cuenta
+              </Text>
               <View>
                 {/* Dividir los colores en filas de 6 */}
                 {Array.from({
@@ -267,7 +311,7 @@ export default function AccountModal() {
                               backgroundColor: color,
                               borderColor:
                                 currentAccount?.color === color
-                                  ? "#000"
+                                  ? blackWhite
                                   : "transparent",
                               borderWidth:
                                 currentAccount?.color === color ? 2 : 0,
@@ -287,28 +331,34 @@ export default function AccountModal() {
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
+                style={[styles.button, { backgroundColor: cancelButton }]}
                 onPress={() => {
                   setShowAccountModal(false);
                   clearAccountErrors();
                 }}
               >
-                <Text style={styles.buttonText}>Cancelar</Text>
+                <Text style={[styles.buttonText, { color: cancelText }]}>
+                  Cancelar
+                </Text>
               </TouchableOpacity>
 
               {accountMode === "new" ? (
                 <TouchableOpacity
-                  style={[styles.button, styles.addButton]}
+                  style={[styles.button, { backgroundColor: confirmButton }]}
                   onPress={addAccount}
                 >
-                  <Text style={styles.buttonText}>Agregar Cuenta</Text>
+                  <Text style={[styles.buttonText, { color: confirmText }]}>
+                    Agregar Cuenta
+                  </Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  style={[styles.button, styles.addButton]}
+                  style={[styles.button, { backgroundColor: confirmButton }]}
                   onPress={updateAccount}
                 >
-                  <Text style={styles.buttonText}>Guardar Cambios</Text>
+                  <Text style={[styles.buttonText, { color: confirmText }]}>
+                    Guardar Cambios
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -338,7 +388,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 20,
     width: "90%",
@@ -349,33 +398,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: Colors.greenT[600],
   },
   modalTitleEdit: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: Colors.sky[600],
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
     fontSize: 16,
-    color: Colors.slate[800],
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
-  },
-  cancelButton: {
-    backgroundColor: Colors.red,
-  },
-  addButton: {
-    backgroundColor: Colors.green,
   },
   buttonText: {
     color: "white",
@@ -429,7 +468,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
-    color: Colors.slate[800],
   },
   header: {
     flexDirection: "row",
