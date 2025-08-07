@@ -40,19 +40,19 @@ export default function TabLayout() {
         options={{
           title: "Cuentas",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="circle" color={color} />
+            <IconSymbol size={28} name="creditcard.fill" color={color} />
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="index"
+      <Tabs.Screen
+        name="configuracion"
         options={{
-          title: "Home",
+          title: "Configuración",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={28} name="gear" color={color} />
           ),
         }}
-      /> */}
+      />
     </Tabs>
   );
 }

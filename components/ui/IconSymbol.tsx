@@ -21,10 +21,11 @@ const MAPPING = {
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
-  circle: "wallet",
+  "creditcard.fill": "wallet",
   plus: "add",
   "list.bullet": "list-alt",
   trash: "delete",
+  gear: "settings",
 } as IconMapping;
 
 /**
