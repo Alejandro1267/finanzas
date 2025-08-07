@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useFinance } from "@/hooks/useFinance";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useState } from "react";
 import {
@@ -26,6 +27,43 @@ export function TransferModal() {
   const [selectedTransferAccountId, setSelectedTransferAccountId] = useState<
     string | null
   >(null);
+  const text = useThemeColor({}, "text");
+  const background = useThemeColor({}, "backgroundCard");
+  const titleNew = useThemeColor({}, "titleNew");
+  const titleEdit = useThemeColor({}, "titleEdit");
+  const borderColor = useThemeColor({}, "borderColor");
+  const cancelButton = useThemeColor(
+    { light: Colors.red, dark: Colors.redT[200] },
+    "text"
+  );
+  const confirmButton = useThemeColor(
+    { light: Colors.green, dark: Colors.greenT[200] },
+    "text"
+  );
+  const cancelText = useThemeColor(
+    { light: Colors.white, dark: Colors.redT[700] },
+    "text"
+  );
+  const confirmText = useThemeColor(
+    { light: Colors.white, dark: Colors.greenT[700] },
+    "text"
+  );
+  const blackWhite = useThemeColor(
+    { light: Colors.black, dark: Colors.white },
+    "text"
+  );
+  const transferDescription = useThemeColor(
+    { light: Colors.slate[600], dark: Colors.slate[400] },
+    "text"
+  );
+  const borderBottomColor = useThemeColor(
+    { light: Colors.slate[200], dark: Colors.slate[600] },
+    "borderColor"
+  );
+  const selectedAccountItem = useThemeColor(
+    { light: Colors.sky[100], dark: Colors.sky[900] },
+    "backgroundCard"
+  );
 
   const confirmTransfer = async () => {
     if (currentAccount?.id && selectedTransferAccountId) {
@@ -55,14 +93,26 @@ export function TransferModal() {
       onRequestClose={cancelTransfer}
     >
       <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitleEdit}>Transferir Registros</Text>
+        <View style={[styles.modalContent, { backgroundColor: background }]}>
+          <Text style={[styles.modalTitleEdit, { color: titleEdit }]}>
+            Transferir Registros
+          </Text>
           {!hasOtherAccounts ? (
-            <Text style={styles.transferDescription}>
+            <Text
+              style={[
+                styles.transferDescription,
+                { color: transferDescription },
+              ]}
+            >
               No hay mas cuentas para transferir
             </Text>
           ) : (
-            <Text style={styles.transferDescription}>
+            <Text
+              style={[
+                styles.transferDescription,
+                { color: transferDescription },
+              ]}
+            >
               Selecciona la cuenta a la que quieres transferir todos los
               registros de "{currentAccount?.name}":
             </Text>
@@ -76,8 +126,10 @@ export function TransferModal() {
               <TouchableOpacity
                 style={[
                   styles.accountItem,
-                  selectedTransferAccountId === item.id &&
-                    styles.selectedAccountItem,
+                  { borderBottomColor: borderBottomColor },
+                  selectedTransferAccountId === item.id && {
+                    backgroundColor: selectedAccountItem,
+                  },
                 ]}
                 onPress={() => setSelectedTransferAccountId(item.id)}
               >
@@ -89,8 +141,15 @@ export function TransferModal() {
                     ]}
                   />
                   <View style={styles.accountInfo}>
-                    <Text style={styles.accountName}>{item.name}</Text>
-                    <Text style={styles.accountBalance}>
+                    <Text style={[styles.accountName, { color: text }]}>
+                      {item.name}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.accountBalance,
+                        { color: transferDescription },
+                      ]}
+                    >
                       {formatNumber$(item.balance)}
                     </Text>
                   </View>
@@ -109,17 +168,19 @@ export function TransferModal() {
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
+              style={[styles.button, { backgroundColor: cancelButton }]}
               onPress={cancelTransfer}
             >
-              <Text style={styles.buttonText}>Cancelar</Text>
+              <Text style={[styles.buttonText, { color: cancelText }]}>
+                Cancelar
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.button,
                 selectedTransferAccountId
-                  ? styles.addButton
+                  ? { backgroundColor: confirmButton }
                   : styles.disabledButton,
               ]}
               onPress={confirmTransfer}
@@ -143,7 +204,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: Colors.white,
     borderRadius: 10,
     padding: 20,
     width: "90%",
@@ -154,21 +214,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: Colors.sky[600],
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
   },
-  cancelButton: {
-    backgroundColor: Colors.red,
-  },
-  addButton: {
-    backgroundColor: Colors.green,
-  },
   buttonText: {
-    color: "white",
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -188,15 +240,10 @@ const styles = StyleSheet.create({
   transferDescription: {
     fontSize: 16,
     marginBottom: 20,
-    color: Colors.slate[600],
   },
   accountItem: {
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.slate[200],
-  },
-  selectedAccountItem: {
-    backgroundColor: Colors.sky[100],
   },
   accountItemContent: {
     flexDirection: "row",
@@ -209,11 +256,9 @@ const styles = StyleSheet.create({
   accountName: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.slate[800],
   },
   accountBalance: {
     fontSize: 14,
-    color: Colors.slate[600],
   },
   accountsList: {
     maxHeight: 200,
