@@ -14,6 +14,7 @@ export function RecordsList() {
     setActiveTab,
   } = useFinanceStore();
   const text = useThemeColor({}, "text");
+  const background = useThemeColor({}, "backgroundCard");
 
   return (
     <View style={styles.container}>
@@ -26,7 +27,7 @@ export function RecordsList() {
         <TouchableOpacity
           key={record.id}
           activeOpacity={0.8}
-          style={styles.recordCard}
+          style={[styles.recordCard, { backgroundColor: background }]}
           onPress={() => {
             setRecordMode("edit");
             setCurrentRecord(record);
@@ -35,9 +36,11 @@ export function RecordsList() {
           }}
         >
           <View style={styles.recordInfo}>
-            <Text style={styles.description}>{record.description}</Text>
+            <Text style={[styles.description, { color: text }]}>
+              {record.description}
+            </Text>
             <Text style={styles.date}>{record.date}</Text>
-            <Text style={styles.account}>
+            <Text style={[styles.account]}>
               {accounts.find((account) => account.id === record.account)?.name}
             </Text>
           </View>
@@ -71,7 +74,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Colors.white,
     padding: 16,
     marginBottom: 12,
     borderRadius: 8,
@@ -87,7 +89,6 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.slate[800],
   },
   date: {
     fontSize: 12,
@@ -106,8 +107,8 @@ const styles = StyleSheet.create({
   },
   account: {
     fontSize: 14,
-    color: Colors.blue,
     marginTop: 4,
     fontWeight: "500",
+    color: Colors.blue,
   },
 });
