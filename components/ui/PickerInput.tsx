@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -31,12 +32,19 @@ export function PickerInput({
   hasError = false,
 }: PickerInputProps) {
   const [modalVisible, setModalVisible] = useState(false);
+  const text = useThemeColor({}, "text");
+  const borderColor = useThemeColor({}, "borderColor");
+  const backgroundCard = useThemeColor({}, "backgroundCard");
+  const borderBottomColor = useThemeColor(
+    { light: Colors.slate[100], dark: Colors.slate[600] },
+    "text"
+  );
 
   const selectedItem = items.find((item) => item.id === value);
 
   const renderItem = ({ item }: { item: PickerItem }) => (
     <TouchableOpacity
-      style={styles.optionItem}
+      style={[styles.optionItem, { borderBottomColor: borderBottomColor }]}
       onPress={() => {
         onValueChange(item.id);
         setModalVisible(false);
@@ -45,14 +53,18 @@ export function PickerInput({
       {item.color && (
         <View style={[styles.colorCircle, { backgroundColor: item.color }]} />
       )}
-      <Text style={styles.optionText}>{item.name}</Text>
+      <Text style={[styles.optionText, { color: text }]}>{item.name}</Text>
     </TouchableOpacity>
   );
 
   return (
     <>
       <TouchableOpacity
-        style={[styles.input, hasError && styles.inputError]}
+        style={[
+          styles.input,
+          { borderColor: borderColor, backgroundColor: backgroundCard },
+          hasError && styles.inputError,
+        ]}
         onPress={() => setModalVisible(true)}
       >
         <View style={styles.selectedContainer}>
@@ -67,6 +79,7 @@ export function PickerInput({
           <Text
             style={[
               styles.selectedText,
+              { color: text },
               !selectedItem && styles.placeholderText,
             ]}
           >
@@ -87,7 +100,9 @@ export function PickerInput({
           activeOpacity={1}
           onPress={() => setModalVisible(false)}
         >
-          <View style={styles.modalContent}>
+          <View
+            style={[styles.modalContent, { backgroundColor: backgroundCard }]}
+          >
             <FlatList
               data={items}
               renderItem={renderItem}
@@ -104,14 +119,12 @@ export function PickerInput({
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: Colors.slate[200],
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "white",
   },
   selectedContainer: {
     flexDirection: "row",
@@ -120,7 +133,6 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     fontSize: 16,
-    color: Colors.slate[800],
   },
   placeholderText: {
     color: Colors.slate[400],
@@ -148,7 +160,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "white",
     borderRadius: 8,
     maxHeight: 300,
     width: "80%",
@@ -167,11 +178,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.slate[100],
+    // borderBottomColor: Colors.slate[100],
   },
   optionText: {
     fontSize: 16,
-    color: Colors.slate[800],
   },
   inputError: {
     borderColor: Colors.redT[500],
