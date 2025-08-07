@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
@@ -14,6 +15,8 @@ export function ExpenseForm() {
     recordErrors,
     setRecordErrors,
   } = useFinanceStore();
+  const text = useThemeColor({}, "text");
+  const borderColor = useThemeColor({}, "borderColor");
 
   const clearFieldError = (fieldName: string) => {
     const { [fieldName]: removedError, ...remainingErrors } = recordErrors;
@@ -23,7 +26,7 @@ export function ExpenseForm() {
   return (
     <ScrollView>
       <View style={styles.viewContainer}>
-        <Text style={styles.selectAccountText}>Fecha:</Text>
+        <Text style={[styles.selectAccountText, { color: text }]}>Fecha:</Text>
         <DateInput
           date={currentRecord?.date}
           onDateChange={(date) => {
@@ -38,7 +41,9 @@ export function ExpenseForm() {
       </View>
 
       <View style={styles.viewContainer}>
-        <Text style={styles.selectAccountText}>Importe:</Text>
+        <Text style={[styles.selectAccountText, { color: text }]}>
+          Importe:
+        </Text>
         <CurrencyInput
           value={currentRecord?.amount || 0}
           onChangeValue={(value: number) => {
@@ -50,7 +55,11 @@ export function ExpenseForm() {
           separator="."
           precision={2}
           minValue={0}
-          style={[styles.input, recordErrors.amount && styles.inputError]}
+          style={[
+            styles.input,
+            { borderColor: borderColor, color: text },
+            recordErrors.amount && styles.inputError,
+          ]}
         />
         {recordErrors.amount && (
           <Text style={styles.errorText}>{recordErrors.amount}</Text>
@@ -58,9 +67,15 @@ export function ExpenseForm() {
       </View>
 
       <View style={styles.viewContainer}>
-        <Text style={styles.selectAccountText}>Descripción:</Text>
+        <Text style={[styles.selectAccountText, { color: text }]}>
+          Descripción:
+        </Text>
         <TextInput
-          style={[styles.input, recordErrors.description && styles.inputError]}
+          style={[
+            styles.input,
+            { borderColor: borderColor },
+            recordErrors.description && styles.inputError,
+          ]}
           placeholder="Descripción"
           value={currentRecord?.description || ""}
           onChangeText={(value) => {
@@ -75,7 +90,9 @@ export function ExpenseForm() {
       </View>
 
       <View style={styles.viewContainer}>
-        <Text style={styles.selectAccountText}>Seleccionar cuenta:</Text>
+        <Text style={[styles.selectAccountText, { color: text }]}>
+          Seleccionar cuenta:
+        </Text>
         <PickerInput
           value={currentRecord?.account || ""}
           onValueChange={(value) => {
@@ -102,17 +119,14 @@ export function ExpenseForm() {
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
     fontSize: 16,
-    color: Colors.slate[800],
   },
   selectAccountText: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
-    color: Colors.slate[800],
   },
   viewContainer: {
     marginBottom: 16,
