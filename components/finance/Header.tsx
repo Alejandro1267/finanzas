@@ -1,11 +1,17 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export function Header() {
   const { records, totalBalance } = useFinanceStore();
+  const text = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor(
+    { light: Colors.slate[200], dark: Colors.slate[700] },
+    "text"
+  );
 
   const { totalIncome, totalExpenses } = useMemo(() => {
     let income = 0;
@@ -21,23 +27,25 @@ export function Header() {
   }, [records]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <View style={styles.columnsContainer}>
         <View style={styles.column}>
-          <Text style={styles.columnLabel}>Ingresos</Text>
+          <Text style={[styles.columnLabel, { color: text }]}>Ingresos</Text>
           <Text style={[styles.columnValue, styles.incomeValue]}>
             {formatNumber$(totalIncome)}
           </Text>
         </View>
         <View style={styles.column}>
-          <Text style={styles.columnLabel}>Egresos</Text>
+          <Text style={[styles.columnLabel, { color: text }]}>Egresos</Text>
           <Text style={[styles.columnValue, styles.expenseValue]}>
             {formatNumber$(totalExpenses)}
           </Text>
         </View>
         <View style={styles.column}>
-          <Text style={styles.columnLabel}>Balance Total</Text>
-          <Text style={[styles.columnValue, styles.balanceValue]}>
+          <Text style={[styles.columnLabel, { color: text }]}>
+            Balance Total
+          </Text>
+          <Text style={[styles.columnValue, { color: text }]}>
             {formatNumber$(totalBalance)}
           </Text>
         </View>
@@ -48,7 +56,6 @@ export function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.slate[300],
     paddingVertical: 24,
     paddingHorizontal: 20,
     alignItems: "center",
@@ -65,7 +72,6 @@ const styles = StyleSheet.create({
   },
   columnLabel: {
     fontSize: 18,
-    color: Colors.slate[800],
     marginBottom: 4,
     fontWeight: "bold",
   },
@@ -78,8 +84,5 @@ const styles = StyleSheet.create({
   },
   expenseValue: {
     color: Colors.redT[600],
-  },
-  balanceValue: {
-    color: Colors.blueT[900],
   },
 });
