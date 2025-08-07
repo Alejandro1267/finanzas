@@ -65,11 +65,11 @@ export function RecordModal() {
     "text"
   );
   const cancelText = useThemeColor(
-    { light: Colors.white, dark: Colors.redT[600] },
+    { light: Colors.white, dark: Colors.redT[700] },
     "text"
   );
   const confirmText = useThemeColor(
-    { light: Colors.white, dark: Colors.greenT[600] },
+    { light: Colors.white, dark: Colors.greenT[700] },
     "text"
   );
 
