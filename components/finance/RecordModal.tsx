@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { useFinance } from "@/hooks/useFinance";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { recordSchema } from "@/schemas";
 import { useFinanceStore } from "@/store/FinanceStore";
 import { ValidationErrors } from "@/types";
@@ -32,6 +33,45 @@ export function RecordModal() {
   } = useFinanceStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useFinance();
+  const background = useThemeColor({}, "backgroundCard");
+  const titleNew = useThemeColor({}, "titleNew");
+  const titleEdit = useThemeColor({}, "titleEdit");
+  const tabBackground = useThemeColor(
+    { light: Colors.slate[100], dark: Colors.zinc[700] },
+    "text"
+  );
+  const activeTabButton = useThemeColor(
+    { light: Colors.blue, dark: Colors.blueT[200] },
+    "text"
+  );
+  const tabButtonText = useThemeColor(
+    { light: Colors.slate[600], dark: Colors.slate[200] },
+    "text"
+  );
+  const tabIconColorInactive = useThemeColor(
+    { light: Colors.slate[600], dark: Colors.slate[300] },
+    "text"
+  );
+  const tabIconColorActive = useThemeColor(
+    { light: Colors.white, dark: Colors.slate[600] },
+    "text"
+  );
+  const cancelButton = useThemeColor(
+    { light: Colors.red, dark: Colors.redT[200] },
+    "text"
+  );
+  const confirmButton = useThemeColor(
+    { light: Colors.green, dark: Colors.greenT[200] },
+    "text"
+  );
+  const cancelText = useThemeColor(
+    { light: Colors.white, dark: Colors.redT[600] },
+    "text"
+  );
+  const confirmText = useThemeColor(
+    { light: Colors.white, dark: Colors.greenT[600] },
+    "text"
+  );
 
   const handleSubmit = () => {
     clearRecordErrors();
@@ -109,18 +149,23 @@ export function RecordModal() {
 
   const renderTabButton = (type: RecordType, label: string, icon: string) => (
     <TouchableOpacity
-      style={[styles.tabButton, activeTab === type && styles.activeTabButton]}
+      style={[
+        styles.tabButton,
+        activeTab === type && { backgroundColor: activeTabButton },
+      ]}
       onPress={() => setActiveTab(type)}
     >
       <IconSymbol
         name={icon as any}
         size={20}
-        color={activeTab === type ? Colors.white : Colors.slate[600]}
+        // color={activeTab === type ? Colors.white : Colors.slate[600]}
+        color={activeTab === type ? tabIconColorActive : tabIconColorInactive}
       />
       <Text
         style={[
           styles.tabButtonText,
-          activeTab === type && styles.activeTabButtonText,
+          { color: tabButtonText },
+          activeTab === type && { color: tabIconColorActive },
         ]}
       >
         {label}
@@ -132,13 +177,17 @@ export function RecordModal() {
     <View>
       <Modal visible={showRecordModal} animationType="slide" transparent>
         <View style={styles.overlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: background }]}>
             {/* Header */}
             {recordMode === "new" ? (
-              <Text style={styles.titleNew}>Nuevo Registro</Text>
+              <Text style={[styles.title, { color: titleNew }]}>
+                Nuevo Registro
+              </Text>
             ) : (
               <View style={styles.header}>
-                <Text style={styles.titleEdit}>Editar Registro</Text>
+                <Text style={[styles.title, { color: titleEdit }]}>
+                  Editar Registro
+                </Text>
                 <TouchableOpacity onPress={handleDelete}>
                   <IconSymbol
                     name="trash"
@@ -150,9 +199,11 @@ export function RecordModal() {
             )}
 
             {/* Tabs */}
-            <View style={styles.tabContainer}>
+            <View
+              style={[styles.tabContainer, { backgroundColor: tabBackground }]}
+            >
               {renderTabButton("income", "Ingreso", "plus")}
-              {renderTabButton("expense", "Gasto", "circle")}
+              {renderTabButton("expense", "Gasto", "creditcard.fill")}
             </View>
 
             {/* Formulario dinámico */}
@@ -161,16 +212,18 @@ export function RecordModal() {
             {/* Botones */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
+                style={[styles.button, { backgroundColor: cancelButton }]}
                 onPress={handleClose}
               >
-                <Text style={styles.buttonText}>Cancelar</Text>
+                <Text style={[styles.buttonText, { color: cancelText }]}>
+                  Cancelar
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.confirmButton]}
+                style={[styles.button, { backgroundColor: confirmButton }]}
                 onPress={handleSubmit}
               >
-                <Text style={styles.buttonText}>
+                <Text style={[styles.buttonText, { color: confirmText }]}>
                   {recordMode === "new"
                     ? activeTab === "income"
                       ? "Agregar Ingreso"
@@ -207,26 +260,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   modalContent: {
-    backgroundColor: Colors.white,
     padding: 24,
     borderRadius: 12,
     width: "100%",
     maxWidth: 400,
     maxHeight: "80%",
   },
-  titleNew: {
+  title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: Colors.greenT[600],
-  },
-  titleEdit: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: Colors.sky[600],
   },
   buttonContainer: {
     flexDirection: "row",
@@ -236,7 +280,6 @@ const styles = StyleSheet.create({
   // Tabs
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: Colors.slate[100],
     borderRadius: 8,
     padding: 4,
     marginBottom: 20,
@@ -251,16 +294,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 8,
   },
-  activeTabButton: {
-    backgroundColor: Colors.blue,
-  },
   tabButtonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.slate[600],
-  },
-  activeTabButtonText: {
-    color: "white",
   },
 
   // Buttons
@@ -270,14 +306,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  cancelButton: {
-    backgroundColor: Colors.red,
-  },
-  confirmButton: {
-    backgroundColor: Colors.green,
-  },
   buttonText: {
-    color: Colors.white,
     fontWeight: "bold",
     fontSize: 16,
   },

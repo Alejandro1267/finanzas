@@ -16,6 +16,8 @@ export const ThemeColors = {
     tabIconSelected: tintColorLight,
     backgroundCard: "#fff",
     // accountColor: "#1F3A93",
+    titleNew: "#2AA63E",
+    titleEdit: "#2984D1",
   },
   dark: {
     text: "#E2E8F0",
@@ -26,6 +28,8 @@ export const ThemeColors = {
     tabIconSelected: tintColorDark,
     backgroundCard: "#27272A",
     // accountColor: "#1C398E",
+    titleNew: "#B9F8CF",
+    titleEdit: "#B8E6FE",
   },
 };
 
