@@ -77,7 +77,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
   totalBalance: 0,
   recordMode: "new",
   accountMode: "new",
-  activeTab: "income",
+  activeTab: "expense",
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
