@@ -8,17 +8,26 @@ const tintColorDark = '#fff';
 
 export const ThemeColors = {
   light: {
+    // Texto normal
     text: "#1D293D",
+    // Fondo de las páginas y modales
     background: "#fff",
     tint: tintColorLight,
     icon: "#687076",
+    // Los tabs que estan en la parte inferior
     tabIconDefault: "#687076",
+    // El tab seleccionado
     tabIconSelected: tintColorLight,
+    // El fondo de las tarjetas
     backgroundCard: "#fff",
     // accountColor: "#1F3A93",
+    // Titulo de los modales y páginas de creación
     titleNew: "#2AA63E",
+    // Titulo de los modales y páginas de edición
     titleEdit: "#2984D1",
+    // Bordes de los inputs
     borderColor: "#E2E8F0",
+    // Texto de los detalles de las tarjetas
     detailText: "#45556C"
   },
   dark: {

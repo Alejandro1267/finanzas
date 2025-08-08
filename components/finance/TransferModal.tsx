@@ -29,9 +29,7 @@ export function TransferModal() {
   >(null);
   const text = useThemeColor({}, "text");
   const background = useThemeColor({}, "backgroundCard");
-  const titleNew = useThemeColor({}, "titleNew");
   const titleEdit = useThemeColor({}, "titleEdit");
-  const borderColor = useThemeColor({}, "borderColor");
   const cancelButton = useThemeColor(
     { light: Colors.red, dark: Colors.redT[200] },
     "text"
@@ -46,10 +44,6 @@ export function TransferModal() {
   );
   const confirmText = useThemeColor(
     { light: Colors.white, dark: Colors.greenT[700] },
-    "text"
-  );
-  const blackWhite = useThemeColor(
-    { light: Colors.black, dark: Colors.white },
     "text"
   );
   const transferDescription = useThemeColor(
