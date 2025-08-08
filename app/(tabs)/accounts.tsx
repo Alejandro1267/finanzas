@@ -5,7 +5,7 @@ import { AccountsList } from "@/components/finance/AccountsList";
 import { Header } from "@/components/finance/Header";
 import { TransferModal } from "@/components/finance/TransferModal";
 
-export default function Cuentas() {
+export default function Accounts() {
   return (
     <>
       <ScrollView>

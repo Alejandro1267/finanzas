@@ -2,7 +2,7 @@ import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
 import { ScrollView, StyleSheet } from "react-native";
 
-export default function Registros() {
+export default function Records() {
   return (
     <>
       <ScrollView style={styles.container}>

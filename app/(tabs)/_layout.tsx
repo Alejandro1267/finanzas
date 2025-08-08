@@ -27,7 +27,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="registros"
+        name="records"
         options={{
           title: "Registros",
           tabBarIcon: ({ color }) => (
@@ -36,7 +36,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cuentas"
+        name="accounts"
         options={{
           title: "Cuentas",
           tabBarIcon: ({ color }) => (
