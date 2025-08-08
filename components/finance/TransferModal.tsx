@@ -64,6 +64,10 @@ export function TransferModal() {
     { light: Colors.sky[100], dark: Colors.sky[900] },
     "backgroundCard"
   );
+  const disabledButton = useThemeColor(
+    { light: Colors.white, dark: Colors.slate[700] },
+    "backgroundCard"
+  );
 
   const confirmTransfer = async () => {
     if (currentAccount?.id && selectedTransferAccountId) {
@@ -186,7 +190,16 @@ export function TransferModal() {
               onPress={confirmTransfer}
               disabled={!selectedTransferAccountId}
             >
-              <Text style={styles.buttonText}>Transferir</Text>
+              <Text
+                style={[
+                  styles.buttonText,
+                  selectedTransferAccountId
+                    ? { color: confirmText }
+                    : { color: disabledButton },
+                ]}
+              >
+                Transferir
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
