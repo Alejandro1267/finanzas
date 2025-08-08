@@ -26,6 +26,8 @@ const MAPPING = {
   "list.bullet": "list-alt",
   trash: "delete",
   gear: "settings",
+  "sun.max": "light-mode",
+  moon: "dark-mode",
 } as IconMapping;
 
 /**

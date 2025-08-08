@@ -1,3 +1,5 @@
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useThemeModeStore } from "@/store/ThemeModeStore";
@@ -12,7 +14,11 @@ import {
 
 export default function ConfiguracionScreen() {
   const { setThemeMode } = useThemeModeStore();
-  const textColor = useThemeColor({}, "text");
+  const text = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor(
+    { light: Colors.grayT[200], dark: Colors.grayT[800] },
+    "text"
+  );
   const currentScheme = useColorScheme();
 
   return (
@@ -21,28 +27,33 @@ export default function ConfiguracionScreen() {
       contentContainerStyle={styles.contentContainer}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>Configuración</Text>
+        <Text style={[styles.title, { color: text }]}>Configuración</Text>
       </View>
 
       <View style={styles.section}>
-        <View style={styles.currentModeInfo}>
+        <View style={[styles.currentModeInfo, { backgroundColor }]}>
           <TouchableOpacity
             onPress={() =>
               setThemeMode(currentScheme === "dark" ? "light" : "dark")
             }
           >
-            <Text
-              style={[
-                styles.currentModeText,
-                { color: textColor, opacity: 0.8 },
-              ]}
-            >
-              Modo actual: {currentScheme === "dark" ? "Oscuro 🌙" : "Claro ☀️"}
-            </Text>
+            {currentScheme === "light" ? (
+              <View style={styles.flexRow}>
+                <Text style={[styles.currentModeText, { color: text }]}>
+                  Modo Oscuro
+                </Text>
+                <IconSymbol name="moon" color={text} />
+              </View>
+            ) : (
+              <View style={styles.flexRow}>
+                <Text style={[styles.currentModeText, { color: text }]}>
+                  Modo Claro
+                </Text>
+                <IconSymbol name="sun.max" color={text} />
+              </View>
+            )}
           </TouchableOpacity>
         </View>
-
-        <View style={styles.themesContainer}></View>
       </View>
     </ScrollView>
   );
@@ -70,7 +81,7 @@ const styles = StyleSheet.create({
   currentModeInfo: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    backgroundColor: Colors.red,
     marginBottom: 20,
   },
   currentModeText: {
@@ -78,7 +89,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
-  themesContainer: {
-    gap: 12,
+  flexRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
   },
 });
