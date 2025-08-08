@@ -45,7 +45,8 @@ export default function RootLayout() {
         `);
 
         const accounts = (await db.getAllAsync(
-          `SELECT * FROM accounts`
+          `SELECT *
+          FROM accounts`
         )) as Account[];
         setAccounts(
           accounts.map((acc) => ({
@@ -62,7 +63,11 @@ export default function RootLayout() {
         setTotalBalance(totalBalance);
 
         const records = (await db.getAllAsync(
-          `SELECT * FROM records`
+          `SELECT *
+          FROM records
+          ORDER BY
+            date DESC,
+            id DESC`
         )) as Record[];
         setRecords(records);
         console.log("records", records);

@@ -147,7 +147,7 @@ export const useFinanceStore = create<FinanceState>((set, get) => ({
     set({ accounts: [...get().accounts, account] })
   },
   addRecord: (record: Record) => {
-    set({ records: [...get().records, record] })
+    set({ records: [record, ...get().records] })
   },
   createEmptyAccount: () => {
     set({ currentAccount: {
