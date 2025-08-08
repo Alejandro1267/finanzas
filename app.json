@@ -2,9 +2,9 @@
   "expo": {
     "name": "Finanzas",
     "slug": "finanzas",
-    "version": "1.0.7",
+    "version": "1.0.12",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/splash-icon.png",
     "scheme": "finanzas",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,7 +18,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.alejandro260.finanzas",
-      "versionCode": 8
+      "versionCode": 13
     },
     "web": {
       "bundler": "metro",
@@ -33,7 +33,11 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#16A34A"
+          "backgroundColor": "#16A34A",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#18181B"
+          }
         }
       ]
     ],

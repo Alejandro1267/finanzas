@@ -12,7 +12,7 @@ export default function NotFoundScreen() {
         <ThemedText type="title">
           Lo siento, la página que buscas no existe.
         </ThemedText>
-        <Link href="/registros" style={styles.link}>
+        <Link href="/records" style={styles.link}>
           <ThemedText type="link">Volver al inicio</ThemedText>
         </Link>
       </ThemedView>
