@@ -16,6 +16,7 @@ import {
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
+import { TransferForm } from "./TransferForm";
 
 export function RecordModal() {
   const {
@@ -186,6 +187,19 @@ export function RecordModal() {
       </Text>
     </TouchableOpacity>
   );
+
+  const renderForm = () => {
+    switch (activeTab) {
+      case "income":
+        return <IncomeForm />;
+      case "expense":
+        return <ExpenseForm />;
+      case "transfer":
+        return <TransferForm />;
+      default:
+        return <ExpenseForm />;
+    }
+  };
 
   const getButtonText = () => {
     if (recordMode === "new") {
