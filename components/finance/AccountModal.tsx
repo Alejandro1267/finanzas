@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import { useFinance } from "@/hooks/useFinance";
+import { useAccount } from "@/hooks/useAccount";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ export default function AccountModal() {
     setAccountMode,
     setShowTransferModal,
   } = useAccountStore();
-  const { addAccount, deleteAccount, updateAccount } = useFinance();
+  const { addAccount, deleteAccount, updateAccount } = useAccount();
   const text = useThemeColor({}, "text");
   const background = useThemeColor({}, "backgroundCard");
   const titleNew = useThemeColor({}, "titleNew");

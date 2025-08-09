@@ -1,6 +1,5 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
-import { useFinance } from "@/hooks/useFinance";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useState } from "react";
@@ -13,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
+import { useAccount } from "@/hooks/useAccount";
 
 export function TransferModal() {
   const {
@@ -23,7 +23,7 @@ export function TransferModal() {
     setShowAccountModal,
     clearAccountErrors,
   } = useAccountStore();
-  const { deleteAccount } = useFinance();
+  const { deleteAccount } = useAccount();
   const [selectedTransferAccountId, setSelectedTransferAccountId] = useState<
     string | null
   >(null);

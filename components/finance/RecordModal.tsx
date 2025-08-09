@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import { useFinance } from "@/hooks/useFinance";
+import { useRecord } from "@/hooks/useRecord";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { recordSchema } from "@/schemas";
 import { RecordType, useRecordStore } from "@/store/useRecordStore";
@@ -38,7 +38,7 @@ export function RecordModal() {
     currentTransfer,
   } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
-    useFinance();
+    useRecord();
   const background = useThemeColor({}, "backgroundCard");
   const titleNew = useThemeColor({}, "titleNew");
   const titleEdit = useThemeColor({}, "titleEdit");

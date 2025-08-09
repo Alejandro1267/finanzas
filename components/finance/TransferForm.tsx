@@ -115,15 +115,6 @@ export function TransferForm() {
         </Text>
         <PickerInput
           value={currentTransfer?.originAccount || ""}
-          //   onValueChange={(value) => {
-          //     setTransferField("originAccount", value);
-          //     clearFieldError("originAccount");
-          //   }}
-          //   items={accounts.map((account) => ({
-          //     id: account.id,
-          //     name: `${account.name} (${formatNumber$(account.balance)})`,
-          //     color: account.color,
-          //   }))}
           onValueChange={(value) => {
             setTransferField("originAccount", value);
             clearFieldError("originAccount");
@@ -148,15 +139,6 @@ export function TransferForm() {
         </Text>
         <PickerInput
           value={currentTransfer?.destinationAccount || ""}
-          //   onValueChange={(value) => {
-          //     setTransferField("destinationAccount", value);
-          //     clearFieldError("destinationAccount");
-          //   }}
-          //   items={accounts.map((account) => ({
-          //     id: account.id,
-          //     name: `${account.name} (${formatNumber$(account.balance)})`,
-          //     color: account.color,
-          //   }))}
           onValueChange={(value) => {
             setTransferField("destinationAccount", value);
             clearFieldError("destinationAccount");
