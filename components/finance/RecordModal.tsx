@@ -1,7 +1,8 @@
 import { Colors } from "@/constants/Colors";
 import { useRecord } from "@/hooks/useRecord";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { recordSchema } from "@/schemas";
+import { useTransfer } from "@/hooks/useTransfer";
+import { recordSchema, transferSchema } from "@/schemas";
 import { RecordType, useRecordStore } from "@/store/useRecordStore";
 import { useTransferStore } from "@/store/useTransferStore";
 import { ValidationErrors } from "@/types";
@@ -39,6 +40,7 @@ export function RecordModal() {
   } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useRecord();
+  const { addTransfer } = useTransfer();
   const background = useThemeColor({}, "backgroundCard");
   const titleNew = useThemeColor({}, "titleNew");
   const titleEdit = useThemeColor({}, "titleEdit");
@@ -81,7 +83,34 @@ export function RecordModal() {
 
   const handleSubmit = () => {
     if (activeTab === "transfer") {
-      console.log("Guardar Transferencia");
+      // console.log("Guardar Transferencia");
+      clearTransferErrors();
+
+      const transfer = transferSchema.safeParse(currentTransfer);
+
+      if (!transfer.success) {
+        const errors: ValidationErrors = {};
+        transfer.error.issues.forEach((issue) => {
+          if (issue.path.length > 0) {
+            errors[issue.path[0] as string] = issue.message;
+          }
+        });
+
+        setTransferErrors(errors);
+        console.log("Errores de validación:", errors);
+        return;
+      }
+
+      if (recordMode === "edit") {
+        // if (currentTransfer?.id) {
+        //   editTransfer(currentTransfer.id, transfer.data);
+        //   console.log("Transfer edited:", transfer.data);
+        // }
+        return;
+      } else {
+        addTransfer(transfer.data);
+        console.log("addedTransfer", transfer.data);
+      }
     } else {
       clearRecordErrors();
 
