@@ -2,7 +2,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useThemeModeStore } from "@/store/ThemeModeStore";
+import { useThemeModeStore } from "@/store/useThemeModeStore";
 import React from "react";
 import {
   ScrollView,

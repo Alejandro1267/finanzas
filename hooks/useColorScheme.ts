@@ -1,4 +1,4 @@
-import { useThemeModeStore } from '@/store/ThemeModeStore';
+import { useThemeModeStore } from '@/store/useThemeModeStore';
 import { useColorScheme as useSystemColorScheme } from 'react-native';
 
 export function useColorScheme() {
