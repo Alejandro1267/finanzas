@@ -16,14 +16,12 @@ type TransferState = {
   currentTransfer: Transfer | null
   transfers: Transfer[]
   transferErrors: ValidationErrors
-  transferMode: "edit" | "new"
 
   // Actions
   setCurrentTransfer: (transfer: Transfer | null) => void
   setTransfers: (transfers: Transfer[]) => void
   setTransferErrors: (errors: ValidationErrors) => void
   setTransferField: <K extends keyof Transfer>(field: K, value: Transfer[K]) => void
-  setTransferMode: (mode: "edit" | "new") => void
 
   // Functions
   addTransfer: (transfer: Transfer) => void
@@ -37,7 +35,6 @@ export const useTransferStore = create<TransferState>((set, get) => ({
   currentTransfer: null,
   transfers: [],
   transferErrors: {},
-  transferMode: "new",
 
   // Actions
   setCurrentTransfer: (transfer: Transfer | null) => {
@@ -60,9 +57,6 @@ export const useTransferStore = create<TransferState>((set, get) => ({
         },
       }
     }),
-  setTransferMode: (mode: "edit" | "new") => {
-    set({ transferMode: mode })
-  },
   
   // Functions
   addTransfer: (transfer: Transfer) => {

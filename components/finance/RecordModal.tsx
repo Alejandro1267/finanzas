@@ -35,8 +35,6 @@ export function RecordModal() {
     createEmptyTransfer,
     setTransferErrors,
     clearTransferErrors,
-    transferMode,
-    setTransferMode,
     currentTransfer,
   } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
@@ -293,6 +291,7 @@ export function RecordModal() {
         onPress={() => {
           setRecordMode("new");
           createEmptyRecord();
+          createEmptyTransfer();
           setShowRecordModal(true);
         }}
       >
