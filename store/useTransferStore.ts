@@ -7,8 +7,8 @@ export type Transfer = {
   date: string
   amount: number
   description: string
-  originAccount: string
-  destinationAccount: string
+  origin: string
+  destination: string
 }
 
 type TransferState = {
@@ -68,8 +68,8 @@ export const useTransferStore = create<TransferState>((set, get) => ({
       date: fechaLocal(), // YYYY-MM-DD
       amount: 0,
       description: "",
-      originAccount: "",
-      destinationAccount: ""
+      origin: "",
+      destination: ""
     }})
   },
   clearTransferErrors: () => {

@@ -25,21 +25,21 @@ export function TransferForm() {
   };
 
   // Create account items with disabled state for conflicting accounts
-  const getOriginAccountItems = () => {
+  const getOriginItems = () => {
     return accounts.map((account) => ({
       id: account.id,
       name: `${account.name} (${formatNumber$(account.balance)})`,
       color: account.color,
-      disabled: account.id === currentTransfer?.destinationAccount,
+      disabled: account.id === currentTransfer?.destination,
     }));
   };
 
-  const getDestinationAccountItems = () => {
+  const getDestinationItems = () => {
     return accounts.map((account) => ({
       id: account.id,
       name: `${account.name} (${formatNumber$(account.balance)})`,
       color: account.color,
-      disabled: account.id === currentTransfer?.originAccount,
+      disabled: account.id === currentTransfer?.origin,
     }));
   };
 
@@ -114,21 +114,21 @@ export function TransferForm() {
           Cuenta Origen:
         </Text>
         <PickerInput
-          value={currentTransfer?.originAccount || ""}
+          value={currentTransfer?.origin || ""}
           onValueChange={(value) => {
-            setTransferField("originAccount", value);
-            clearFieldError("originAccount");
+            setTransferField("origin", value);
+            clearFieldError("origin");
             // Clear destination if it's the same as the new origin
-            if (currentTransfer?.destinationAccount === value) {
-              setTransferField("destinationAccount", "");
+            if (currentTransfer?.destination === value) {
+              setTransferField("destination", "");
             }
           }}
-          items={getOriginAccountItems()}
-          hasError={!!transferErrors.originAccount}
+          items={getOriginItems()}
+          hasError={!!transferErrors.origin}
         />
-        {transferErrors.originAccount && (
+        {transferErrors.origin && (
           <Text style={[styles.errorText, styles.viewContainer]}>
-            {transferErrors.originAccount}
+            {transferErrors.origin}
           </Text>
         )}
       </View>
@@ -138,21 +138,21 @@ export function TransferForm() {
           Cuenta Destino:
         </Text>
         <PickerInput
-          value={currentTransfer?.destinationAccount || ""}
+          value={currentTransfer?.destination || ""}
           onValueChange={(value) => {
-            setTransferField("destinationAccount", value);
-            clearFieldError("destinationAccount");
+            setTransferField("destination", value);
+            clearFieldError("destination");
             // Clear origin if it's the same as the new destination
-            if (currentTransfer?.originAccount === value) {
-              setTransferField("originAccount", "");
+            if (currentTransfer?.origin === value) {
+              setTransferField("origin", "");
             }
           }}
-          items={getDestinationAccountItems()}
-          hasError={!!transferErrors.destinationAccount}
+          items={getDestinationItems()}
+          hasError={!!transferErrors.destination}
         />
-        {transferErrors.destinationAccount && (
+        {transferErrors.destination && (
           <Text style={[styles.errorText, styles.viewContainer]}>
-            {transferErrors.destinationAccount}
+            {transferErrors.destination}
           </Text>
         )}
       </View>

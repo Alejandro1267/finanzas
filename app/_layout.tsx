@@ -49,10 +49,10 @@ export default function RootLayout() {
             date TEXT NOT NULL,
             amount REAL NOT NULL,
             description TEXT,
-            origin_account TEXT NOT NULL,
-            destination_account TEXT NOT NULL,
-            FOREIGN KEY (origin_account) REFERENCES accounts (id) ON DELETE RESTRICT,
-            FOREIGN KEY (destination_account) REFERENCES accounts (id) ON DELETE RESTRICT
+            origin TEXT NOT NULL,
+            destination TEXT NOT NULL,
+            FOREIGN KEY (origin) REFERENCES accounts (id) ON DELETE RESTRICT,
+            FOREIGN KEY (destination) REFERENCES accounts (id) ON DELETE RESTRICT
           );
         `);
 
