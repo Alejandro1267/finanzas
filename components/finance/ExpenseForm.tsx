@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import { useRecordStore } from "@/store/useRecordStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
@@ -9,7 +9,7 @@ import { DateInput } from "../ui/DateInput";
 import { PickerInput } from "../ui/PickerInput";
 
 export function ExpenseForm() {
-  const { accounts } = useFinanceStore();
+  const { accounts } = useAccountStore();
   const { currentRecord, setRecordField, recordErrors, setRecordErrors } =
     useRecordStore();
   const text = useThemeColor({}, "text");

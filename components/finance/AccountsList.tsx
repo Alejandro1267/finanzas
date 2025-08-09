@@ -1,12 +1,12 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function AccountsList() {
   const { accounts, setCurrentAccount, setShowAccountModal, setAccountMode } =
-    useFinanceStore();
+    useAccountStore();
   const text = useThemeColor({}, "text");
   const backgroundCard = useThemeColor({}, "backgroundCard");
   const detailText = useThemeColor({}, "detailText");

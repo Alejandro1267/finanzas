@@ -1,12 +1,12 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import { useRecordStore } from "@/store/useRecordStore";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function RecordsList() {
-  const { accounts } = useFinanceStore();
+  const { accounts } = useAccountStore();
   const {
     setCurrentRecord,
     records,

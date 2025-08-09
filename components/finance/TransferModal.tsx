@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useFinance } from "@/hooks/useFinance";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import { useState } from "react";
 import {
   FlatList,
@@ -22,7 +22,7 @@ export function TransferModal() {
     setShowTransferModal,
     setShowAccountModal,
     clearAccountErrors,
-  } = useFinanceStore();
+  } = useAccountStore();
   const { deleteAccount } = useFinance();
   const [selectedTransferAccountId, setSelectedTransferAccountId] = useState<
     string | null
