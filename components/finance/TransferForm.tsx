@@ -24,6 +24,25 @@ export function TransferForm() {
     setTransferErrors(remainingErrors);
   };
 
+  // Create account items with disabled state for conflicting accounts
+  const getOriginAccountItems = () => {
+    return accounts.map((account) => ({
+      id: account.id,
+      name: `${account.name} (${formatNumber$(account.balance)})`,
+      color: account.color,
+      disabled: account.id === currentTransfer?.destinationAccount,
+    }));
+  };
+
+  const getDestinationAccountItems = () => {
+    return accounts.map((account) => ({
+      id: account.id,
+      name: `${account.name} (${formatNumber$(account.balance)})`,
+      color: account.color,
+      disabled: account.id === currentTransfer?.originAccount,
+    }));
+  };
+
   return (
     <ScrollView>
       <View style={styles.viewContainer}>
@@ -96,15 +115,24 @@ export function TransferForm() {
         </Text>
         <PickerInput
           value={currentTransfer?.originAccount || ""}
+          //   onValueChange={(value) => {
+          //     setTransferField("originAccount", value);
+          //     clearFieldError("originAccount");
+          //   }}
+          //   items={accounts.map((account) => ({
+          //     id: account.id,
+          //     name: `${account.name} (${formatNumber$(account.balance)})`,
+          //     color: account.color,
+          //   }))}
           onValueChange={(value) => {
             setTransferField("originAccount", value);
             clearFieldError("originAccount");
+            // Clear destination if it's the same as the new origin
+            if (currentTransfer?.destinationAccount === value) {
+              setTransferField("destinationAccount", "");
+            }
           }}
-          items={accounts.map((account) => ({
-            id: account.id,
-            name: `${account.name} (${formatNumber$(account.balance)})`,
-            color: account.color,
-          }))}
+          items={getOriginAccountItems()}
           hasError={!!transferErrors.originAccount}
         />
         {transferErrors.originAccount && (
@@ -120,15 +148,24 @@ export function TransferForm() {
         </Text>
         <PickerInput
           value={currentTransfer?.destinationAccount || ""}
+          //   onValueChange={(value) => {
+          //     setTransferField("destinationAccount", value);
+          //     clearFieldError("destinationAccount");
+          //   }}
+          //   items={accounts.map((account) => ({
+          //     id: account.id,
+          //     name: `${account.name} (${formatNumber$(account.balance)})`,
+          //     color: account.color,
+          //   }))}
           onValueChange={(value) => {
             setTransferField("destinationAccount", value);
             clearFieldError("destinationAccount");
+            // Clear origin if it's the same as the new destination
+            if (currentTransfer?.originAccount === value) {
+              setTransferField("originAccount", "");
+            }
           }}
-          items={accounts.map((account) => ({
-            id: account.id,
-            name: `${account.name} (${formatNumber$(account.balance)})`,
-            color: account.color,
-          }))}
+          items={getDestinationAccountItems()}
           hasError={!!transferErrors.destinationAccount}
         />
         {transferErrors.destinationAccount && (
