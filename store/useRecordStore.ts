@@ -1,6 +1,8 @@
-import { fechaLocal } from "@/helpers"
-import { ValidationErrors } from "@/types"
-import { create } from "zustand"
+import { fechaLocal } from "@/helpers";
+import { ValidationErrors } from "@/types";
+import { create } from "zustand";
+
+export type RecordType = "income" | "expense" | "transfer";
 
 export type Record = {
   id: string
@@ -18,7 +20,7 @@ type RecordState = {
   showRecordModal: boolean
   recordErrors: ValidationErrors
   recordMode: "edit" | "new"
-  activeTab: "income" | "expense" | "transfer"
+  activeTab: RecordType
 
   // Actions
   setCurrentRecord: (record: Record | null) => void
@@ -27,7 +29,7 @@ type RecordState = {
   setRecordErrors: (errors: ValidationErrors) => void
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   setRecordMode: (mode: "edit" | "new") => void
-  setActiveTab: (tab: "income" | "expense" | "transfer") => void
+  setActiveTab: (tab: RecordType) => void
 
   // Functions
   addRecord: (record: Record) => void
@@ -72,7 +74,7 @@ export const useRecordStore = create<RecordState>((set, get) => ({
   setRecordMode: (mode: "edit" | "new") => {
     set({ recordMode: mode })
   },
-  setActiveTab: (tab: "income" | "expense" | "transfer") => {
+  setActiveTab: (tab: RecordType) => {
     set({ activeTab: tab })
   },
   

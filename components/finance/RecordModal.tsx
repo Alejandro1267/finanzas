@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { useFinance } from "@/hooks/useFinance";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { recordSchema } from "@/schemas";
-import { useRecordStore } from "@/store/useRecordStore";
+import { RecordType, useRecordStore } from "@/store/useRecordStore";
 import { useTransferStore } from "@/store/useTransferStore";
 import { ValidationErrors } from "@/types";
 import {
@@ -16,8 +16,6 @@ import {
 import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
-
-type RecordType = "income" | "expense" | "transfer";
 
 export function RecordModal() {
   const {
