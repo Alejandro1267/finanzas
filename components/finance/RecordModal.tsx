@@ -257,7 +257,7 @@ export function RecordModal() {
             </View>
 
             {/* Formulario dinámico */}
-            {activeTab === "income" ? <IncomeForm /> : <ExpenseForm />}
+            {renderForm()}
 
             {/* Botones */}
             <View style={styles.buttonContainer}>

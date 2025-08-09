@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
-import { useRecordStore } from "@/store/useRecordStore";
+import { useTransferStore } from "@/store/useTransferStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 import { DateInput } from "../ui/DateInput";
@@ -10,14 +10,18 @@ import { PickerInput } from "../ui/PickerInput";
 
 export function TransferForm() {
   const { accounts } = useAccountStore();
-  const { currentRecord, setRecordField, recordErrors, setRecordErrors } =
-    useRecordStore();
+  const {
+    currentTransfer,
+    setTransferField,
+    transferErrors,
+    setTransferErrors,
+  } = useTransferStore();
   const text = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "borderColor");
 
   const clearFieldError = (fieldName: string) => {
-    const { [fieldName]: removedError, ...remainingErrors } = recordErrors;
-    setRecordErrors(remainingErrors);
+    const { [fieldName]: removedError, ...remainingErrors } = transferErrors;
+    setTransferErrors(remainingErrors);
   };
 
   return (
@@ -25,15 +29,15 @@ export function TransferForm() {
       <View style={styles.viewContainer}>
         <Text style={[styles.selectAccountText, { color: text }]}>Fecha:</Text>
         <DateInput
-          date={currentRecord?.date}
+          date={currentTransfer?.date}
           onDateChange={(date) => {
-            setRecordField("date", date);
+            setTransferField("date", date);
             clearFieldError("date");
           }}
-          hasError={!!recordErrors.date}
+          hasError={!!transferErrors.date}
         />
-        {recordErrors.date && (
-          <Text style={styles.errorText}>{recordErrors.date}</Text>
+        {transferErrors.date && (
+          <Text style={styles.errorText}>{transferErrors.date}</Text>
         )}
       </View>
 
@@ -42,9 +46,9 @@ export function TransferForm() {
           Importe:
         </Text>
         <CurrencyInput
-          value={currentRecord?.amount || 0}
+          value={currentTransfer?.amount || 0}
           onChangeValue={(value: number) => {
-            setRecordField("amount", value || 0);
+            setTransferField("amount", value || 0);
             clearFieldError("amount");
           }}
           prefix="$"
@@ -55,11 +59,11 @@ export function TransferForm() {
           style={[
             styles.input,
             { borderColor: borderColor, color: text },
-            recordErrors.amount && styles.inputError,
+            transferErrors.amount && styles.inputError,
           ]}
         />
-        {recordErrors.amount && (
-          <Text style={styles.errorText}>{recordErrors.amount}</Text>
+        {transferErrors.amount && (
+          <Text style={styles.errorText}>{transferErrors.amount}</Text>
         )}
       </View>
 
@@ -71,41 +75,65 @@ export function TransferForm() {
           style={[
             styles.input,
             { borderColor: borderColor, color: text },
-            recordErrors.description && styles.inputError,
+            transferErrors.description && styles.inputError,
           ]}
           placeholder="Descripción"
-          value={currentRecord?.description || ""}
+          value={currentTransfer?.description || ""}
           onChangeText={(value) => {
-            setRecordField("description", value);
+            setTransferField("description", value);
             clearFieldError("description");
           }}
           placeholderTextColor={Colors.gray}
         />
-        {recordErrors.description && (
-          <Text style={styles.errorText}>{recordErrors.description}</Text>
+        {transferErrors.description && (
+          <Text style={styles.errorText}>{transferErrors.description}</Text>
         )}
       </View>
 
       <View style={styles.viewContainer}>
         <Text style={[styles.selectAccountText, { color: text }]}>
-          Seleccionar cuenta:
+          Cuenta Origen:
         </Text>
         <PickerInput
-          value={currentRecord?.account || ""}
+          value={currentTransfer?.originAccount || ""}
           onValueChange={(value) => {
-            setRecordField("account", value);
-            clearFieldError("account");
+            setTransferField("originAccount", value);
+            clearFieldError("originAccount");
           }}
           items={accounts.map((account) => ({
             id: account.id,
             name: `${account.name} (${formatNumber$(account.balance)})`,
             color: account.color,
           }))}
-          hasError={!!recordErrors.account}
+          hasError={!!transferErrors.originAccount}
         />
-        {recordErrors.account && (
+        {transferErrors.originAccount && (
           <Text style={[styles.errorText, styles.viewContainer]}>
-            {recordErrors.account}
+            {transferErrors.originAccount}
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.viewContainer}>
+        <Text style={[styles.selectAccountText, { color: text }]}>
+          Cuenta Destino:
+        </Text>
+        <PickerInput
+          value={currentTransfer?.destinationAccount || ""}
+          onValueChange={(value) => {
+            setTransferField("destinationAccount", value);
+            clearFieldError("destinationAccount");
+          }}
+          items={accounts.map((account) => ({
+            id: account.id,
+            name: `${account.name} (${formatNumber$(account.balance)})`,
+            color: account.color,
+          }))}
+          hasError={!!transferErrors.destinationAccount}
+        />
+        {transferErrors.destinationAccount && (
+          <Text style={[styles.errorText, styles.viewContainer]}>
+            {transferErrors.destinationAccount}
           </Text>
         )}
       </View>
