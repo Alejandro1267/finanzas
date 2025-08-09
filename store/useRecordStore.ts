@@ -18,7 +18,7 @@ type RecordState = {
   showRecordModal: boolean
   recordErrors: ValidationErrors
   recordMode: "edit" | "new"
-  activeTab: "income" | "expense"
+  activeTab: "income" | "expense" | "transfer"
 
   // Actions
   setCurrentRecord: (record: Record | null) => void
@@ -27,7 +27,7 @@ type RecordState = {
   setRecordErrors: (errors: ValidationErrors) => void
   setRecordField: <K extends keyof Record>(field: K, value: Record[K]) => void
   setRecordMode: (mode: "edit" | "new") => void
-  setActiveTab: (tab: "income" | "expense") => void
+  setActiveTab: (tab: "income" | "expense" | "transfer") => void
 
   // Functions
   addRecord: (record: Record) => void
@@ -72,7 +72,7 @@ export const useRecordStore = create<RecordState>((set, get) => ({
   setRecordMode: (mode: "edit" | "new") => {
     set({ recordMode: mode })
   },
-  setActiveTab: (tab: "income" | "expense") => {
+  setActiveTab: (tab: "income" | "expense" | "transfer") => {
     set({ activeTab: tab })
   },
   

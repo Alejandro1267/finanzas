@@ -28,6 +28,7 @@ const MAPPING = {
   gear: "settings",
   "sun.max": "light-mode",
   moon: "dark-mode",
+  "arrow.right.arrow.left": "compare-arrows",
 } as IconMapping;
 
 /**

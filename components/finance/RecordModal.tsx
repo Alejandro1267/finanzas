@@ -3,6 +3,7 @@ import { useFinance } from "@/hooks/useFinance";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { recordSchema } from "@/schemas";
 import { useRecordStore } from "@/store/useRecordStore";
+import { useTransferStore } from "@/store/useTransferStore";
 import { ValidationErrors } from "@/types";
 import {
   Alert,
@@ -16,7 +17,7 @@ import { IconSymbol } from "../ui/IconSymbol";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
 
-type RecordType = "income" | "expense";
+type RecordType = "income" | "expense" | "transfer";
 
 export function RecordModal() {
   const {
@@ -31,6 +32,14 @@ export function RecordModal() {
     recordMode,
     currentRecord,
   } = useRecordStore();
+  const {
+    createEmptyTransfer,
+    setTransferErrors,
+    clearTransferErrors,
+    transferMode,
+    setTransferMode,
+    currentTransfer,
+  } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useFinance();
   const background = useThemeColor({}, "backgroundCard");
@@ -74,48 +83,52 @@ export function RecordModal() {
   );
 
   const handleSubmit = () => {
-    clearRecordErrors();
+    if (activeTab === "transfer") {
+      console.log("Guardar Transferencia");
+    } else {
+      clearRecordErrors();
 
-    const record = recordSchema.safeParse({
-      ...currentRecord,
-      type: activeTab,
-      ...(activeTab === "income" &&
-        currentRecord?.account === "" && { account: "distribute" }),
-    });
-
-    if (!record.success) {
-      const errors: ValidationErrors = {};
-      record.error.issues.forEach((issue) => {
-        if (issue.path.length > 0) {
-          errors[issue.path[0] as string] = issue.message;
-        }
+      const record = recordSchema.safeParse({
+        ...currentRecord,
+        type: activeTab,
+        ...(activeTab === "income" &&
+          currentRecord?.account === "" && { account: "distribute" }),
       });
 
-      setRecordErrors(errors);
-      console.log("Errores de validación:", errors);
-      return;
-    }
+      if (!record.success) {
+        const errors: ValidationErrors = {};
+        record.error.issues.forEach((issue) => {
+          if (issue.path.length > 0) {
+            errors[issue.path[0] as string] = issue.message;
+          }
+        });
 
-    if (recordMode === "edit") {
-      if (currentRecord?.id) {
-        editRecord(currentRecord.id, record.data);
-        console.log("Record edited:", record.data);
+        setRecordErrors(errors);
+        console.log("Errores de validación:", errors);
+        return;
       }
-    } else {
-      // Verificar si es distribución automática para ingresos
-      if (activeTab === "income" && record.data.account === "distribute") {
-        if (record.data.amount < 1) {
-          Alert.alert(
-            "Error",
-            "El importe para distribuir automáticamente debe ser al menos 1"
-          );
-          return;
+
+      if (recordMode === "edit") {
+        if (currentRecord?.id) {
+          editRecord(currentRecord.id, record.data);
+          console.log("Record edited:", record.data);
         }
-        handleAutomaticDistribution(record.data);
       } else {
-        // Registro normal
-        addRecord(record.data);
-        console.log("addedRecord", record.data);
+        // Verificar si es distribución automática para ingresos
+        if (activeTab === "income" && record.data.account === "distribute") {
+          if (record.data.amount < 1) {
+            Alert.alert(
+              "Error",
+              "El importe para distribuir automáticamente debe ser al menos 1"
+            );
+            return;
+          }
+          handleAutomaticDistribution(record.data);
+        } else {
+          // Registro normal
+          addRecord(record.data);
+          console.log("addedRecord", record.data);
+        }
       }
     }
     handleClose();
@@ -125,10 +138,13 @@ export function RecordModal() {
     setShowRecordModal(false);
     setActiveTab("expense");
     clearRecordErrors();
+    clearTransferErrors();
   };
 
   const handleDelete = async () => {
-    if (currentRecord?.id) {
+    if (activeTab === "transfer") {
+      console.log("Eliminar Transferencia");
+    } else if (currentRecord?.id) {
       Alert.alert(
         "Eliminar Registro",
         "¿Estás seguro de que quieres eliminar este registro?",
@@ -157,7 +173,7 @@ export function RecordModal() {
     >
       <IconSymbol
         name={icon as any}
-        size={20}
+        size={18}
         // color={activeTab === type ? Colors.white : Colors.slate[600]}
         color={activeTab === type ? tabIconColorActive : tabIconColorInactive}
       />
@@ -172,6 +188,23 @@ export function RecordModal() {
       </Text>
     </TouchableOpacity>
   );
+
+  const getButtonText = () => {
+    if (recordMode === "new") {
+      switch (activeTab) {
+        case "income":
+          return "Agregar Ingreso";
+        case "expense":
+          return "Agregar Gasto";
+        case "transfer":
+          return "Transferir";
+        default:
+          return "Agregar";
+      }
+    } else {
+      return "Guardar Cambios";
+    }
+  };
 
   return (
     <View>
@@ -204,6 +237,11 @@ export function RecordModal() {
             >
               {renderTabButton("income", "Ingreso", "plus")}
               {renderTabButton("expense", "Gasto", "creditcard.fill")}
+              {renderTabButton(
+                "transfer",
+                "Transfer.",
+                "arrow.right.arrow.left"
+              )}
             </View>
 
             {/* Formulario dinámico */}
@@ -224,11 +262,12 @@ export function RecordModal() {
                 onPress={handleSubmit}
               >
                 <Text style={[styles.buttonText, { color: confirmText }]}>
-                  {recordMode === "new"
+                  {/* {recordMode === "new"
                     ? activeTab === "income"
                       ? "Agregar Ingreso"
                       : "Agregar Gasto"
-                    : "Guardar Cambios"}
+                    : "Guardar Cambios"} */}
+                  {getButtonText()}
                 </Text>
               </TouchableOpacity>
             </View>
