@@ -2,17 +2,18 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export function RecordsList() {
+  const { accounts } = useFinanceStore();
   const {
-    records,
-    accounts,
-    setRecordMode,
     setCurrentRecord,
+    records,
+    setRecordMode,
     setShowRecordModal,
     setActiveTab,
-  } = useFinanceStore();
+  } = useRecordStore();
   const text = useThemeColor({}, "text");
   const background = useThemeColor({}, "backgroundCard");
 

@@ -1,5 +1,6 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Account, Record, useFinanceStore } from "@/store/FinanceStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import {
   DarkTheme,
   DefaultTheme,
@@ -17,7 +18,8 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  const { setAccounts, setRecords, setTotalBalance } = useFinanceStore();
+  const { setAccounts, setTotalBalance } = useFinanceStore();
+  const { setRecords } = useRecordStore();
 
   useEffect(() => {
     const initializeDatabase = async () => {

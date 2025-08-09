@@ -2,19 +2,16 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
 import { DateInput } from "../ui/DateInput";
 import { PickerInput } from "../ui/PickerInput";
 
 export function IncomeForm() {
-  const {
-    recordErrors,
-    setRecordErrors,
-    currentRecord,
-    setRecordField,
-    accounts,
-  } = useFinanceStore();
+  const { accounts } = useFinanceStore();
+  const { recordErrors, setRecordErrors, setRecordField, currentRecord } =
+    useRecordStore();
   const text = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "borderColor");
 

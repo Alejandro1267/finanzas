@@ -2,11 +2,13 @@ import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useFinanceStore } from "@/store/FinanceStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export function Header() {
-  const { records, totalBalance } = useFinanceStore();
+  const { totalBalance } = useFinanceStore();
+  const { records } = useRecordStore();
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.slate[200], dark: Colors.slate[700] },

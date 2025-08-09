@@ -2,7 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { useFinance } from "@/hooks/useFinance";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { recordSchema } from "@/schemas";
-import { useFinanceStore } from "@/store/FinanceStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import { ValidationErrors } from "@/types";
 import {
   Alert,
@@ -22,7 +22,6 @@ export function RecordModal() {
   const {
     showRecordModal,
     setShowRecordModal,
-    currentRecord,
     createEmptyRecord,
     setRecordErrors,
     clearRecordErrors,
@@ -30,7 +29,8 @@ export function RecordModal() {
     setActiveTab,
     setRecordMode,
     recordMode,
-  } = useFinanceStore();
+    currentRecord,
+  } = useRecordStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useFinance();
   const background = useThemeColor({}, "backgroundCard");

@@ -1,13 +1,13 @@
 import { Colors } from "@/constants/Colors"
 import { accountSchema, RecordDraft } from "@/schemas"
 import { Account, Record, useFinanceStore } from "@/store/FinanceStore"
+import { useRecordStore } from "@/store/useRecordStore"
 import { ValidationErrors } from "@/types"
 import * as SQLite from 'expo-sqlite'
 import { Alert } from "react-native"
 
 export function useFinance() {
   const {
-    addRecord: addRecordStore,
     updateAccountBalance,
     accounts,
     setTotalBalance,
@@ -17,10 +17,9 @@ export function useFinance() {
     currentAccount,
     setShowAccountModal,
     setAccountErrors,
-    records,
-    setRecords,
     setAccounts,
   } = useFinanceStore()
+  const { addRecord: addRecordStore, records, setRecords } = useRecordStore()
 
   async function addRecord(record: RecordDraft, updateTotal: boolean = true) {
     const account = accounts.find(acc => acc.id === record.account)
