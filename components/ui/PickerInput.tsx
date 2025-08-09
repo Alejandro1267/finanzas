@@ -14,6 +14,7 @@ export type PickerItem = {
   id: string;
   name: string;
   color?: string;
+  disabled?: boolean;
 };
 
 type PickerInputProps = {
@@ -39,21 +40,59 @@ export function PickerInput({
     { light: Colors.slate[100], dark: Colors.slate[600] },
     "text"
   );
+  const disabledItem = useThemeColor(
+    { light: Colors.slate[50], dark: Colors.slate[800] },
+    "text"
+  );
+  const disabledText = useThemeColor(
+    { light: Colors.slate[400], dark: Colors.slate[200] },
+    "text"
+  );
 
   const selectedItem = items.find((item) => item.id === value);
 
   const renderItem = ({ item }: { item: PickerItem }) => (
     <TouchableOpacity
-      style={[styles.optionItem, { borderBottomColor: borderBottomColor }]}
+      style={[
+        styles.optionItem,
+        { borderBottomColor: borderBottomColor },
+        item.disabled && [
+          styles.disabledItem,
+          { backgroundColor: disabledItem },
+        ],
+      ]}
       onPress={() => {
-        onValueChange(item.id);
-        setModalVisible(false);
+        if (!item.disabled) {
+          onValueChange(item.id);
+          setModalVisible(false);
+        }
       }}
+      disabled={item.disabled}
     >
       {item.color && (
-        <View style={[styles.colorCircle, { backgroundColor: item.color }]} />
+        <View
+          style={[
+            styles.colorCircle,
+            { backgroundColor: item.color },
+            item.disabled && styles.disabledItem,
+          ]}
+        />
       )}
-      <Text style={[styles.optionText, { color: text }]}>{item.name}</Text>
+      <Text
+        style={[
+          styles.optionText,
+          { color: text },
+          item.disabled && { color: disabledText },
+        ]}
+      >
+        {item.name}
+      </Text>
+      {item.disabled && (
+        <Text style={[styles.disabledLabel, { color: disabledText }]}>
+          {" "}
+          (No disponible)
+        </Text>
+      )}
     </TouchableOpacity>
   );
 
@@ -178,12 +217,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    // borderBottomColor: Colors.slate[100],
   },
   optionText: {
     fontSize: 16,
   },
   inputError: {
     borderColor: Colors.redT[500],
+  },
+  disabledItem: {
+    opacity: 0.5,
+  },
+  disabledLabel: {
+    fontSize: 12,
+    fontStyle: "italic",
   },
 });
