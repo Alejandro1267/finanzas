@@ -1,6 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Account, useAccountStore } from "@/store/useAccountStore";
 import { Record, useRecordStore } from "@/store/useRecordStore";
+import { Transfer, useTransferStore } from "@/store/useTransferStore";
 import {
   DarkTheme,
   DefaultTheme,
@@ -20,6 +21,7 @@ export default function RootLayout() {
   });
   const { setAccounts, setTotalBalance } = useAccountStore();
   const { setRecords } = useRecordStore();
+  const { setTransfers } = useTransferStore();
 
   useEffect(() => {
     const initializeDatabase = async () => {
@@ -83,6 +85,16 @@ export default function RootLayout() {
         )) as Record[];
         setRecords(records);
         console.log("records", records);
+
+        const transfers = (await db.getAllAsync(
+          `SELECT *
+          FROM transfers
+          ORDER BY
+            date DESC,
+            id DESC`
+        )) as Transfer[];
+        setTransfers(transfers);
+        console.log("transfers", transfers);
         console.log("Database initialized");
       } catch (error) {
         console.error("Error initializing database:", error);
