@@ -40,7 +40,7 @@ export function RecordModal() {
   } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useRecord();
-  const { addTransfer } = useTransfer();
+  const { addTransfer, editTransfer } = useTransfer();
   const background = useThemeColor({}, "backgroundCard");
   const titleNew = useThemeColor({}, "titleNew");
   const titleEdit = useThemeColor({}, "titleEdit");
@@ -102,10 +102,10 @@ export function RecordModal() {
       }
 
       if (recordMode === "edit") {
-        // if (currentTransfer?.id) {
-        //   editTransfer(currentTransfer.id, transfer.data);
-        //   console.log("Transfer edited:", transfer.data);
-        // }
+        if (currentTransfer?.id) {
+          editTransfer(currentTransfer.id, transfer.data);
+          console.log("Transfer edited:", transfer.data);
+        }
         return;
       } else {
         addTransfer(transfer.data);

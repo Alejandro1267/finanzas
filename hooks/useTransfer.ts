@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 import { Alert } from "react-native";
 
 export function useTransfer() {
-  const { addTransfer: addTransferStore } = useTransferStore();
+  const { addTransfer: addTransferStore, editTransfer: editTransferStore, transfers } = useTransferStore();
   const { accounts, updateAccountBalance } = useAccountStore();
 
   const isTransfer = (transaction: Transaction): transaction is Transfer & { type: "transfer" } => {
@@ -120,8 +120,90 @@ export function useTransfer() {
     }
   };
 
+  const editTransfer = async (id: string, transfer: TransferDraft) => {
+    const originalTransfer = transfers.find(t => t.id === id);
+
+    if (!originalTransfer) {
+      Alert.alert("Error", "Transferencia no encontrada.");
+      return;
+    }
+
+    const newOrigin = accounts.find(acc => acc.id === transfer.origin);
+    const newDestination = accounts.find(acc => acc.id === transfer.destination);
+
+    if (!newOrigin) {
+      Alert.alert("Error", "Cuenta de origen no encontrada.");
+      return;
+    }
+
+    if (!newDestination) {
+      Alert.alert("Error", "Cuenta de destino no encontrada.");
+      return;
+    }
+
+    try {
+      // Revertir el efecto de la transferencia original
+      const originalOrigin = accounts.find(acc => acc.id === originalTransfer.origin);
+      const originalDestination = accounts.find(acc => acc.id === originalTransfer.destination);
+
+      if (originalOrigin && originalDestination) {
+        // Revertir balances originales
+        const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
+        const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
+        
+        updateAccountBalance(originalOrigin.id, revertedOriginBalance);
+        updateAccountBalance(originalDestination.id, revertedDestinationBalance);
+      }
+
+      // Validar que la nueva cuenta de origen tenga suficiente saldo (después de revertir)
+      const currentOriginBalance = originalOrigin?.id === newOrigin.id 
+        ? newOrigin.balance + originalTransfer.amount  // Si es la misma cuenta, usar balance revertido
+        : newOrigin.balance;
+
+      if (currentOriginBalance < transfer.amount) {
+        // Si no hay suficiente saldo, revertir los cambios y mostrar error
+        if (originalOrigin && originalDestination) {
+          updateAccountBalance(originalOrigin.id, originalOrigin.balance);
+          updateAccountBalance(originalDestination.id, originalDestination.balance);
+        }
+        Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
+        return;
+      }
+
+      // Aplicar la nueva transferencia
+      const newOriginBalance = currentOriginBalance - transfer.amount;
+      const newDestinationBalance = (originalDestination?.id === newDestination.id 
+        ? newDestination.balance - originalTransfer.amount  // Si es la misma cuenta, usar balance revertido
+        : newDestination.balance) + transfer.amount;
+
+      updateAccountBalance(newOrigin.id, newOriginBalance);
+      updateAccountBalance(newDestination.id, newDestinationBalance);
+
+      // Crear la transferencia actualizada
+      const editedTransfer: Transfer = {
+        id: id,
+        date: transfer.date,
+        amount: transfer.amount,
+        description: transfer.description,
+        origin: transfer.origin,
+        destination: transfer.destination,
+      };
+
+      // Actualizar en el store
+      editTransferStore(id, editedTransfer);
+
+      console.log("Transferencia editada:", editedTransfer);
+      console.log(`Nuevos balances - Origen: ${newOriginBalance}, Destino: ${newDestinationBalance}`);
+
+    } catch (error) {
+      console.error("Error editing transfer:", error);
+      Alert.alert("Error", "No se pudo editar la transferencia.");
+    }
+  };
+
   return {
     isTransfer,
     addTransfer,
+    editTransfer,
   }
 }
