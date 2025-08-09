@@ -44,6 +44,16 @@ export default function RootLayout() {
             date TEXT,
             account TEXT
           );
+          CREATE TABLE IF NOT EXISTS transfers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            amount REAL NOT NULL,
+            description TEXT,
+            origin_account TEXT NOT NULL,
+            destination_account TEXT NOT NULL,
+            FOREIGN KEY (origin_account) REFERENCES accounts (id) ON DELETE RESTRICT,
+            FOREIGN KEY (destination_account) REFERENCES accounts (id) ON DELETE RESTRICT
+          );
         `);
 
         const accounts = (await db.getAllAsync(
