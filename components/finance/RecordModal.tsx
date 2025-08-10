@@ -83,7 +83,6 @@ export function RecordModal() {
 
   const handleSubmit = () => {
     if (activeTab === "transfer") {
-      // console.log("Guardar Transferencia");
       clearTransferErrors();
 
       const transfer = transferSchema.safeParse(currentTransfer);
@@ -200,7 +199,6 @@ export function RecordModal() {
       <IconSymbol
         name={icon as any}
         size={18}
-        // color={activeTab === type ? Colors.white : Colors.slate[600]}
         color={activeTab === type ? tabIconColorActive : tabIconColorInactive}
       />
       <Text
@@ -271,17 +269,33 @@ export function RecordModal() {
             )}
 
             {/* Tabs */}
-            <View
+            {/* <View
               style={[styles.tabContainer, { backgroundColor: tabBackground }]}
-            >
-              {renderTabButton("income", "Ingreso", "plus")}
-              {renderTabButton("expense", "Gasto", "creditcard.fill")}
-              {renderTabButton(
-                "transfer",
-                "Transfer.",
-                "arrow.right.arrow.left"
-              )}
-            </View>
+            > */}
+            {recordMode === "edit"
+              ? (
+                activeTab === "transfer"
+                  ? (
+                    <></>
+                  ) : (
+                    <View style={[styles.tabContainer, { backgroundColor: tabBackground }]}>
+                      {renderTabButton("income", "Ingreso", "plus")}
+                      {renderTabButton("expense", "Gasto", "creditcard.fill")}
+                    </View>
+                  )
+              ) : (
+                <View style={[styles.tabContainer, { backgroundColor: tabBackground }]}>
+                  {renderTabButton("income", "Ingreso", "plus")}
+                  {renderTabButton("expense", "Gasto", "creditcard.fill")}
+                  {renderTabButton(
+                    "transfer",
+                    "Transfer.",
+                    "arrow.right.arrow.left"
+                  )}
+                </View>
+              )
+            }
+            {/* </View> */}
 
             {/* Formulario dinámico */}
             {renderForm()}
