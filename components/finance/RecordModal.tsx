@@ -250,28 +250,48 @@ export function RecordModal() {
           <View style={[styles.modalContent, { backgroundColor: background }]}>
             {/* Header */}
             {recordMode === "new" ? (
-              <Text style={[styles.title, { color: titleNew }]}>
-                Nuevo Registro
-              </Text>
+              activeTab === "transfer"
+                ? (
+                  <Text style={[styles.title, { color: titleNew }]}>
+                    Nueva Transferencia
+                  </Text>
+                ) : (
+                  <Text style={[styles.title, { color: titleNew }]}>
+                    Nuevo Registro
+                  </Text>
+                )
             ) : (
-              <View style={styles.header}>
-                <Text style={[styles.title, { color: titleEdit }]}>
-                  Editar Registro
-                </Text>
-                <TouchableOpacity onPress={handleDelete}>
-                  <IconSymbol
-                    name="trash"
-                    style={styles.deleteButton}
-                    color={Colors.red}
-                  />
-                </TouchableOpacity>
-              </View>
+              activeTab === "transfer"
+                ? (
+                  <View style={styles.header}>
+                    <Text style={[styles.title, { color: titleEdit }]}>
+                      Editar Transferencia
+                    </Text>
+                    <TouchableOpacity onPress={handleDelete}>
+                      <IconSymbol
+                        name="trash"
+                        style={styles.deleteButton}
+                        color={Colors.red}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={styles.header}>
+                    <Text style={[styles.title, { color: titleEdit }]}>
+                      Editar Registro
+                    </Text>
+                    <TouchableOpacity onPress={handleDelete}>
+                      <IconSymbol
+                        name="trash"
+                        style={styles.deleteButton}
+                        color={Colors.red}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )
             )}
 
             {/* Tabs */}
-            {/* <View
-              style={[styles.tabContainer, { backgroundColor: tabBackground }]}
-            > */}
             {recordMode === "edit"
               ? (
                 activeTab === "transfer"
@@ -295,7 +315,6 @@ export function RecordModal() {
                 </View>
               )
             }
-            {/* </View> */}
 
             {/* Formulario dinámico */}
             {renderForm()}
@@ -315,11 +334,6 @@ export function RecordModal() {
                 onPress={handleSubmit}
               >
                 <Text style={[styles.buttonText, { color: confirmText }]}>
-                  {/* {recordMode === "new"
-                    ? activeTab === "income"
-                      ? "Agregar Ingreso"
-                      : "Agregar Gasto"
-                    : "Guardar Cambios"} */}
                   {getButtonText()}
                 </Text>
               </TouchableOpacity>
