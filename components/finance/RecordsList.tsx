@@ -22,8 +22,11 @@ export function RecordsList() {
 
   const text = useThemeColor({}, "text");
   const background = useThemeColor({}, "backgroundCard");
+  const incomeAmount = useThemeColor({ light: Colors.green, dark: Colors.greenT[300]}, "text")
+  const expenseAmount = useThemeColor({ light: Colors.red, dark: Colors.redT[400]}, "text")
+  const transferAmount = useThemeColor({ light: Colors.blue, dark: Colors.blueT[300]}, "text")
 
-  // Combine and sort transactions by date (newest first)
+  // Combina y ordena las transacciones por fecha (más reciente primero)
   const transactions: Transaction[] = [
     ...records,
     ...transfers.map((transfer) => ({
@@ -34,8 +37,6 @@ export function RecordsList() {
 
   const handleTransactionPress = (transaction: Transaction) => {
     if (isTransfer(transaction)) {
-      // Handle transfer press - open unified modal in transfer mode
-      // setTransferMode("edit");
       setRecordMode("edit");
       setCurrentTransfer({
         id: transaction.id,
@@ -46,13 +47,12 @@ export function RecordsList() {
         destination: transaction.destination,
       });
       setActiveTab("transfer");
-      setShowRecordModal(true); // Use unified modal
+      setShowRecordModal(true);
     } else {
-      // Handle record press - open unified modal in record mode
       setRecordMode("edit");
       setCurrentRecord(transaction);
       setActiveTab(transaction.type);
-      setShowRecordModal(true); // Use unified modal
+      setShowRecordModal(true);
     }
   };
 
@@ -70,7 +70,7 @@ export function RecordsList() {
         accountInfo: `${originAccount?.name || "Cuenta"} → ${
           destinationAccount?.name || "Cuenta"
         }`,
-        amountStyle: styles.transferAmount,
+        amountStyle: { color: transferAmount },
         amountText: `↔ ${formatNumber$(transaction.amount)}`,
       };
     } else {
@@ -81,8 +81,8 @@ export function RecordsList() {
         accountInfo: account?.name || "Cuenta",
         amountStyle:
           transaction.type === "income"
-            ? styles.incomeAmount
-            : styles.expenseAmount,
+            ? { color: incomeAmount }
+            : { color: expenseAmount },
         amountText: `${
           transaction.type === "income" ? "" : "- "
         }${formatNumber$(transaction.amount)}`,
@@ -105,20 +105,14 @@ export function RecordsList() {
             key={transaction.id}
             activeOpacity={0.8}
             style={[styles.recordCard, { backgroundColor: background }]}
-            onPress={() => {
-              // setRecordMode("edit");
-              // setCurrentRecord(record);
-              // setShowRecordModal(true);
-              // setActiveTab(record.type);
-              handleTransactionPress(transaction);
-            }}
+            onPress={() => handleTransactionPress(transaction)}
           >
             <View style={styles.recordInfo}>
               <Text style={[styles.description, { color: text }]}>
                 {display.description}
               </Text>
               <Text style={styles.date}>{transaction.date}</Text>
-              <Text style={[styles.account]}>{display.accountInfo}</Text>
+              <Text style={[styles.account, { color: transferAmount }]}>{display.accountInfo}</Text>
             </View>
             <Text style={[styles.amount, display.amountStyle]}>
               {display.amountText}
@@ -168,19 +162,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  incomeAmount: {
-    color: Colors.green,
-  },
-  expenseAmount: {
-    color: Colors.red,
-  },
-  transferAmount: {
-    color: Colors.blue,
-  },
   account: {
     fontSize: 14,
     marginTop: 4,
     fontWeight: "500",
-    color: Colors.blueT[200],
   },
 });

@@ -14,6 +14,8 @@ export function Header() {
     { light: Colors.slate[200], dark: Colors.slate[700] },
     "text"
   );
+  const incomeValue = useThemeColor({ light: Colors.green, dark: Colors.greenT[300]}, "text")
+  const expenseValue = useThemeColor({ light: Colors.red, dark: Colors.redT[400]}, "text")
 
   const { totalIncome, totalExpenses } = useMemo(() => {
     let income = 0;
@@ -33,13 +35,13 @@ export function Header() {
       <View style={styles.columnsContainer}>
         <View style={styles.column}>
           <Text style={[styles.columnLabel, { color: text }]}>Ingresos</Text>
-          <Text style={[styles.columnValue, styles.incomeValue]}>
+          <Text style={[styles.columnValue, { color: incomeValue }]}>
             {formatNumber$(totalIncome)}
           </Text>
         </View>
         <View style={styles.column}>
           <Text style={[styles.columnLabel, { color: text }]}>Egresos</Text>
-          <Text style={[styles.columnValue, styles.expenseValue]}>
+          <Text style={[styles.columnValue, { color: expenseValue }]}>
             {formatNumber$(totalExpenses)}
           </Text>
         </View>
@@ -80,11 +82,5 @@ const styles = StyleSheet.create({
   columnValue: {
     fontSize: 18,
     fontWeight: "bold",
-  },
-  incomeValue: {
-    color: Colors.greenT[600],
-  },
-  expenseValue: {
-    color: Colors.redT[600],
   },
 });
