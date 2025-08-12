@@ -13,25 +13,25 @@ export function useTransfer() {
     return 'origin' in transaction || 'destination' in transaction;
   };
 
-  const addTransfer = async (transfer: TransferDraft) => {
+  const addTransfer = async (transfer: TransferDraft): Promise<boolean> => {
     // Validar que las cuentas existan
     const origin = accounts.find(acc => acc.id === transfer.origin);
     const destination = accounts.find(acc => acc.id === transfer.destination);
 
     if (!origin) {
       Alert.alert("Error", "Cuenta de origen no encontrada.");
-      return;
+      return false;
     }
 
     if (!destination) {
       Alert.alert("Error", "Cuenta de destino no encontrada.");
-      return;
+      return false;
     }
 
     // Validar que la cuenta de origen tenga suficiente saldo
     if (origin.balance < transfer.amount) {
       Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
-      return;
+      return false;
     }
 
     let db: SQLite.SQLiteDatabase | null = null;
@@ -86,7 +86,6 @@ export function useTransfer() {
       // Confirmar transacción
       await db.execAsync('COMMIT');
 
-
       // Agregar transferencia al store
       addTransferStore(newTransfer);
 
@@ -96,6 +95,7 @@ export function useTransfer() {
       console.log("Transferencia agregada:", transfer);
       console.log(`Balance actualizado - Origen: ${newOriginBalance}, Destino: ${newDestinationBalance}`);
 
+      return true;
     } catch (error) {
       console.error("Error adding transfer:", error);
 
@@ -109,6 +109,7 @@ export function useTransfer() {
       }
 
       Alert.alert("Error", "No se pudo procesar la transferencia.");
+      return false;
     } finally {
       if (db) {
         try {
@@ -120,12 +121,12 @@ export function useTransfer() {
     }
   };
 
-  const editTransfer = async (id: string, transfer: TransferDraft) => {
+  const editTransfer = async (id: string, transfer: TransferDraft): Promise<boolean> => {
     const originalTransfer = transfers.find(t => t.id === id);
 
     if (!originalTransfer) {
       Alert.alert("Error", "Transferencia no encontrada.");
-      return;
+      return false;
     }
 
     const newOrigin = accounts.find(acc => acc.id === transfer.origin);
@@ -133,12 +134,12 @@ export function useTransfer() {
 
     if (!newOrigin) {
       Alert.alert("Error", "Cuenta de origen no encontrada.");
-      return;
+      return false;
     }
 
     if (!newDestination) {
       Alert.alert("Error", "Cuenta de destino no encontrada.");
-      return;
+      return false;
     }
 
     let db: SQLite.SQLiteDatabase | null = null;
@@ -173,7 +174,7 @@ export function useTransfer() {
           updateAccountBalance(originalDestination.id, originalDestination.balance);
         }
         Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
-        return;
+        return false;
       }
 
       // Aplicar la nueva transferencia
@@ -243,6 +244,7 @@ export function useTransfer() {
       console.log("Transferencia editada:", editedTransfer);
       console.log(`Nuevos balances - Origen: ${newOriginBalance}, Destino: ${newDestinationBalance}`);
 
+      return true;
     } catch (error) {
       console.error("Error editing transfer:", error);
 
@@ -257,6 +259,7 @@ export function useTransfer() {
       }
 
       Alert.alert("Error", "No se pudo editar la transferencia.");
+      return false;
     } finally {
       if (db) {
         try {

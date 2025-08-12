@@ -81,7 +81,7 @@ export function RecordModal() {
     "text"
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (activeTab === "transfer") {
       clearTransferErrors();
 
@@ -102,13 +102,18 @@ export function RecordModal() {
 
       if (recordMode === "edit") {
         if (currentTransfer?.id) {
-          editTransfer(currentTransfer.id, transfer.data);
+          const success = await editTransfer(currentTransfer.id, transfer.data);
           console.log("Transfer edited:", transfer.data);
+          if (success) {
+            handleClose();
+          }
         }
-        return;
       } else {
-        addTransfer(transfer.data);
+        const success = await addTransfer(transfer.data);
         console.log("addedTransfer", transfer.data);
+        if (success) {
+          handleClose();
+        }
       }
     } else {
       clearRecordErrors();
@@ -135,8 +140,11 @@ export function RecordModal() {
 
       if (recordMode === "edit") {
         if (currentRecord?.id) {
-          editRecord(currentRecord.id, record.data);
+          const success = await editRecord(currentRecord.id, record.data);
           console.log("Record edited:", record.data);
+          if (success) {
+            handleClose();
+          }
         }
       } else {
         // Verificar si es distribución automática para ingresos
@@ -148,15 +156,20 @@ export function RecordModal() {
             );
             return;
           }
-          handleAutomaticDistribution(record.data);
+          const success = await handleAutomaticDistribution(record.data);
+          if (success) {
+            handleClose();
+          }
         } else {
           // Registro normal
-          addRecord(record.data);
+          const success = await addRecord(record.data);
           console.log("addedRecord", record.data);
+          if (success) {
+            handleClose();
+          }
         }
       }
     }
-    handleClose();
   };
 
   const handleClose = () => {
@@ -250,71 +263,74 @@ export function RecordModal() {
           <View style={[styles.modalContent, { backgroundColor: background }]}>
             {/* Header */}
             {recordMode === "new" ? (
-              activeTab === "transfer"
-                ? (
-                  <Text style={[styles.title, { color: titleNew }]}>
-                    Nueva Transferencia
-                  </Text>
-                ) : (
-                  <Text style={[styles.title, { color: titleNew }]}>
-                    Nuevo Registro
-                  </Text>
-                )
+              activeTab === "transfer" ? (
+                <Text style={[styles.title, { color: titleNew }]}>
+                  Nueva Transferencia
+                </Text>
+              ) : (
+                <Text style={[styles.title, { color: titleNew }]}>
+                  Nuevo Registro
+                </Text>
+              )
+            ) : activeTab === "transfer" ? (
+              <View style={styles.header}>
+                <Text style={[styles.title, { color: titleEdit }]}>
+                  Editar Transferencia
+                </Text>
+                <TouchableOpacity onPress={handleDelete}>
+                  <IconSymbol
+                    name="trash"
+                    style={styles.deleteButton}
+                    color={Colors.red}
+                  />
+                </TouchableOpacity>
+              </View>
             ) : (
-              activeTab === "transfer"
-                ? (
-                  <View style={styles.header}>
-                    <Text style={[styles.title, { color: titleEdit }]}>
-                      Editar Transferencia
-                    </Text>
-                    <TouchableOpacity onPress={handleDelete}>
-                      <IconSymbol
-                        name="trash"
-                        style={styles.deleteButton}
-                        color={Colors.red}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <View style={styles.header}>
-                    <Text style={[styles.title, { color: titleEdit }]}>
-                      Editar Registro
-                    </Text>
-                    <TouchableOpacity onPress={handleDelete}>
-                      <IconSymbol
-                        name="trash"
-                        style={styles.deleteButton}
-                        color={Colors.red}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                )
+              <View style={styles.header}>
+                <Text style={[styles.title, { color: titleEdit }]}>
+                  Editar Registro
+                </Text>
+                <TouchableOpacity onPress={handleDelete}>
+                  <IconSymbol
+                    name="trash"
+                    style={styles.deleteButton}
+                    color={Colors.red}
+                  />
+                </TouchableOpacity>
+              </View>
             )}
 
             {/* Tabs */}
-            {recordMode === "edit"
-              ? (
-                activeTab === "transfer"
-                  ? (
-                    <></>
-                  ) : (
-                    <View style={[styles.tabContainer, { backgroundColor: tabBackground }]}>
-                      {renderTabButton("income", "Ingreso", "plus")}
-                      {renderTabButton("expense", "Gasto", "creditcard.fill")}
-                    </View>
-                  )
+            {recordMode === "edit" ? (
+              activeTab === "transfer" ? (
+                <></>
               ) : (
-                <View style={[styles.tabContainer, { backgroundColor: tabBackground }]}>
+                <View
+                  style={[
+                    styles.tabContainer,
+                    { backgroundColor: tabBackground },
+                  ]}
+                >
                   {renderTabButton("income", "Ingreso", "plus")}
                   {renderTabButton("expense", "Gasto", "creditcard.fill")}
-                  {renderTabButton(
-                    "transfer",
-                    "Transfer.",
-                    "arrow.right.arrow.left"
-                  )}
                 </View>
               )
-            }
+            ) : (
+              <View
+                style={[
+                  styles.tabContainer,
+                  { backgroundColor: tabBackground },
+                ]}
+              >
+                {renderTabButton("income", "Ingreso", "plus")}
+                {renderTabButton("expense", "Gasto", "creditcard.fill")}
+                {renderTabButton(
+                  "transfer",
+                  "Transfer.",
+                  "arrow.right.arrow.left"
+                )}
+              </View>
+            )}
 
             {/* Formulario dinámico */}
             {renderForm()}

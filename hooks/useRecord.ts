@@ -13,11 +13,11 @@ export function useRecord() {
   } = useAccountStore()
   const { addRecord: addRecordStore, records, setRecords } = useRecordStore()
 
-  async function addRecord(record: RecordDraft, updateTotal: boolean = true) {
+  async function addRecord(record: RecordDraft, updateTotal: boolean = true): Promise<boolean> {
     const account = accounts.find(acc => acc.id === record.account)
     if (!account) {
       Alert.alert("Error", "Cuenta no encontrada.")
-      return
+      return false;
     }
 
     let db: SQLite.SQLiteDatabase | null = null;
@@ -70,9 +70,11 @@ export function useRecord() {
         setTotalBalance(totalBalance + delta)
       }
 
+      return true;
     } catch (error) {
       console.error("Error adding record to database:", error);
       Alert.alert("Error", "No se pudo agregar el registro a la base de datos");
+      return false;
     } finally {
       if (db) {
         try {
@@ -109,14 +111,14 @@ export function useRecord() {
 
   async function handleAutomaticDistribution(
     baseRecord: RecordDraft,
-  ) {
+  ): Promise<boolean> {
     const accountsWithPercentage = accounts.filter(
       (account) => account.id !== "distribute" && account.percentage && account.percentage > 0
     )
 
     if (accountsWithPercentage.length === 0) {
       Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
-      return
+      return false
     }
 
     const totalPercentage = accountsWithPercentage.reduce(
@@ -125,7 +127,7 @@ export function useRecord() {
 
     if (Math.abs(totalPercentage - 100) > 0.01) {
       Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`)
-      return
+      return false
     }
 
     const totalCents = Math.round(baseRecord.amount * 100)
@@ -205,10 +207,11 @@ export function useRecord() {
       // Confirmar transacción
       await db.execAsync('COMMIT');
       console.log("✅ Distribución automática completada exitosamente");
-
+      return true;
     } catch (error) {
       console.error("Error in automatic distribution:", error);
       Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
+      return false;
     } finally {
       if (db) {
         try {
@@ -285,21 +288,21 @@ export function useRecord() {
     }
   }
 
-  async function editRecord(recordId: string, newRecord: RecordDraft) {
+  async function editRecord(recordId: string, newRecord: RecordDraft): Promise<boolean> {
     let db: SQLite.SQLiteDatabase | null = null;
     try {
       // 1. Encontrar el registro original en el store
       const originalRecord = records.find(record => record.id === recordId);
       if (!originalRecord) {
         Alert.alert("Error", "Registro original no encontrado.");
-        return;
+        return false;
       }
 
       // 2. Encontrar la cuenta original
       const originalAccount = accounts.find(acc => acc.id === originalRecord.account);
       if (!originalAccount) {
         Alert.alert("Error", "Cuenta original no encontrada.");
-        return;
+        return false;
       }
 
       // 3. Revertir el balance de la cuenta original
@@ -327,7 +330,7 @@ export function useRecord() {
 
         if (accountsWithPercentage.length === 0) {
           Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución");
-          return;
+          return false;
         }
 
         const totalPercentage = accountsWithPercentage.reduce(
@@ -336,7 +339,7 @@ export function useRecord() {
 
         if (Math.abs(totalPercentage - 100) > 0.01) {
           Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`);
-          return;
+          return false;
         }
 
         const totalCents = Math.round(newRecord.amount * 100);
@@ -386,23 +389,18 @@ export function useRecord() {
           }
 
           totalDeltaDistribution += delta;
-
-          // console.log(`🔧 DISTRIBUTION DEBUG: account.id=${account.id}, originalAccount.id=${originalAccount.id}`);
-          // console.log(`🔧 DISTRIBUTION DEBUG: account.balance=${account.balance}, revertedBalance=${revertedBalance}`);
-          // console.log(`🔧 DISTRIBUTION DEBUG: baseBalance=${baseBalance}, delta=${delta}, newBalance=${newBalance}`);
         }
 
         // Calcular totalBalance manualmente para distribución
         const newTotalBalance = revertedTotalBalance + totalDeltaDistribution;
         setTotalBalance(newTotalBalance);
-        // console.log(`📊 DISTRIBUTION Final totalBalance: ${revertedTotalBalance} + ${totalDeltaDistribution} = ${newTotalBalance}`);
 
       } else {
         // REGISTRO INDIVIDUAL
         const account = accounts.find(acc => acc.id === newRecord.account);
         if (!account) {
           Alert.alert("Error", "Cuenta no encontrada.");
-          return;
+          return false;
         }
 
         // Insertar en la base de datos primero
@@ -439,21 +437,17 @@ export function useRecord() {
             [newBalance, account.id]
           );
         }
-
-        // console.log(`🔧 INDIVIDUAL DEBUG: account.id=${account.id}, originalAccount.id=${originalAccount.id}`);
-        // console.log(`🔧 INDIVIDUAL DEBUG: account.balance=${account.balance}, revertedBalance=${revertedBalance}`);
-        // console.log(`🔧 INDIVIDUAL DEBUG: baseBalance=${baseBalance}, delta=${delta}, newBalance=${newBalance}`);
-
         // Calcular totalBalance manualmente para registro individual
         // Usar el totalBalance revertido como base y aplicar el nuevo delta
         const newTotalBalance = revertedTotalBalance + delta;
         setTotalBalance(newTotalBalance);
-        // console.log(`📊 INDIVIDUAL Final totalBalance: ${revertedTotalBalance} + ${delta} = ${newTotalBalance}`);
       }
       console.log("Record edited successfully:", newRecord);
+      return true;
     } catch (error) {
       console.error("Error editing record:", error);
       Alert.alert("Error", "No se pudo editar el registro");
+      return false;
     } finally {
       if (db) {
         try {
