@@ -193,6 +193,24 @@ export function useTransfer() {
       ]);
 
       // Actualizar balances de las cuentas en la base de datos
+      // Primero actualizar las cuentas originales (revertir efectos)
+      if (originalOrigin) {
+        const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
+        await db.runAsync(
+          'UPDATE accounts SET balance = ? WHERE id = ?',
+          [revertedOriginBalance, originalOrigin.id]
+        );
+      }
+
+      if (originalDestination) {
+        const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
+        await db.runAsync(
+          'UPDATE accounts SET balance = ? WHERE id = ?',
+          [revertedDestinationBalance, originalDestination.id]
+        );
+      }
+
+      // Luego actualizar las nuevas cuentas (aplicar nueva transferencia)
       await db.runAsync(
         'UPDATE accounts SET balance = ? WHERE id = ?',
         [newOriginBalance, newOrigin.id]
