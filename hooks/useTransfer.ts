@@ -271,7 +271,7 @@ export function useTransfer() {
     }
   };
 
-  const deleteTransfer = (id: string) => {
+  const deleteTransfer = async (id: string) => {
     // Buscar la transferencia a eliminar
     const transferToDelete = transfers.find(t => t.id === id);
     
@@ -289,10 +289,36 @@ export function useTransfer() {
       return;
     }
 
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción
+      await db.execAsync('BEGIN TRANSACTION');
+
       // Revertir los efectos de la transferencia en los balances
       const revertedOriginBalance = originAccount.balance + transferToDelete.amount;
       const revertedDestinationBalance = destinationAccount.balance - transferToDelete.amount;
+
+      // Actualizar balances en la base de datos
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [revertedOriginBalance, originAccount.id]
+      );
+
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [revertedDestinationBalance, destinationAccount.id]
+      );
+
+      // Eliminar transferencia de la base de datos
+      await db.runAsync(
+        'DELETE FROM transfers WHERE id = ?',
+        [id]
+      );
+
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
 
       // Actualizar balances en el store
       updateAccountBalance(originAccount.id, revertedOriginBalance);
@@ -306,7 +332,26 @@ export function useTransfer() {
 
     } catch (error) {
       console.error("Error deleting transfer:", error);
+
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("Transacción revertida")
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
+
       Alert.alert("Error", "No se pudo eliminar la transferencia.");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   };
 
