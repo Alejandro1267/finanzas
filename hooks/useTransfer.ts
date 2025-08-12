@@ -141,7 +141,13 @@ export function useTransfer() {
       return;
     }
 
+    let db: SQLite.SQLiteDatabase | null = null;
     try {
+      db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción
+      await db.execAsync('BEGIN TRANSACTION');
+
       // Revertir el efecto de la transferencia original
       const originalOrigin = accounts.find(acc => acc.id === originalTransfer.origin);
       const originalDestination = accounts.find(acc => acc.id === originalTransfer.destination);
@@ -176,6 +182,30 @@ export function useTransfer() {
         ? newDestination.balance - originalTransfer.amount  // Si es la misma cuenta, usar balance revertido
         : newDestination.balance) + transfer.amount;
 
+      // Actualizar en la base de datos
+      await db.runAsync('UPDATE transfers SET date = ?, amount = ?, description = ?, origin = ?, destination = ? WHERE id = ?', [
+        transfer.date,
+        transfer.amount,
+        transfer.description,
+        transfer.origin,
+        transfer.destination,
+        id
+      ]);
+
+      // Actualizar balances de las cuentas en la base de datos
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [newOriginBalance, newOrigin.id]
+      );
+
+      await db.runAsync(
+        'UPDATE accounts SET balance = ? WHERE id = ?',
+        [newDestinationBalance, newDestination.id]
+      );
+
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
       updateAccountBalance(newOrigin.id, newOriginBalance);
       updateAccountBalance(newDestination.id, newDestinationBalance);
 
@@ -197,7 +227,26 @@ export function useTransfer() {
 
     } catch (error) {
       console.error("Error editing transfer:", error);
+
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
+
       Alert.alert("Error", "No se pudo editar la transferencia.");
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
     }
   };
 
