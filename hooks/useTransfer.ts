@@ -6,7 +6,7 @@ import * as SQLite from 'expo-sqlite';
 import { Alert } from "react-native";
 
 export function useTransfer() {
-  const { addTransfer: addTransferStore, editTransfer: editTransferStore, transfers } = useTransferStore();
+  const { addTransfer: addTransferStore, editTransfer: editTransferStore, transfers, deleteTransfer: deleteTransferStore } = useTransferStore();
   const { accounts, updateAccountBalance } = useAccountStore();
 
   const isTransfer = (transaction: Transaction): transaction is Transfer & { type: "transfer" } => {
@@ -271,9 +271,49 @@ export function useTransfer() {
     }
   };
 
+  const deleteTransfer = (id: string) => {
+    // Buscar la transferencia a eliminar
+    const transferToDelete = transfers.find(t => t.id === id);
+    
+    if (!transferToDelete) {
+      Alert.alert("Error", "Transferencia no encontrada.");
+      return;
+    }
+
+    // Buscar las cuentas afectadas
+    const originAccount = accounts.find(acc => acc.id === transferToDelete.origin);
+    const destinationAccount = accounts.find(acc => acc.id === transferToDelete.destination);
+
+    if (!originAccount || !destinationAccount) {
+      Alert.alert("Error", "No se encontraron las cuentas de la transferencia.");
+      return;
+    }
+
+    try {
+      // Revertir los efectos de la transferencia en los balances
+      const revertedOriginBalance = originAccount.balance + transferToDelete.amount;
+      const revertedDestinationBalance = destinationAccount.balance - transferToDelete.amount;
+
+      // Actualizar balances en el store
+      updateAccountBalance(originAccount.id, revertedOriginBalance);
+      updateAccountBalance(destinationAccount.id, revertedDestinationBalance);
+
+      // Eliminar transferencia del store
+      deleteTransferStore(id);
+
+      console.log("Transferencia eliminada:", transferToDelete);
+      console.log(`Balances revertidos - Origen: ${revertedOriginBalance}, Destino: ${revertedDestinationBalance}`);
+
+    } catch (error) {
+      console.error("Error deleting transfer:", error);
+      Alert.alert("Error", "No se pudo eliminar la transferencia.");
+    }
+  };
+
   return {
     isTransfer,
     addTransfer,
     editTransfer,
+    deleteTransfer,
   }
 }

@@ -26,6 +26,7 @@ type TransferState = {
   // Functions
   addTransfer: (transfer: Transfer) => void
   editTransfer: (id: string, transfer: Transfer) => void
+  deleteTransfer: (id: string) => void
   createEmptyTransfer: () => void
   clearTransferErrors: () => void
 
@@ -65,6 +66,9 @@ export const useTransferStore = create<TransferState>((set, get) => ({
   },
   editTransfer: (id: string, transfer: Transfer) => {
     set({ transfers: get().transfers.map(t => t.id === id ? transfer : t) })
+  },
+  deleteTransfer: (id: string) => {
+    set({ transfers: get().transfers.filter(t => t.id !== id) })
   },
   createEmptyTransfer: () => {
     set({ currentTransfer: {

@@ -40,7 +40,7 @@ export function RecordModal() {
   } = useTransferStore();
   const { addRecord, handleAutomaticDistribution, editRecord, deleteRecord } =
     useRecord();
-  const { addTransfer, editTransfer } = useTransfer();
+  const { addTransfer, editTransfer, deleteTransfer } = useTransfer();
   const background = useThemeColor({}, "backgroundCard");
   const titleNew = useThemeColor({}, "titleNew");
   const titleEdit = useThemeColor({}, "titleEdit");
@@ -181,7 +181,21 @@ export function RecordModal() {
 
   const handleDelete = async () => {
     if (activeTab === "transfer") {
-      console.log("Eliminar Transferencia");
+      Alert.alert(
+        "Eliminar Transferencia",
+        "¿Estás seguro de que quieres eliminar esta transferencia?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: async () => {
+              await deleteTransfer(currentTransfer?.id || "");
+              handleClose();
+            },
+          },
+        ]
+      );
     } else if (currentRecord?.id) {
       Alert.alert(
         "Eliminar Registro",
