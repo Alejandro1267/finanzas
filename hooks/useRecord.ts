@@ -25,6 +25,9 @@ export function useRecord() {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
+
       // Insertar el nuevo registro en la base de datos
       await db.runAsync(
         'INSERT INTO records (type, amount, description, date, account) VALUES (?, ?, ?, ?, ?)',
@@ -44,16 +47,6 @@ export function useRecord() {
 
       console.log("Registro insertado en DB:", insertedRecord);
 
-      // Agregar el registro al store con el ID real de la base de datos
-      addRecordStore({
-        id: insertedRecord.id.toString(),
-        type: insertedRecord.type,
-        amount: insertedRecord.amount,
-        description: insertedRecord.description,
-        date: insertedRecord.date,
-        account: insertedRecord.account,
-      });
-
       // Actualizar balance de la cuenta
       const delta = record.type === "income" ? record.amount : -record.amount
       const newBalance = account.balance + delta
@@ -64,6 +57,19 @@ export function useRecord() {
         [newBalance, account.id]
       );
 
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
+      // Agregar el registro al store con el ID real de la base de datos
+      addRecordStore({
+        id: insertedRecord.id.toString(),
+        type: insertedRecord.type,
+        amount: insertedRecord.amount,
+        description: insertedRecord.description,
+        date: insertedRecord.date,
+        account: insertedRecord.account,
+      });      
+
       updateAccountBalance(account.id, newBalance)
 
       if (updateTotal) {
@@ -73,6 +79,15 @@ export function useRecord() {
       return true;
     } catch (error) {
       console.error("Error adding record to database:", error);
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
       Alert.alert("Error", "No se pudo agregar el registro a la base de datos");
       return false;
     } finally {
@@ -141,9 +156,9 @@ export function useRecord() {
 
     console.log("totalDelta", totalDelta)
 
-    setTotalBalance(totalBalance + totalDelta)
-
     let db: SQLite.SQLiteDatabase | null = null;
+    const insertedRecords: Record[] = [];
+
     try {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
@@ -173,7 +188,31 @@ export function useRecord() {
           'SELECT * FROM records WHERE rowid = last_insert_rowid()'
         ) as Record;
 
+        insertedRecords.push(insertedRecord);
+
         console.log(`Registro distribuido insertado para ${account.name}:`, insertedRecord);
+
+        // Actualizar balance de la cuenta
+        const delta = baseRecord.type === "income" ? amount : -amount
+        const newBalance = account.balance + delta
+
+        // Actualizar balance en la base de datos
+          await db.runAsync(
+            'UPDATE accounts SET balance = ? WHERE id = ?',
+            [newBalance, account.id]
+          );
+      }
+
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
+      setTotalBalance(totalBalance + totalDelta)
+
+      insertedRecords.forEach((insertedRecord, index) => {
+        const account = accountsWithPercentage[index];
+        const amount = distributionCents[index] / 100;
+        const delta = baseRecord.type === "income" ? amount : -amount;
+        const newBalance = account.balance + delta;
 
         // Agregar el registro al store con el ID real de la base de datos
         addRecordStore({
@@ -183,33 +222,24 @@ export function useRecord() {
           description: insertedRecord.description,
           date: insertedRecord.date,
           account: insertedRecord.account,
-        });
-
-        // Actualizar balance de la cuenta
-        const delta = baseRecord.type === "income" ? amount : -amount
-        const newBalance = account.balance + delta
-
-        console.log(`Updating balance for account ${account.id}: ${account.balance} + ${delta} = ${newBalance}`);
-
-        // Actualizar balance en la base de datos
-        if (account.id && !isNaN(newBalance)) {
-          await db.runAsync(
-            'UPDATE accounts SET balance = ? WHERE id = ?',
-            [newBalance, account.id]
-          );
-        } else {
-          console.error(`Invalid data for balance update: accountId=${account.id}, newBalance=${newBalance}`);
-        }
+        });        
 
         updateAccountBalance(account.id, newBalance)
-      }
+      })
 
-      // Confirmar transacción
-      await db.execAsync('COMMIT');
       console.log("✅ Distribución automática completada exitosamente");
       return true;
     } catch (error) {
       console.error("Error in automatic distribution:", error);
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
       Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
       return false;
     } finally {
@@ -228,6 +258,9 @@ export function useRecord() {
     try {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
 
       // Obtener el registro antes de eliminarlo para revertir balances
       const recordToDelete = await db.getFirstAsync(
@@ -264,6 +297,9 @@ export function useRecord() {
         [newBalance, account.id]
       );
 
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
       // Actualizar balance en el store
       updateAccountBalance(account.id, newBalance);
 
@@ -274,8 +310,18 @@ export function useRecord() {
       const updatedRecords = records.filter(record => record.id !== recordId);
       setRecords(updatedRecords);
 
+      return true;
     } catch (error) {
       console.error("Error deleting record from database:", error);
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
       Alert.alert("Error", "No se pudo eliminar el registro de la base de datos");
     } finally {
       if (db) {
@@ -290,6 +336,7 @@ export function useRecord() {
 
   async function editRecord(recordId: string, newRecord: RecordDraft): Promise<boolean> {
     let db: SQLite.SQLiteDatabase | null = null;
+
     try {
       // 1. Encontrar el registro original en el store
       const originalRecord = records.find(record => record.id === recordId);
@@ -319,7 +366,14 @@ export function useRecord() {
 
       // Eliminar de la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
+
       await db.runAsync('DELETE FROM records WHERE id = ?', [recordId]);
+
+      const insertedRecords: Record[] = [];
+      let totalDeltaFinal = 0;
 
       // 6. Agregar el nuevo registro(s) al store Y a la DB
       if (newRecord.account === "distribute") {
@@ -365,8 +419,7 @@ export function useRecord() {
             [result.lastInsertRowId]
           ) as Record;
 
-          // Agregar al store con el ID real de la DB
-          addRecordStore(insertedRecord);
+          insertedRecords.push(insertedRecord);
 
           // Actualizar balance de la cuenta
           const delta = newRecord.type === "income" ? amount : -amount;
@@ -378,22 +431,15 @@ export function useRecord() {
           }
 
           const newBalance = baseBalance + delta;
-          updateAccountBalance(account.id, newBalance);
 
           // Actualizar balance en la base de datos
-          if (account.id && !isNaN(newBalance)) {
-            await db.runAsync(
-              'UPDATE accounts SET balance = ? WHERE id = ?',
-              [newBalance, account.id]
-            );
-          }
-
-          totalDeltaDistribution += delta;
+          await db.runAsync(
+            'UPDATE accounts SET balance = ? WHERE id = ?',
+            [newBalance, account.id]
+          );
+          
+          totalDeltaFinal += delta;
         }
-
-        // Calcular totalBalance manualmente para distribución
-        const newTotalBalance = revertedTotalBalance + totalDeltaDistribution;
-        setTotalBalance(newTotalBalance);
 
       } else {
         // REGISTRO INDIVIDUAL
@@ -415,8 +461,7 @@ export function useRecord() {
           [result.lastInsertRowId]
         ) as Record;
 
-        // Agregar al store con el ID real de la DB
-        addRecordStore(insertedRecord);
+        insertedRecords.push(insertedRecord);
 
         // Actualizar balance de la cuenta
         const delta = newRecord.type === "income" ? newRecord.amount : -newRecord.amount;
@@ -428,24 +473,96 @@ export function useRecord() {
         }
 
         const newBalance = baseBalance + delta;
-        updateAccountBalance(account.id, newBalance);
 
         // Actualizar balance en la base de datos
-        if (account.id && !isNaN(newBalance)) {
-          await db.runAsync(
-            'UPDATE accounts SET balance = ? WHERE id = ?',
-            [newBalance, account.id]
-          );
-        }
-        // Calcular totalBalance manualmente para registro individual
-        // Usar el totalBalance revertido como base y aplicar el nuevo delta
-        const newTotalBalance = revertedTotalBalance + delta;
-        setTotalBalance(newTotalBalance);
+        await db.runAsync(
+          'UPDATE accounts SET balance = ? WHERE id = ?',
+          [newBalance, account.id]
+        );
+
+        totalDeltaFinal += delta;
       }
+
       console.log("Record edited successfully:", newRecord);
+      
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
+      if (newRecord.account === "distribute") {
+        // DISTRIBUCIÓN AUTOMÁTICA - actualizar store
+        const accountsWithPercentage = accounts.filter(
+          (account) => account.id !== "distribute" && account.percentage && account.percentage > 0
+        );
+        const totalCents = Math.round(newRecord.amount * 100);
+        const percentages = accountsWithPercentage.map(a => a.percentage || 0);
+        const distributionCents = distributePercentages(totalCents, percentages);
+
+        insertedRecords.forEach((insertedRecord, index) => {
+          const account = accountsWithPercentage[index];
+          const amount = distributionCents[index] / 100;
+          const delta = newRecord.type === "income" ? amount : -amount;
+
+          // Agregar al store con el ID real de la DB
+          addRecordStore({
+            id: insertedRecord.id.toString(),
+            type: insertedRecord.type,
+            amount: insertedRecord.amount,
+            description: insertedRecord.description,
+            date: insertedRecord.date,
+            account: insertedRecord.account,
+          });
+
+          // USAR EL BALANCE CORRECTO: Si es la misma cuenta que el registro original, usar el balance revertido
+          let baseBalance = account.balance;
+          if (account.id === originalAccount.id) {
+            baseBalance = revertedBalance;
+          }
+
+          const newBalance = baseBalance + delta;
+          updateAccountBalance(account.id, newBalance);
+        });
+
+      } else {
+        // REGISTRO INDIVIDUAL - actualizar store
+        const account = accounts.find(acc => acc.id === newRecord.account);
+        const insertedRecord = insertedRecords[0];
+        const delta = newRecord.type === "income" ? newRecord.amount : -newRecord.amount;
+
+        // Agregar el store con el ID real de la DB
+        addRecordStore({
+          id: insertedRecord.id.toString(),
+          type: insertedRecord.type,
+          amount: insertedRecord.amount,
+          description: insertedRecord.description,
+          date: insertedRecord.date,
+          account: insertedRecord.account,
+        });
+
+        // USAR EL BALANCE CORRECTO: Si es la misma cuenta que el registro original, usar el balance revertido
+        let baseBalance = account!.balance;
+        if (account!.id === originalAccount.id) {
+          baseBalance = revertedBalance;
+        }
+
+        const newBalance = baseBalance + delta;
+        updateAccountBalance(account!.id, newBalance);
+      }
+
+      // Calcular totalBalance manualmente usando el balance revertido como base
+      const newTotalBalance = revertedTotalBalance + totalDeltaFinal;
+      setTotalBalance(newTotalBalance);
+
       return true;
     } catch (error) {
       console.error("Error editing record:", error);
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
       Alert.alert("Error", "No se pudo editar el registro");
       return false;
     } finally {
