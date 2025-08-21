@@ -153,14 +153,19 @@ export function useTransfer() {
       const originalOrigin = accounts.find(acc => acc.id === originalTransfer.origin);
       const originalDestination = accounts.find(acc => acc.id === originalTransfer.destination);
 
-      if (originalOrigin && originalDestination) {
-        // Revertir balances originales
-        const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
-        const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
-        
-        updateAccountBalance(originalOrigin.id, revertedOriginBalance);
-        updateAccountBalance(originalDestination.id, revertedDestinationBalance);
+      if (!originalOrigin || !originalDestination) {
+        Alert.alert("Error", "Cuentas originales no encontradas.");
+        return false;
       }
+
+      // if (originalOrigin && originalDestination) {
+        // Revertir balances originales
+      const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
+      const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
+      
+      updateAccountBalance(originalOrigin.id, revertedOriginBalance);
+      updateAccountBalance(originalDestination.id, revertedDestinationBalance);
+      // }
 
       // Validar que la nueva cuenta de origen tenga suficiente saldo (después de revertir)
       const currentOriginBalance = originalOrigin?.id === newOrigin.id 
@@ -169,10 +174,10 @@ export function useTransfer() {
 
       if (currentOriginBalance < transfer.amount) {
         // Si no hay suficiente saldo, revertir los cambios y mostrar error
-        if (originalOrigin && originalDestination) {
-          updateAccountBalance(originalOrigin.id, originalOrigin.balance);
-          updateAccountBalance(originalDestination.id, originalDestination.balance);
-        }
+        // if (originalOrigin && originalDestination) {
+        updateAccountBalance(originalOrigin.id, originalOrigin.balance);
+        updateAccountBalance(originalDestination.id, originalDestination.balance);
+        // }
         Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
         return false;
       }
@@ -195,21 +200,21 @@ export function useTransfer() {
 
       // Actualizar balances de las cuentas en la base de datos
       // Primero actualizar las cuentas originales (revertir efectos)
-      if (originalOrigin) {
-        const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
+      // if (originalOrigin) {
+        // const revertedOriginBalance = originalOrigin.balance + originalTransfer.amount;
         await db.runAsync(
           'UPDATE accounts SET balance = ? WHERE id = ?',
           [revertedOriginBalance, originalOrigin.id]
         );
-      }
+      // }
 
-      if (originalDestination) {
-        const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
+      // if (originalDestination) {
+        // const revertedDestinationBalance = originalDestination.balance - originalTransfer.amount;
         await db.runAsync(
           'UPDATE accounts SET balance = ? WHERE id = ?',
           [revertedDestinationBalance, originalDestination.id]
         );
-      }
+      // }
 
       // Luego actualizar las nuevas cuentas (aplicar nueva transferencia)
       await db.runAsync(
