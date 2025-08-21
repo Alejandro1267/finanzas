@@ -81,13 +81,16 @@ export function useAccount() {
             insertedAccount.id.toString()
           ]
         );
+      }
 
+      // Confirmar transacción
+      await db.execAsync('COMMIT');
+
+      if (insertedAccount.balance > 0) {
         // Obtener el registro recién insertado
         const insertedRecord = await db.getFirstAsync(
           'SELECT * FROM records WHERE rowid = last_insert_rowid()'
         ) as Record;
-
-        console.log("Registro de saldo inicial creado:", insertedRecord);
 
         // Agregar el registro al store
         addRecordStore({
@@ -99,9 +102,6 @@ export function useAccount() {
           account: insertedRecord.account,
         });
       }
-
-      // Confirmar transacción
-      await db.execAsync('COMMIT');
 
       // Agregar la cuenta al store con el ID real de la base de datos
       addAccountStore({
@@ -143,9 +143,19 @@ export function useAccount() {
 
   async function deleteAccount(accountId: string, transferToAccountId?: string) {
     let db: SQLite.SQLiteDatabase | null = null;
+    
+    // Variables para almacenar cambios que se aplicarán al store después del COMMIT
+    let updatedAccounts: Account[] = [];
+    let updatedRecords: Record[] = [];
+    let updatedTransfers: Transfer[] = [];
+    let newTotalBalance = totalBalance;
+    
     try {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
+
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
   
       if (transferToAccountId) {
         // TRANSFERENCIA: Actualizar registros en la base de datos
@@ -205,33 +215,30 @@ export function useAccount() {
             [newBalance, transferToAccountId]
           );
   
-          // Actualizar cuentas en el store: eliminar cuenta original y actualizar balance de destino
-          const updatedAccounts = accounts
+          // Preparar actualizaciones para el store
+          updatedAccounts = accounts
             .filter(account => account.id !== accountId) // Eliminar cuenta original
             .map(account =>
               account.id === transferToAccountId
                 ? { ...account, balance: newBalance } // Actualizar balance de cuenta destino
                 : account
             );
-          setAccounts(updatedAccounts);
         }
   
-        // Cambiar todos los records que tenían el accountId eliminado al transferToAccountId en el store
-        const updatedRecords = records.map(record =>
+        // Preparar cambios de records para el store
+        updatedRecords = records.map(record =>
           record.account === accountId
             ? { ...record, account: transferToAccountId }
             : record
         );
-        setRecords(updatedRecords);
   
-        // Actualizar transferencias en el store
-        const updatedTransfers = transfers
+        // Preparar actualizaciones de transferencias para el store
+        updatedTransfers = transfers
           .filter(transfer => !transfersToDelete.includes(transfer.id)) // Eliminar redundantes
           .map(transfer => {
             const updatedTransfer = transfersToUpdate.find(t => t.id === transfer.id);
             return updatedTransfer || transfer; // Usar versión actualizada si existe
           });
-        setTransfers(updatedTransfers);
   
         console.log(`Transferencias migradas: ${transfersToUpdate.length}, eliminadas: ${transfersToDelete.length}`);
   
@@ -248,6 +255,8 @@ export function useAccount() {
         );
   
         // Revertir efectos de las transferencias en los balances antes de eliminar
+        const accountBalanceUpdates = new Map<string, number>();
+        
         for (const transfer of transfersToDelete) {
           const originAccount = accounts.find(acc => acc.id === transfer.origin);
           const destinationAccount = accounts.find(acc => acc.id === transfer.destination);
@@ -256,7 +265,10 @@ export function useAccount() {
             // Solo actualizar balances de cuentas que NO sean la que se está eliminando
             if (transfer.origin !== accountId) {
               // Revertir efecto en cuenta origen (devolver el monto)
-              const revertedOriginBalance = originAccount.balance + transfer.amount;
+              const currentBalance = accountBalanceUpdates.get(transfer.origin) ?? originAccount.balance;
+              const revertedOriginBalance = currentBalance + transfer.amount;
+              accountBalanceUpdates.set(transfer.origin, revertedOriginBalance);
+              
               await db.runAsync(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [revertedOriginBalance, transfer.origin]
@@ -265,7 +277,10 @@ export function useAccount() {
   
             if (transfer.destination !== accountId) {
               // Revertir efecto en cuenta destino (quitar el monto)
-              const revertedDestinationBalance = destinationAccount.balance - transfer.amount;
+              const currentBalance = accountBalanceUpdates.get(transfer.destination) ?? destinationAccount.balance;
+              const revertedDestinationBalance = currentBalance - transfer.amount;
+              accountBalanceUpdates.set(transfer.destination, revertedDestinationBalance);
+              
               await db.runAsync(
                 'UPDATE accounts SET balance = ? WHERE id = ?',
                 [revertedDestinationBalance, transfer.destination]
@@ -286,44 +301,22 @@ export function useAccount() {
           return record.type === "income" ? sum - record.amount : sum + record.amount;
         }, 0);
   
-        // Eliminar registros del store
-        const filteredRecords = records.filter(record => record.account !== accountId);
-        setRecords(filteredRecords);
-        setTotalBalance(totalBalance + totalDelta);
+        // Preparar cambios para el store
+        updatedRecords = records.filter(record => record.account !== accountId);
+        newTotalBalance = totalBalance + totalDelta;
   
-        // Actualizar transferencias en el store: eliminar las que involucren la cuenta eliminada
-        // y actualizar balances de cuentas afectadas
-        const remainingTransfers = transfers.filter(transfer => 
+        // Preparar transferencias actualizadas para el store
+        updatedTransfers = transfers.filter(transfer => 
           transfer.origin !== accountId && transfer.destination !== accountId
         );
   
-        // Actualizar balances en el store para cuentas afectadas por transferencias eliminadas
-        const accountsToUpdate = new Map<string, number>();
-        
-        transfersToDelete.forEach(transfer => {
-          if (transfer.origin !== accountId) {
-            const currentBalance = accountsToUpdate.get(transfer.origin) ?? 
-              accounts.find(acc => acc.id === transfer.origin)?.balance ?? 0;
-            accountsToUpdate.set(transfer.origin, currentBalance + transfer.amount);
-          }
-          
-          if (transfer.destination !== accountId) {
-            const currentBalance = accountsToUpdate.get(transfer.destination) ?? 
-              accounts.find(acc => acc.id === transfer.destination)?.balance ?? 0;
-            accountsToUpdate.set(transfer.destination, currentBalance - transfer.amount);
-          }
-        });
-  
-        // Aplicar actualizaciones de balance en el store
-        const finalAccounts = accounts
+        // Preparar cuentas actualizadas para el store
+        updatedAccounts = accounts
           .filter(account => account.id !== accountId)
           .map(account => {
-            const newBalance = accountsToUpdate.get(account.id);
+            const newBalance = accountBalanceUpdates.get(account.id);
             return newBalance !== undefined ? { ...account, balance: newBalance } : account;
           });
-        
-        setAccounts(finalAccounts);
-        setTransfers(remainingTransfers);
   
         console.log(`Transferencias eliminadas: ${transfersToDelete.length}`);
       }
@@ -333,10 +326,28 @@ export function useAccount() {
         'DELETE FROM accounts WHERE id = ?',
         [accountId]
       );
+
+      // ✅ Confirmar transacción UNA SOLA VEZ
+      await db.execAsync('COMMIT');
+  
+      // ✅ Actualizar store DESPUÉS del commit exitoso
+      setAccounts(updatedAccounts);
+      setRecords(updatedRecords);
+      setTransfers(updatedTransfers);
+      setTotalBalance(newTotalBalance);
   
       console.log("Cuenta eliminada de DB:", accountId);
     } catch (error) {
       console.error("Error deleting account from database:", error);
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
       Alert.alert("Error", "No se pudo eliminar la cuenta de la base de datos");
     } finally {
       if (db) {
@@ -377,6 +388,9 @@ export function useAccount() {
       // Abrir la base de datos
       db = await SQLite.openDatabaseAsync("finanzas.db", { useNewConnection: true });
 
+      // Iniciar transacción para operaciones atómicas
+      await db.execAsync('BEGIN TRANSACTION');
+
       // Actualizar la cuenta en la base de datos
       await db.runAsync(
         'UPDATE accounts SET name = ?, percentage = ?, color = ? WHERE id = ?',
@@ -390,7 +404,10 @@ export function useAccount() {
 
       console.log("Cuenta actualizada en DB:", currentAccount.id);
 
-      // Actualizar la cuenta en el store
+      // ✅ Confirmar transacción UNA SOLA VEZ
+      await db.execAsync('COMMIT');
+
+      // ✅ Actualizar store DESPUÉS del commit exitoso
       const updatedAccounts = accounts.map(acc =>
         acc.id === currentAccount.id
           ? {
@@ -408,6 +425,17 @@ export function useAccount() {
       clearAccountErrors();
     } catch (error) {
       console.error("Error updating account in database:", error);
+      
+      // Revertir transacción en caso de error
+      if (db) {
+        try {
+          await db.execAsync('ROLLBACK');
+          console.log("🔄 Transacción revertida debido al error");
+        } catch (rollbackError) {
+          console.error("Error during rollback:", rollbackError);
+        }
+      }
+      
       Alert.alert("Error", "No se pudo actualizar la cuenta en la base de datos");
     } finally {
       if (db) {
