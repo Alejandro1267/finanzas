@@ -1,10 +1,12 @@
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import { useAccount } from "@/hooks/useAccount";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useThemeModeStore } from "@/store/useThemeModeStore";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,12 +16,39 @@ import {
 
 export default function ConfiguracionScreen() {
   const { setThemeMode } = useThemeModeStore();
+  const { reconcileBalances } = useAccount();
+  const [isReconciling, setIsReconciling] = useState(false);
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.grayT[200], dark: Colors.grayT[800] },
     "text"
   );
   const currentScheme = useColorScheme();
+
+  const handleReconcileBalances = async () => {
+    Alert.alert(
+      "Reconciliar Balances",
+      "Esta acción recalculará todos los balances de las cuentas basándose en los registros y transferencias. ¿Continuar?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Reconciliar",
+          style: "destructive",
+          onPress: async () => {
+            setIsReconciling(true);
+            try {
+              await reconcileBalances();
+            } finally {
+              setIsReconciling(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView
@@ -39,19 +68,33 @@ export default function ConfiguracionScreen() {
           >
             {currentScheme === "light" ? (
               <View style={styles.flexRow}>
-                <Text style={[styles.currentModeText, { color: text }]}>
+                <Text style={[styles.buttonText, { color: text }]}>
                   Modo Oscuro
                 </Text>
                 <IconSymbol name="moon" color={text} />
               </View>
             ) : (
               <View style={styles.flexRow}>
-                <Text style={[styles.currentModeText, { color: text }]}>
+                <Text style={[styles.buttonText, { color: text }]}>
                   Modo Claro
                 </Text>
                 <IconSymbol name="sun.max" color={text} />
               </View>
             )}
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.currentModeInfo, { backgroundColor }]}>
+          <TouchableOpacity
+            onPress={handleReconcileBalances}
+            disabled={isReconciling}
+          >
+            <View style={styles.flexRow}>
+              <Text style={[styles.buttonText, { color: text }]}>
+                {isReconciling ? "Reconciliando..." : "Reconciliar Balances"}
+              </Text>
+              <IconSymbol name="arrow.clockwise" color={text} />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -81,10 +124,9 @@ const styles = StyleSheet.create({
   currentModeInfo: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: Colors.red,
     marginBottom: 20,
   },
-  currentModeText: {
+  buttonText: {
     fontSize: 14,
     fontWeight: "500",
     textAlign: "center",
