@@ -18,6 +18,7 @@ type AccountState = {
   accountErrors: ValidationErrors
   totalBalance: number
   accountMode: "edit" | "new"
+  isLoading: boolean
 
   // Actions
   setCurrentAccount: (account: Account | null) => void
@@ -28,6 +29,7 @@ type AccountState = {
   setAccountField: <K extends keyof Account>(field: K, value: Account[K]) => void
   setTotalBalance: (balance: number) => void
   setAccountMode: (mode: "edit" | "new") => void
+  setIsLoading: (loading: boolean) => void
 
   // Functions
   addAccount: (account: Account) => void
@@ -46,6 +48,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   accountErrors: {},
   totalBalance: 0,
   accountMode: "new",
+  isLoading: false,
 
   // Actions
   setCurrentAccount: (account: Account | null) => {
@@ -79,6 +82,9 @@ export const useAccountStore = create<AccountState>((set, get) => ({
   },
   setAccountMode: (mode: "edit" | "new") => {
     set({ accountMode: mode })
+  },
+  setIsLoading: (loading: boolean) => {
+    set({ isLoading: loading })
   },
   
   // Functions

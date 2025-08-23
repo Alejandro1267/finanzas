@@ -18,11 +18,13 @@ export function useAccount() {
     setShowAccountModal,
     setAccountErrors,
     setAccounts,
+    setIsLoading,
   } = useAccountStore()
   const { addRecord: addRecordStore, records, setRecords } = useRecordStore()
   const { transfers, setTransfers } = useTransferStore();
 
   const addAccount = async () => {
+    setIsLoading(true);
     clearAccountErrors();
 
     const account = accountSchema.safeParse(currentAccount)
@@ -37,6 +39,7 @@ export function useAccount() {
 
       setAccountErrors(errors);
       console.log("Errores de validación:", errors);
+      setIsLoading(false);
       return;
     }
 
@@ -115,7 +118,6 @@ export function useAccount() {
       setTotalBalance(totalBalance + insertedAccount.balance);
       setShowAccountModal(false);
       clearAccountErrors();
-
     } catch (error) {
       console.error("Error adding account to database:", error);
 
@@ -131,6 +133,7 @@ export function useAccount() {
 
       Alert.alert("Error", "No se pudo agregar la cuenta a la base de datos");
     } finally {
+      setIsLoading(false);
       if (db) {
         try {
           await db.closeAsync();
@@ -142,6 +145,7 @@ export function useAccount() {
   };
 
   async function deleteAccount(accountId: string, transferToAccountId?: string) {
+    setIsLoading(true);
     let db: SQLite.SQLiteDatabase | null = null;
 
     // Variables para almacenar cambios que se aplicarán al store después del COMMIT
@@ -350,6 +354,7 @@ export function useAccount() {
       }
       Alert.alert("Error", "No se pudo eliminar la cuenta de la base de datos");
     } finally {
+      setIsLoading(false);
       if (db) {
         try {
           await db.closeAsync();
@@ -361,6 +366,7 @@ export function useAccount() {
   }
 
   async function updateAccount() {
+    setIsLoading(true);
     clearAccountErrors();
 
     const account = accountSchema.safeParse(currentAccount);
@@ -375,11 +381,13 @@ export function useAccount() {
 
       setAccountErrors(errors);
       console.log("Errores de validación:", errors);
+      setIsLoading(false);
       return;
     }
 
     if (!currentAccount?.id) {
       Alert.alert("Error", "No se puede actualizar la cuenta: ID no encontrado");
+      setIsLoading(false);
       return;
     }
 
@@ -438,6 +446,7 @@ export function useAccount() {
 
       Alert.alert("Error", "No se pudo actualizar la cuenta en la base de datos");
     } finally {
+      setIsLoading(false);
       if (db) {
         try {
           await db.closeAsync();
@@ -517,7 +526,6 @@ export function useAccount() {
       );
 
       console.log("Balances reconciliados exitosamente");
-
     } catch (error) {
       console.error("Error reconciling balances:", error);
 

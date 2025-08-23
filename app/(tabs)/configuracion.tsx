@@ -3,8 +3,9 @@ import { Colors } from "@/constants/Colors";
 import { useAccount } from "@/hooks/useAccount";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useAccountStore } from "@/store/useAccountStore";
 import { useThemeModeStore } from "@/store/useThemeModeStore";
-import React, { useState } from "react";
+import React from "react";
 import {
   Alert,
   ScrollView,
@@ -17,7 +18,7 @@ import {
 export default function ConfiguracionScreen() {
   const { setThemeMode } = useThemeModeStore();
   const { reconcileBalances } = useAccount();
-  const [isReconciling, setIsReconciling] = useState(false);
+  const { isLoading, setIsLoading } = useAccountStore();
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.grayT[200], dark: Colors.grayT[800] },
@@ -38,11 +39,11 @@ export default function ConfiguracionScreen() {
           text: "Reconciliar",
           style: "destructive",
           onPress: async () => {
-            setIsReconciling(true);
+            setIsLoading(true);
             try {
               await reconcileBalances();
             } finally {
-              setIsReconciling(false);
+              setIsLoading(false);
             }
           },
         },
@@ -87,11 +88,11 @@ export default function ConfiguracionScreen() {
         <View style={[styles.currentModeInfo, { backgroundColor }]}>
           <TouchableOpacity
             onPress={handleReconcileBalances}
-            disabled={isReconciling}
+            disabled={isLoading}
           >
             <View style={styles.flexRow}>
               <Text style={[styles.buttonText, { color: text }]}>
-                {isReconciling ? "Reconciliando..." : "Reconciliar Balances"}
+                {isLoading ? "Reconciliando..." : "Reconciliar Balances"}
               </Text>
               <IconSymbol name="arrow.clockwise" color={text} />
             </View>

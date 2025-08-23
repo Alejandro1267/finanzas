@@ -28,6 +28,7 @@ export default function AccountModal() {
     accountMode,
     setAccountMode,
     setShowTransferModal,
+    isLoading,
   } = useAccountStore();
   const { addAccount, deleteAccount, updateAccount } = useAccount();
   const text = useThemeColor({}, "text");
@@ -346,6 +347,7 @@ export default function AccountModal() {
                 <TouchableOpacity
                   style={[styles.button, { backgroundColor: confirmButton }]}
                   onPress={addAccount}
+                  disabled={isLoading}
                 >
                   <Text style={[styles.buttonText, { color: confirmText }]}>
                     Agregar Cuenta
@@ -355,6 +357,7 @@ export default function AccountModal() {
                 <TouchableOpacity
                   style={[styles.button, { backgroundColor: confirmButton }]}
                   onPress={updateAccount}
+                  disabled={isLoading}
                 >
                   <Text style={[styles.buttonText, { color: confirmText }]}>
                     Guardar Cambios
