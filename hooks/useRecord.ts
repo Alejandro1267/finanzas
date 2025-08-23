@@ -11,12 +11,14 @@ export function useRecord() {
     setTotalBalance,
     totalBalance,
   } = useAccountStore()
-  const { addRecord: addRecordStore, records, setRecords } = useRecordStore()
+  const { addRecord: addRecordStore, records, setRecords, setIsLoading } = useRecordStore()
 
   async function addRecord(record: RecordDraft, updateTotal: boolean = true): Promise<boolean> {
+    setIsLoading(true)
     const account = accounts.find(acc => acc.id === record.account)
     if (!account) {
       Alert.alert("Error", "Cuenta no encontrada.")
+      setIsLoading(false)
       return false;
     }
 
@@ -91,6 +93,7 @@ export function useRecord() {
       Alert.alert("Error", "No se pudo agregar el registro a la base de datos");
       return false;
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
@@ -127,12 +130,14 @@ export function useRecord() {
   async function handleAutomaticDistribution(
     baseRecord: RecordDraft,
   ): Promise<boolean> {
+    setIsLoading(true)
     const accountsWithPercentage = accounts.filter(
       (account) => account.id !== "distribute" && account.percentage && account.percentage > 0
     )
 
     if (accountsWithPercentage.length === 0) {
       Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución")
+      setIsLoading(false)
       return false
     }
 
@@ -142,6 +147,7 @@ export function useRecord() {
 
     if (Math.abs(totalPercentage - 100) > 0.01) {
       Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`)
+      setIsLoading(false)
       return false
     }
 
@@ -243,6 +249,7 @@ export function useRecord() {
       Alert.alert("Error", "No se pudo distribuir el registro automáticamente");
       return false;
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
@@ -254,6 +261,7 @@ export function useRecord() {
   }
 
   async function deleteRecord(recordId: string) {
+    setIsLoading(true)
     let db: SQLite.SQLiteDatabase | null = null;
     try {
       // Abrir la base de datos
@@ -270,6 +278,7 @@ export function useRecord() {
 
       if (!recordToDelete) {
         Alert.alert("Error", "Registro no encontrado.");
+        setIsLoading(false)
         return;
       }
 
@@ -277,6 +286,7 @@ export function useRecord() {
       const account = accounts.find(acc => acc.id === recordToDelete.account);
       if (!account) {
         Alert.alert("Error", "Cuenta no encontrada.");
+        setIsLoading(false)
         return;
       }
 
@@ -324,6 +334,7 @@ export function useRecord() {
       }
       Alert.alert("Error", "No se pudo eliminar el registro de la base de datos");
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
@@ -335,6 +346,7 @@ export function useRecord() {
   }
 
   async function editRecord(recordId: string, newRecord: RecordDraft): Promise<boolean> {
+    setIsLoading(true)
     let db: SQLite.SQLiteDatabase | null = null;
 
     try {
@@ -342,6 +354,7 @@ export function useRecord() {
       const originalRecord = records.find(record => record.id === recordId);
       if (!originalRecord) {
         Alert.alert("Error", "Registro original no encontrado.");
+        setIsLoading(false)
         return false;
       }
 
@@ -349,6 +362,7 @@ export function useRecord() {
       const originalAccount = accounts.find(acc => acc.id === originalRecord.account);
       if (!originalAccount) {
         Alert.alert("Error", "Cuenta original no encontrada.");
+        setIsLoading(false)
         return false;
       }
 
@@ -384,6 +398,7 @@ export function useRecord() {
 
         if (accountsWithPercentage.length === 0) {
           Alert.alert("Error", "No hay cuentas con porcentaje definido para la distribución");
+          setIsLoading(false)
           return false;
         }
 
@@ -393,6 +408,7 @@ export function useRecord() {
 
         if (Math.abs(totalPercentage - 100) > 0.01) {
           Alert.alert("Error", `Los porcentajes no suman 100%\nTotal: ${totalPercentage}%`);
+          setIsLoading(false)
           return false;
         }
 
@@ -446,6 +462,7 @@ export function useRecord() {
         const account = accounts.find(acc => acc.id === newRecord.account);
         if (!account) {
           Alert.alert("Error", "Cuenta no encontrada.");
+          setIsLoading(false)
           return false;
         }
 
@@ -566,6 +583,7 @@ export function useRecord() {
       Alert.alert("Error", "No se pudo editar el registro");
       return false;
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();

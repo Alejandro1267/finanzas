@@ -31,6 +31,7 @@ export function RecordModal() {
     setRecordMode,
     recordMode,
     currentRecord,
+    isLoading,
   } = useRecordStore();
   const {
     createEmptyTransfer,
@@ -254,6 +255,9 @@ export function RecordModal() {
   };
 
   const getButtonText = () => {
+    if (isLoading) {
+      return "Guardando...";
+    }
     if (recordMode === "new") {
       switch (activeTab) {
         case "income":
@@ -291,7 +295,7 @@ export function RecordModal() {
                 <Text style={[styles.title, { color: titleEdit }]}>
                   Editar Transferencia
                 </Text>
-                <TouchableOpacity onPress={handleDelete}>
+                <TouchableOpacity onPress={handleDelete} disabled={isLoading}>
                   <IconSymbol
                     name="trash"
                     style={styles.deleteButton}
@@ -304,7 +308,7 @@ export function RecordModal() {
                 <Text style={[styles.title, { color: titleEdit }]}>
                   Editar Registro
                 </Text>
-                <TouchableOpacity onPress={handleDelete}>
+                <TouchableOpacity onPress={handleDelete} disabled={isLoading}>
                   <IconSymbol
                     name="trash"
                     style={styles.deleteButton}
@@ -362,6 +366,7 @@ export function RecordModal() {
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: confirmButton }]}
                 onPress={handleSubmit}
+                disabled={isLoading}
               >
                 <Text style={[styles.buttonText, { color: confirmText }]}>
                   {getButtonText()}
