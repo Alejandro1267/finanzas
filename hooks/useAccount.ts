@@ -507,6 +507,7 @@ export function useAccount() {
         // Preparar cuenta actualizada para el store
         updatedAccounts.push({
           ...account,
+          id: account.id.toString(),
           balance: realBalance
         });
 

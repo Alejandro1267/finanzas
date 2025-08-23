@@ -1,5 +1,6 @@
 import { TransferDraft } from "@/schemas";
 import { useAccountStore } from "@/store/useAccountStore";
+import { useRecordStore } from "@/store/useRecordStore";
 import { Transfer, useTransferStore } from "@/store/useTransferStore";
 import { Transaction } from "@/types";
 import * as SQLite from 'expo-sqlite';
@@ -7,6 +8,7 @@ import { Alert } from "react-native";
 
 export function useTransfer() {
   const { addTransfer: addTransferStore, editTransfer: editTransferStore, transfers, deleteTransfer: deleteTransferStore } = useTransferStore();
+  const { setIsLoading } = useRecordStore();
   const { accounts, updateAccountBalance } = useAccountStore();
 
   const isTransfer = (transaction: Transaction): transaction is Transfer & { type: "transfer" } => {
@@ -14,23 +16,27 @@ export function useTransfer() {
   };
 
   const addTransfer = async (transfer: TransferDraft): Promise<boolean> => {
+    setIsLoading(true)
     // Validar que las cuentas existan
     const origin = accounts.find(acc => acc.id === transfer.origin);
     const destination = accounts.find(acc => acc.id === transfer.destination);
 
     if (!origin) {
       Alert.alert("Error", "Cuenta de origen no encontrada.");
+      setIsLoading(false)
       return false;
     }
 
     if (!destination) {
       Alert.alert("Error", "Cuenta de destino no encontrada.");
+      setIsLoading(false)
       return false;
     }
 
     // Validar que la cuenta de origen tenga suficiente saldo
     if (origin.balance < transfer.amount) {
       Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
+      setIsLoading(false)
       return false;
     }
 
@@ -111,6 +117,7 @@ export function useTransfer() {
       Alert.alert("Error", "No se pudo procesar la transferencia.");
       return false;
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
@@ -122,10 +129,12 @@ export function useTransfer() {
   };
 
   const editTransfer = async (id: string, transfer: TransferDraft): Promise<boolean> => {
+    setIsLoading(true)
     const originalTransfer = transfers.find(t => t.id === id);
 
     if (!originalTransfer) {
       Alert.alert("Error", "Transferencia no encontrada.");
+      setIsLoading(false)
       return false;
     }
 
@@ -134,11 +143,13 @@ export function useTransfer() {
 
     if (!newOrigin) {
       Alert.alert("Error", "Cuenta de origen no encontrada.");
+      setIsLoading(false)
       return false;
     }
 
     if (!newDestination) {
       Alert.alert("Error", "Cuenta de destino no encontrada.");
+      setIsLoading(false)
       return false;
     }
 
@@ -155,6 +166,7 @@ export function useTransfer() {
 
       if (!originalOrigin || !originalDestination) {
         Alert.alert("Error", "Cuentas originales no encontradas.");
+        setIsLoading(false)
         return false;
       }
 
@@ -179,6 +191,7 @@ export function useTransfer() {
         updateAccountBalance(originalDestination.id, originalDestination.balance);
         // }
         Alert.alert("Error", "Saldo insuficiente en la cuenta de origen.");
+        setIsLoading(false)
         return false;
       }
 
@@ -266,6 +279,7 @@ export function useTransfer() {
       Alert.alert("Error", "No se pudo editar la transferencia.");
       return false;
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
@@ -277,11 +291,13 @@ export function useTransfer() {
   };
 
   const deleteTransfer = async (id: string) => {
+    setIsLoading(true)
     // Buscar la transferencia a eliminar
     const transferToDelete = transfers.find(t => t.id === id);
     
     if (!transferToDelete) {
       Alert.alert("Error", "Transferencia no encontrada.");
+      setIsLoading(false)
       return;
     }
 
@@ -291,6 +307,7 @@ export function useTransfer() {
 
     if (!originAccount || !destinationAccount) {
       Alert.alert("Error", "No se encontraron las cuentas de la transferencia.");
+      setIsLoading(false)
       return;
     }
 
@@ -350,6 +367,7 @@ export function useTransfer() {
 
       Alert.alert("Error", "No se pudo eliminar la transferencia.");
     } finally {
+      setIsLoading(false)
       if (db) {
         try {
           await db.closeAsync();
