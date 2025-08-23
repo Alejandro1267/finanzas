@@ -2,7 +2,7 @@
   "expo": {
     "name": "Finanzas",
     "slug": "finanzas",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "orientation": "portrait",
     "icon": "./assets/images/splash-icon.png",
     "scheme": "finanzas",
@@ -18,7 +18,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.alejandro260.finanzas",
-      "versionCode": 14
+      "versionCode": 15
     },
     "web": {
       "bundler": "metro",
