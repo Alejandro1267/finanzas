@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     paddingBottom: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
   },
   dateText: {
     fontSize: 16,
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   transactionItemBorder: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
   },
   recordInfo: {
     flex: 1,
