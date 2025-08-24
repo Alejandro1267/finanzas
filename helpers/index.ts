@@ -16,3 +16,12 @@ export const fechaLocal = () => {
   const fechaLocal = new Date().toLocaleDateString("en-CA");
   return fechaLocal;
 }
+
+export const formatShortDate = (date: string) => {
+  const fechaLocal = new Date(date).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  return fechaLocal;
+}
