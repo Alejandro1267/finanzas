@@ -1,6 +1,7 @@
 import { RecordDraft } from "@/schemas"
 import { useAccountStore } from "@/store/useAccountStore"
 import { Record, useRecordStore } from "@/store/useRecordStore"
+import { useTransferStore } from "@/store/useTransferStore"
 import * as SQLite from 'expo-sqlite'
 import { Alert } from "react-native"
 
@@ -594,10 +595,68 @@ export function useRecord() {
     }
   }
 
+  async function loadRecordsByMonth(month: number, year: number) {
+    const { setIsLoading } = useRecordStore.getState();
+    setIsLoading(true);
+    let db: SQLite.SQLiteDatabase | null = null;
+
+    try {
+      db = await SQLite.openDatabaseAsync("finanzas.db", {
+        useNewConnection: true,
+      });
+
+      // Calculate month range for filtering
+      const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+      const nextMonth = month === 11 ? 0 : month + 1;
+      const nextYear = month === 11 ? year + 1 : year;
+      const endDate = `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}-01`;
+
+      // Load records for the specific month
+      const records = (await db.getAllAsync(
+        `SELECT *
+        FROM records
+        WHERE date >= ? AND date < ?
+        ORDER BY date DESC, id DESC`,
+        [startDate, endDate]
+      )) as Record[];
+
+      // Load transfers for the specific month
+      const transfers = (await db.getAllAsync(
+        `SELECT *
+        FROM transfers
+        WHERE date >= ? AND date < ?
+        ORDER BY date DESC, id DESC`,
+        [startDate, endDate]
+      )) as any[];
+
+      const { setRecords } = useRecordStore.getState();
+      setRecords(records);
+      
+      // Update transfers store if needed
+      const { setTransfers } = useTransferStore.getState();
+      setTransfers(transfers);
+
+      console.log(`Loaded ${records.length} records for ${month + 1}/${year}`);
+
+    } catch (error) {
+      console.error("Error loading records by month:", error);
+    } finally {
+      setIsLoading(false);
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error("Error closing database:", closeError);
+        }
+      }
+    }
+  }
+
   return {
     addRecord,
     handleAutomaticDistribution,
     deleteRecord,
     editRecord,
+    loadRecordsByMonth,
   }
 }
