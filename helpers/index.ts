@@ -18,9 +18,13 @@ export const fechaLocal = () => {
 }
 
 export const formatShortDate = (date: string) => {
-  const fechaLocal = new Date(date).toLocaleDateString("es-ES", {
+  // Parse YYYY-MM-DD manually to avoid timezone issues
+  const [year, month, day] = date.split('-').map(Number);
+  const dateObj = new Date(year, month - 1, day); // month is 0-indexed
+  
+  const fechaLocal = dateObj.toLocaleDateString("es-ES", {
     day: "2-digit",
-    month: "short",
+    month: "short", 
     year: "numeric",
   });
   return fechaLocal;
