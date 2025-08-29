@@ -2,14 +2,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useRecordStore } from "@/store/useRecordStore";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MONTHS = [
   "Enero",
@@ -24,6 +17,21 @@ const MONTHS = [
   "Octubre",
   "Noviembre",
   "Diciembre",
+];
+
+const MONTHS_SHORT = [
+  "ENE",
+  "FEB",
+  "MAR",
+  "ABR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SEPT",
+  "OCT",
+  "NOV",
+  "DIC",
 ];
 
 export function MonthSelector() {
@@ -42,19 +50,31 @@ export function MonthSelector() {
   const text = useThemeColor({}, "text");
   const background = useThemeColor({}, "backgroundCard");
   const tint = useThemeColor({}, "tint");
+  const selectedText = useThemeColor(
+    { light: Colors.white, dark: Colors.black },
+    "text"
+  );
 
   const today = new Date();
-  const currentDate = new Date(selectedYear, selectedMonth, 1);
   const isCurrentMonth =
     selectedMonth === today.getMonth() && selectedYear === today.getFullYear();
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === "ios");
+  const handleMonthSelect = (monthIndex: number) => {
+    setSelectedMonth(monthIndex);
+    setSelectedYear(selectedYear);
+    setShowDatePicker(false);
+  };
 
-    if (selectedDate) {
-      setSelectedMonth(selectedDate.getMonth());
-      setSelectedYear(selectedDate.getFullYear());
-    }
+  const handleYearPrevious = () => {
+    setSelectedYear(selectedYear - 1);
+  };
+
+  const handleYearNext = () => {
+    setSelectedYear(selectedYear + 1);
+  };
+
+  const handleCancel = () => {
+    setShowDatePicker(false);
   };
 
   return (
@@ -92,14 +112,106 @@ export function MonthSelector() {
         <IconSymbol name="chevron.right" size={24} color={text} />
       </TouchableOpacity>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={currentDate}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={handleDateChange}
-        />
-      )}
+      <Modal
+        visible={showDatePicker}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCancel}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={handleCancel}
+        >
+          <TouchableOpacity
+            style={[styles.modalContent, { backgroundColor: background }]}
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
+          >
+            {/* Header with close button */}
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: text }]}>Fecha</Text>
+              <TouchableOpacity
+                onPress={handleCancel}
+                style={styles.closeButton}
+              >
+                <IconSymbol name="xmark" size={20} color={text} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Year navigation */}
+            <View style={styles.yearNavigation}>
+              <TouchableOpacity
+                onPress={handleYearPrevious}
+                style={styles.yearArrow}
+              >
+                <IconSymbol name="chevron.left" size={20} color={text} />
+              </TouchableOpacity>
+
+              <Text style={[styles.yearText, { color: text }]}>
+                {selectedYear}
+              </Text>
+
+              <TouchableOpacity
+                onPress={handleYearNext}
+                style={styles.yearArrow}
+              >
+                <IconSymbol name="chevron.right" size={20} color={text} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Months grid */}
+            <View style={styles.monthsGrid}>
+              {MONTHS_SHORT.map((month, index) => {
+                const isSelected = index === selectedMonth;
+                const isCurrentMonthYear =
+                  index === today.getMonth() &&
+                  selectedYear === today.getFullYear();
+
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.monthGridItem,
+                      isSelected && { backgroundColor: tint },
+                      isCurrentMonthYear &&
+                        !isSelected && { borderColor: tint, borderWidth: 1 },
+                    ]}
+                    onPress={() => handleMonthSelect(index)}
+                  >
+                    <Text
+                      style={[
+                        styles.monthGridText,
+                        {
+                          color: isSelected
+                            ? selectedText
+                            : isCurrentMonthYear
+                            ? tint
+                            : text,
+                        },
+                      ]}
+                    >
+                      {month}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Cancel button */}
+            <View style={styles.cancelButtonContainer}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { borderColor: text }]}
+                onPress={handleCancel}
+              >
+                <Text style={[styles.cancelButtonText, { color: text }]}>
+                  Cancelar
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -143,6 +255,94 @@ const styles = StyleSheet.create({
   },
   todayText: {
     fontSize: 12,
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "85%",
+    maxWidth: 400,
+    padding: 24,
+    borderRadius: 16,
+    elevation: 5,
+    shadowColor: Colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  closeButton: {
+    padding: 4,
+  },
+  currentSelection: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  currentSelectionText: {
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 1,
+  },
+  yearNavigation: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 24,
+    gap: 24,
+  },
+  yearArrow: {
+    padding: 8,
+  },
+  yearText: {
+    fontSize: 24,
+    fontWeight: "600",
+    minWidth: 80,
+    textAlign: "center",
+  },
+  monthsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  monthGridItem: {
+    width: "22%",
+    aspectRatio: 1.5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    backgroundColor: "transparent",
+  },
+  monthGridText: {
+    fontSize: 12,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  cancelButtonContainer: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+  cancelButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  cancelButtonText: {
+    fontSize: 14,
     fontWeight: "600",
   },
 });
