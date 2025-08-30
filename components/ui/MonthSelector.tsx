@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    marginBottom: 16,
+    marginBottom: 8,
     borderRadius: 12,
     elevation: 2,
     shadowColor: Colors.black,

@@ -1,13 +1,13 @@
 import { RecordModal } from "@/components/finance/RecordModal";
 import { RecordsList } from "@/components/finance/RecordsList";
-import { ScrollView, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export default function Records() {
   return (
     <>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <RecordsList />
-      </ScrollView>
+      </View>
       <RecordModal />
     </>
   );
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 36,
-    padding: 32,
+    // padding: 32,
+    paddingHorizontal: 32,
   },
 });
