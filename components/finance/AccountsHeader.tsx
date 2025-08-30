@@ -65,7 +65,8 @@ export function AccountsHeader() {
           <Text
             style={[
               styles.columnValue,
-              { color: totalBalance >= 0 ? incomeAmount : expenseAmount },
+              { color: text },
+              //   { color: totalBalance >= 0 ? incomeAmount : expenseAmount },
             ]}
           >
             {formatNumber$(totalBalance)}
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   columnsContainer: {
     flexDirection: "row",

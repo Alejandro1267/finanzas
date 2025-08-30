@@ -8,11 +8,11 @@ import { TransferModal } from "@/components/finance/TransferModal";
 export default function Accounts() {
   return (
     <>
+      <View style={styles.headerContainer}>
+        <AccountsHeader />
+      </View>
       <ScrollView>
         {/* <Header /> */}
-        <View style={styles.headerContainer}>
-          <AccountsHeader />
-        </View>
         <View style={styles.content}>
           <AccountsList />
         </View>
