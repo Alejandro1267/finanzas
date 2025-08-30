@@ -1,7 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Account, useAccountStore } from "@/store/useAccountStore";
-import { Record, useRecordStore } from "@/store/useRecordStore";
-import { Transfer, useTransferStore } from "@/store/useTransferStore";
+import { useRecordStore } from "@/store/useRecordStore";
+import { useTransferStore } from "@/store/useTransferStore";
 import {
   DarkTheme,
   DefaultTheme,
@@ -77,25 +77,30 @@ export default function RootLayout() {
         );
         setTotalBalance(totalBalance);
 
-        const records = (await db.getAllAsync(
-          `SELECT *
-          FROM records
-          ORDER BY
-            date DESC,
-            id DESC`
-        )) as Record[];
-        setRecords(records);
-        console.log("records", records);
+        // const records = (await db.getAllAsync(
+        //   `SELECT *
+        //   FROM records
+        //   ORDER BY
+        //     date DESC,
+        //     id DESC`
+        // )) as Record[];
+        // setRecords(records);
+        // console.log("records", records);
 
-        const transfers = (await db.getAllAsync(
-          `SELECT *
-          FROM transfers
-          ORDER BY
-            date DESC,
-            id DESC`
-        )) as Transfer[];
-        setTransfers(transfers);
-        console.log("transfers", transfers);
+        // const transfers = (await db.getAllAsync(
+        //   `SELECT *
+        //   FROM transfers
+        //   ORDER BY
+        //     date DESC,
+        //     id DESC`
+        // )) as Transfer[];
+        // setTransfers(transfers);
+        // console.log("transfers", transfers);
+
+        // Inicializar records y transfers vacíos, porque se cargan en loadRecordsByMonth
+        setRecords([]);
+        setTransfers([]);
+
         console.log("Database initialized");
       } catch (error) {
         console.error("Error initializing database:", error);
