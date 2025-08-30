@@ -16,7 +16,8 @@ export default function Records() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 36,
+    // marginTop: 36,
+    marginTop: 24,
     // padding: 32,
     paddingHorizontal: 32,
   },

@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RecordsHeader } from "../ui/RecordsHeader";
+import { RecordsHeader } from "./RecordsHeader";
 // import { GestureDetector } from "react-native-gesture-handler";
 
 export function RecordsList() {
@@ -272,15 +272,12 @@ export function RecordsList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // marginBottom: 24,
   },
   headerContainer: {
     marginTop: 24,
     marginBottom: 8,
     flexDirection: "column",
     gap: 8,
-    // justifyContent: "space-between",
-    // alignItems: "center",
   },
   title: {
     fontSize: 20,
@@ -323,7 +320,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // padding: 16,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
