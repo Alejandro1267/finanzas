@@ -10,7 +10,7 @@ import { useTransferStore } from "@/store/useTransferStore";
 import type { Transaction } from "@/types";
 import { useEffect, useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+// import { GestureDetector } from "react-native-gesture-handler";
 
 export function RecordsList() {
   const { accounts } = useAccountStore();
@@ -22,8 +22,8 @@ export function RecordsList() {
     setActiveTab,
     selectedMonth,
     selectedYear,
-    navigateToNextMonth,
-    navigateToPreviousMonth,
+    // navigateToNextMonth,
+    // navigateToPreviousMonth,
     isLoading,
   } = useRecordStore();
   const { transfers, setCurrentTransfer } = useTransferStore();
@@ -154,30 +154,34 @@ export function RecordsList() {
     }
   };
 
-  // Modern Gesture API for swipe navigation
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-10, 10]) // Only activate for horizontal movement
-    .failOffsetY([-5, 5]) // Fail if vertical movement is too small
-    .onEnd((event) => {
-      const { translationX, velocityX } = event;
+  // Swipe de navegación entre meses.
+  // Esta comentado porque aún no funciona bien.
+  // const panGesture = Gesture.Pan()
+  //   .activeOffsetX([-30, 30]) // Only activate for horizontal movement
+  //   .failOffsetY([-20, 20]) // Fail if vertical movement is too small
+  //   .minDistance(30)
+  //   .runOnJS(true)
+  //   .onEnd((event) => {
+  //     const { translationX, velocityX } = event;
 
-      // Swipe threshold
-      const swipeThreshold = 50;
-      const velocityThreshold = 500;
+  //     // Swipe threshold
+  //     const swipeThreshold = 80;
+  //     const velocityThreshold = 800;
 
-      if (
-        Math.abs(translationX) > swipeThreshold ||
-        Math.abs(velocityX) > velocityThreshold
-      ) {
-        if (translationX > 0 || velocityX > 0) {
-          // Swipe right - previous month
-          navigateToPreviousMonth();
-        } else {
-          // Swipe left - next month
-          navigateToNextMonth();
-        }
-      }
-    });
+  //     if (
+  //       Math.abs(translationX) > swipeThreshold ||
+  //       (Math.abs(velocityX) > velocityThreshold &&
+  //         Math.abs(event.translationY) < 50)
+  //     ) {
+  //       if (translationX > 0 || velocityX > 0) {
+  //         // Swipe right - previous month
+  //         navigateToPreviousMonth();
+  //       } else {
+  //         // Swipe left - next month
+  //         navigateToNextMonth();
+  //       }
+  //     }
+  //   });
 
   return (
     <View style={styles.container}>
@@ -191,64 +195,64 @@ export function RecordsList() {
           : "No hay registros"}
       </Text>
 
-      <GestureDetector gesture={panGesture}>
-        <View style={styles.swipeContainer}>
-          {groupedData.map((item) => (
-            <View
-              key={item.date}
-              style={[styles.dateCard, { backgroundColor: background }]}
-            >
-              <View style={[styles.dateHeader, { borderBottomColor: bb }]}>
-                <Text style={[styles.dateText, { color: text }]}>
-                  {formatShortDate(item.date)}
-                </Text>
-                <View style={styles.totalsContainer}>
-                  {item.dailyTotals.income > 0 && (
-                    <Text style={[styles.totalText, { color: incomeAmount }]}>
-                      {formatNumber$(item.dailyTotals.income)}
-                    </Text>
-                  )}
-                  {item.dailyTotals.expenses > 0 && (
-                    <Text style={[styles.totalText, { color: expenseAmount }]}>
-                      {formatNumber$(item.dailyTotals.expenses)}
-                    </Text>
-                  )}
-                </View>
+      {/* <GestureDetector gesture={panGesture}> */}
+      <View style={styles.swipeContainer}>
+        {groupedData.map((item) => (
+          <View
+            key={item.date}
+            style={[styles.dateCard, { backgroundColor: background }]}
+          >
+            <View style={[styles.dateHeader, { borderBottomColor: bb }]}>
+              <Text style={[styles.dateText, { color: text }]}>
+                {formatShortDate(item.date)}
+              </Text>
+              <View style={styles.totalsContainer}>
+                {item.dailyTotals.income > 0 && (
+                  <Text style={[styles.totalText, { color: incomeAmount }]}>
+                    {formatNumber$(item.dailyTotals.income)}
+                  </Text>
+                )}
+                {item.dailyTotals.expenses > 0 && (
+                  <Text style={[styles.totalText, { color: expenseAmount }]}>
+                    {formatNumber$(item.dailyTotals.expenses)}
+                  </Text>
+                )}
               </View>
-
-              {item.transactions.map((transaction, index) => {
-                const display = getTransactionDisplay(transaction);
-                const isLastItem = index === item.transactions.length - 1;
-
-                return (
-                  <TouchableOpacity
-                    key={transaction.id}
-                    activeOpacity={0.8}
-                    style={[
-                      styles.transactionItem,
-                      !isLastItem && styles.transactionItemBorder,
-                      { borderBottomColor: bb },
-                    ]}
-                    onPress={() => handleTransactionPress(transaction)}
-                  >
-                    <View style={styles.recordInfo}>
-                      <Text style={[styles.description, { color: text }]}>
-                        {display.description}
-                      </Text>
-                      <Text style={[styles.account, { color: transferAmount }]}>
-                        {display.accountInfo}
-                      </Text>
-                    </View>
-                    <Text style={[styles.amount, display.amountStyle]}>
-                      {display.amountText}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
             </View>
-          ))}
-        </View>
-      </GestureDetector>
+
+            {item.transactions.map((transaction, index) => {
+              const display = getTransactionDisplay(transaction);
+              const isLastItem = index === item.transactions.length - 1;
+
+              return (
+                <TouchableOpacity
+                  key={transaction.id}
+                  activeOpacity={0.8}
+                  style={[
+                    styles.transactionItem,
+                    !isLastItem && styles.transactionItemBorder,
+                    { borderBottomColor: bb },
+                  ]}
+                  onPress={() => handleTransactionPress(transaction)}
+                >
+                  <View style={styles.recordInfo}>
+                    <Text style={[styles.description, { color: text }]}>
+                      {display.description}
+                    </Text>
+                    <Text style={[styles.account, { color: transferAmount }]}>
+                      {display.accountInfo}
+                    </Text>
+                  </View>
+                  <Text style={[styles.amount, display.amountStyle]}>
+                    {display.amountText}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+      {/* </GestureDetector> */}
     </View>
   );
 }
