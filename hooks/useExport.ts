@@ -10,6 +10,111 @@ import * as XLSX from 'xlsx';
 export function useExport() {
 //   const { setIsLoading } = useAccountStore();
 
+const exportToCSV = async () => {
+    let db: SQLite.SQLiteDatabase | null = null;
+    
+    try {
+      // Abrir la base de datos
+      db = await SQLite.openDatabaseAsync("finanzas.db", {
+        useNewConnection: true,
+      });
+
+      // Obtener todos los datos
+      const accounts = await db.getAllAsync('SELECT * FROM accounts ORDER BY name') as any[];
+      const records = await db.getAllAsync('SELECT * FROM records ORDER BY date DESC, id DESC') as Record[];
+      const transfers = await db.getAllAsync('SELECT * FROM transfers ORDER BY date DESC, id DESC') as Transfer[];
+
+      // Crear todas las transacciones unificadas
+      const allTransactions = [
+        ...records.map(record => {
+          const account = accounts.find(acc => acc.id.toString() === record.account);
+          return {
+            fecha: record.date,
+            tipo: record.type === 'income' ? 'Ingreso' : 'Gasto',
+            monto: record.amount,
+            descripcion: record.description,
+            cuenta: account?.name || 'Cuenta no encontrada',
+            cuenta_origen: '',
+            cuenta_destino: '',
+            id_original: record.id
+          };
+        }),
+        ...transfers.map(transfer => {
+          const originAccount = accounts.find(acc => acc.id.toString() === transfer.origin);
+          const destinationAccount = accounts.find(acc => acc.id.toString() === transfer.destination);
+          return {
+            fecha: transfer.date,
+            tipo: 'Transferencia',
+            monto: transfer.amount,
+            descripcion: transfer.description,
+            cuenta: '',
+            cuenta_origen: originAccount?.name || 'N/A',
+            cuenta_destino: destinationAccount?.name || 'N/A',
+            id_original: transfer.id
+          };
+        })
+      ].sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+      // Convertir a CSV
+      const csvHeaders = 'fecha,tipo,monto,descripcion,cuenta,cuenta_origen,cuenta_destino,id_original\n';
+      const csvContent = allTransactions.map(transaction => 
+        `"${transaction.fecha}","${transaction.tipo}",${transaction.monto},"${transaction.descripcion.replace(/"/g, '""')}","${transaction.cuenta}","${transaction.cuenta_origen}","${transaction.cuenta_destino}","${transaction.id_original}"`
+      ).join('\n');
+
+      const csvData = csvHeaders + csvContent;
+
+      // Crear nombre del archivo con fecha y hora
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+      const fileName = `finanzas_backup_${dateStr}_${timeStr}.csv`;
+      const fileUri = FileSystem.documentDirectory + fileName;
+
+      // Guardar el archivo
+      await FileSystem.writeAsStringAsync(fileUri, csvData, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      console.log('Archivo CSV creado en:', fileUri);
+
+      // Compartir el archivo
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'text/csv',
+          dialogTitle: 'Exportar datos de finanzas (CSV)',
+          UTI: 'public.comma-separated-values-text'
+        });
+      } else {
+        Alert.alert(
+          'Exportación completada', 
+          `El archivo CSV se guardó como: ${fileName}\nUbicación: ${fileUri}`
+        );
+      }
+
+      // Mostrar resumen de exportación
+      const totalTransactions = records.length + transfers.length;
+      Alert.alert(
+        'Exportación CSV Exitosa', 
+        `Datos exportados:\n• ${totalTransactions} transacciones totales\n• ${records.filter(r => r.type === 'income').length} ingresos\n• ${records.filter(r => r.type === 'expense').length} gastos\n• ${transfers.length} transferencias\n\nArchivo: ${fileName}`
+      );
+
+    } catch (error) {
+      console.error('Error exporting CSV data:', error);
+      Alert.alert(
+        'Error de Exportación CSV', 
+        'No se pudo exportar los datos a CSV. Por favor, inténtalo de nuevo.'
+      );
+    } finally {
+      if (db) {
+        try {
+          await db.closeAsync();
+        } catch (closeError) {
+          console.error('Error closing database:', closeError);
+        }
+      }
+    }
+  };
+
   const exportToExcel = async () => {
     // setIsLoading(true);
     let db: SQLite.SQLiteDatabase | null = null;
@@ -219,6 +324,7 @@ export function useExport() {
   };
 
   return {
-    exportToExcel
+    exportToExcel,
+    exportToCSV,
   };
 }

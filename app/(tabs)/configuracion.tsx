@@ -16,21 +16,10 @@ import {
   View,
 } from "react-native";
 
-
-// const { setThemeMode } = useThemeModeStore();
-// const { reconcileBalances } = useAccount();
-// const { isLoading, setIsLoading } = useAccountStore();
-// const text = useThemeColor({}, "text");
-// const backgroundColor = useThemeColor(
-  // { light: Colors.grayT[200], dark: Colors.grayT[800] },
-  // "text"
-// );
-// const currentScheme = useColorScheme();
-
 export default function Configuracion() {
   const { setThemeMode } = useThemeModeStore();
   const { reconcileBalances } = useAccount();
-  const { exportToExcel } = useExport();
+  const { exportToExcel, exportToCSV } = useExport();
   const { isLoading, setIsLoading } = useAccountStore();
   const [isExporting, setIsExporting] = React.useState(false);
   const text = useThemeColor({}, "text");
@@ -68,21 +57,33 @@ export default function Configuracion() {
   const handleExportData = async () => {
     Alert.alert(
       "Exportar Datos",
-      "Se creará un archivo Excel con todos tus datos financieros (cuentas, ingresos, gastos y transferencias). ¿Continuar?",
+      "Selecciona el formato de exportación:",
       [
         {
           text: "Cancelar",
           style: "cancel",
         },
         {
-          text: "Exportar",
+          text: "Excel (.xlsx)",
           style: "default",
           onPress: async () => {
             setIsExporting(true);
             try {
-              await exportToExcel();
+            await exportToExcel();
             } finally {
-              setIsExporting(false);
+              setIsExporting(false)
+            }
+          },
+        },
+        {
+          text: "CSV",
+          style: "default",
+          onPress: async () => {
+            setIsExporting(true);
+            try {
+            await exportToCSV();
+            } finally {
+              setIsExporting(false)
             }
           },
         },
@@ -131,7 +132,7 @@ export default function Configuracion() {
           >
             <View style={styles.flexRow}>
               <Text style={[styles.buttonText, { color: text }]}>
-                {isExporting ? "Exportando..." : "Exportar a Excel"}
+                {isExporting ? "Exportando..." : "Exportar Datos"}
               </Text>
               <IconSymbol 
                 name={isExporting ? "arrow.clockwise" : "square.and.arrow.up"} 
