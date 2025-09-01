@@ -3,6 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { useAccount } from "@/hooks/useAccount";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useExport } from "@/hooks/useExport";
+import { useImport } from "@/hooks/useImport";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useThemeModeStore } from "@/store/useThemeModeStore";
@@ -20,8 +21,10 @@ export default function Configuracion() {
   const { setThemeMode } = useThemeModeStore();
   const { reconcileBalances } = useAccount();
   const { exportToExcel, exportToCSV } = useExport();
+  const { importFromCSV } = useImport();
   const { isLoading, setIsLoading } = useAccountStore();
   const [isExporting, setIsExporting] = React.useState(false);
+  const [isImporting, setIsImporting] = React.useState(false);
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.grayT[200], dark: Colors.grayT[800] },
@@ -55,35 +58,80 @@ export default function Configuracion() {
   };
 
   const handleExportData = async () => {
+    Alert.alert("Exportar Datos", "Selecciona el formato de exportación:", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Excel (.xlsx)",
+        style: "default",
+        onPress: async () => {
+          setIsExporting(true);
+          try {
+            await exportToExcel();
+          } finally {
+            setIsExporting(false);
+          }
+        },
+      },
+      {
+        text: "CSV",
+        style: "default",
+        onPress: async () => {
+          setIsExporting(true);
+          try {
+            await exportToCSV();
+          } finally {
+            setIsExporting(false);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleImportData = async () => {
     Alert.alert(
-      "Exportar Datos",
-      "Selecciona el formato de exportación:",
+      "Importar Datos",
+      "Esta función importará datos desde un archivo CSV. Los datos actuales serán reemplazados completamente.",
       [
         {
           text: "Cancelar",
           style: "cancel",
         },
         {
-          text: "Excel (.xlsx)",
+          text: "Seleccionar Archivo CSV",
           style: "default",
           onPress: async () => {
-            setIsExporting(true);
+            setIsImporting(true);
             try {
-            await exportToExcel();
+              const result = await importFromCSV(true); // Replace existing data
+
+              if (result.success) {
+                Alert.alert(
+                  "Importación Exitosa",
+                  `${result.message}\n\nImportado:\n• ${result.imported.accounts} cuentas\n• ${result.imported.records} registros\n• ${result.imported.transfers} transferencias`
+                );
+
+                // Refresh the app state after successful import
+                // The user might need to restart the app or we could trigger a data reload
+                Alert.alert(
+                  "Reiniciar Aplicación",
+                  "Para ver los datos importados correctamente, es recomendable reiniciar la aplicación.",
+                  [{ text: "OK" }]
+                );
+              } else {
+                Alert.alert("Error de Importación", result.message);
+              }
+            } catch (error) {
+              Alert.alert(
+                "Error de Importación",
+                `No se pudo importar el archivo: ${
+                  error instanceof Error ? error.message : "Error desconocido"
+                }`
+              );
             } finally {
-              setIsExporting(false)
-            }
-          },
-        },
-        {
-          text: "CSV",
-          style: "default",
-          onPress: async () => {
-            setIsExporting(true);
-            try {
-            await exportToCSV();
-            } finally {
-              setIsExporting(false)
+              setIsImporting(false);
             }
           },
         },
@@ -124,12 +172,9 @@ export default function Configuracion() {
             )}
           </TouchableOpacity>
         </View>
-        
+
         <View style={[styles.configItem, { backgroundColor }]}>
-          <TouchableOpacity
-            onPress={handleExportData}
-            disabled={isExporting}
-          >
+          <TouchableOpacity onPress={handleExportData} disabled={isExporting}>
             <View style={styles.flexRow}>
               <Text style={[styles.buttonText, { color: text }]}>
                 {isExporting ? "Exportando..." : "Exportar Datos"}
@@ -137,11 +182,23 @@ export default function Configuracion() {
               {isExporting ? (
                 <></>
               ) : (
-              <IconSymbol 
-                name={"square.and.arrow.up"} 
-                color={text} 
-              />
-            )}
+                <IconSymbol name={"square.and.arrow.up"} color={text} />
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[styles.configItem, { backgroundColor }]}>
+          <TouchableOpacity onPress={handleImportData} disabled={isImporting}>
+            <View style={styles.flexRow}>
+              <Text style={[styles.buttonText, { color: text }]}>
+                {isImporting ? "Importando..." : "Importar Datos"}
+              </Text>
+              {isImporting ? (
+                <></>
+              ) : (
+                <IconSymbol name={"square.and.arrow.down"} color={text} />
+              )}
             </View>
           </TouchableOpacity>
         </View>

@@ -32,6 +32,7 @@ const MAPPING = {
   "arrow.right.arrow.left": "compare-arrows",
   "arrow.clockwise": "refresh",
   "square.and.arrow.up": "file-download",
+  "square.and.arrow.down": "file-upload",
 } as IconMapping;
 
 /**
