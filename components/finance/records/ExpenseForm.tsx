@@ -5,12 +5,12 @@ import { useAccountStore } from "@/store/useAccountStore";
 import { useRecordStore } from "@/store/useRecordStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
-import { DateInput } from "../ui/DateInput";
-import { PickerInput } from "../ui/PickerInput";
+import { DateInput } from "../../ui/DateInput";
+import { PickerInput } from "../../ui/PickerInput";
 
-export function IncomeForm() {
+export function ExpenseForm() {
   const { accounts } = useAccountStore();
-  const { recordErrors, setRecordErrors, setRecordField, currentRecord } =
+  const { currentRecord, setRecordField, recordErrors, setRecordErrors } =
     useRecordStore();
   const text = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "borderColor");
@@ -54,7 +54,7 @@ export function IncomeForm() {
           minValue={0}
           style={[
             styles.input,
-            { color: text, borderColor: borderColor },
+            { borderColor: borderColor, color: text },
             recordErrors.amount && styles.inputError,
           ]}
         />
@@ -70,7 +70,7 @@ export function IncomeForm() {
         <TextInput
           style={[
             styles.input,
-            { color: text, borderColor: borderColor },
+            { borderColor: borderColor, color: text },
             recordErrors.description && styles.inputError,
           ]}
           placeholder="Descripción"
@@ -79,7 +79,7 @@ export function IncomeForm() {
             setRecordField("description", value);
             clearFieldError("description");
           }}
-          placeholderTextColor={Colors.slate[400]}
+          placeholderTextColor={Colors.gray}
         />
         {recordErrors.description && (
           <Text style={styles.errorText}>{recordErrors.description}</Text>
@@ -91,22 +91,16 @@ export function IncomeForm() {
           Seleccionar cuenta:
         </Text>
         <PickerInput
-          value={currentRecord?.account || "distribute"}
+          value={currentRecord?.account || ""}
           onValueChange={(value) => {
             setRecordField("account", value);
             clearFieldError("account");
           }}
-          items={[
-            {
-              id: "distribute",
-              name: "Distribuir Automáticamente",
-            },
-            ...accounts.map((account) => ({
-              id: account.id,
-              name: `${account.name} (${formatNumber$(account.balance)})`,
-              color: account.color,
-            })),
-          ]}
+          items={accounts.map((account) => ({
+            id: account.id,
+            name: `${account.name} (${formatNumber$(account.balance)})`,
+            color: account.color,
+          }))}
           hasError={!!recordErrors.account}
         />
         {recordErrors.account && (
@@ -122,17 +116,14 @@ export function IncomeForm() {
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    // borderColor: Colors.slate[200],
     padding: 12,
     borderRadius: 8,
     fontSize: 16,
-    // color: Colors.slate[800],
   },
   selectAccountText: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
-    // color: Colors.slate[800],
   },
   viewContainer: {
     marginBottom: 16,

@@ -5,8 +5,8 @@ import { useAccountStore } from "@/store/useAccountStore";
 import { useTransferStore } from "@/store/useTransferStore";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CurrencyInput from "react-native-currency-input";
-import { DateInput } from "../ui/DateInput";
-import { PickerInput } from "../ui/PickerInput";
+import { DateInput } from "../../ui/DateInput";
+import { PickerInput } from "../../ui/PickerInput";
 
 export function TransferForm() {
   const { accounts } = useAccountStore();

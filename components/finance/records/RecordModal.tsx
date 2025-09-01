@@ -14,10 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { IconSymbol } from "../ui/IconSymbol";
+import { IconSymbol } from "../../ui/IconSymbol";
+import { TransferForm } from "../transfers/TransferForm";
 import { ExpenseForm } from "./ExpenseForm";
 import { IncomeForm } from "./IncomeForm";
-import { TransferForm } from "./TransferForm";
 
 export function RecordModal() {
   const {

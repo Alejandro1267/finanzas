@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RecordsHeader } from "./RecordsHeader";
+import { Header } from "./Header";
 // import { GestureDetector } from "react-native-gesture-handler";
 
 export function RecordsList() {
@@ -194,7 +194,7 @@ export function RecordsList() {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <MonthSelector />
-        <RecordsHeader />
+        <Header />
       </View>
 
       <ScrollView>

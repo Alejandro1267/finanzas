@@ -1,12 +1,12 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { useRecordStore } from "@/store/useRecordStore";
+import { useAccountStore } from "@/store/useAccountStore";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export function RecordsHeader() {
-  const { records } = useRecordStore();
+export function Header() {
+  const { accounts } = useAccountStore();
 
   const text = useThemeColor({}, "text");
   const cardBackground = useThemeColor({}, "backgroundCard");
@@ -19,51 +19,57 @@ export function RecordsHeader() {
     "text"
   );
 
-  const { totalIncome, totalExpenses, balance } = useMemo(() => {
-    let income = 0;
-    let expenses = 0;
+  const { positiveAccounts, negativeAccounts, totalBalance } = useMemo(() => {
+    let positive = 0;
+    let negative = 0;
+    let total = 0;
 
-    // Calculate from records (already filtered by month)
-    records.forEach((record) => {
-      if (record.type === "income") {
-        income += record.amount;
-      } else if (record.type === "expense") {
-        expenses += record.amount;
+    accounts.forEach((account) => {
+      total += account.balance;
+
+      if (account.balance > 0) {
+        positive += account.balance;
+      } else if (account.balance < 0) {
+        negative += Math.abs(account.balance); // Show as positive number for display
       }
     });
 
-    const balance = income - expenses;
-
-    return { totalIncome: income, totalExpenses: expenses, balance };
-  }, [records]);
+    return {
+      positiveAccounts: positive,
+      negativeAccounts: negative,
+      totalBalance: total,
+    };
+  }, [accounts]);
 
   return (
     <View style={[styles.container, { backgroundColor: cardBackground }]}>
       <View style={styles.columnsContainer}>
         <View style={styles.column}>
-          <Text style={[styles.columnLabel, { color: text }]}>Ingresos</Text>
+          <Text style={[styles.columnLabel, { color: text }]}>Disponible</Text>
           <Text style={[styles.columnValue, { color: incomeAmount }]}>
-            {formatNumber$(totalIncome)}
+            {formatNumber$(positiveAccounts)}
           </Text>
         </View>
 
         <View style={styles.column}>
-          <Text style={[styles.columnLabel, { color: text }]}>Egresos</Text>
+          <Text style={[styles.columnLabel, { color: text }]}>Deudas</Text>
           <Text style={[styles.columnValue, { color: expenseAmount }]}>
-            {formatNumber$(totalExpenses)}
+            {formatNumber$(negativeAccounts)}
           </Text>
         </View>
 
         <View style={styles.column}>
-          <Text style={[styles.columnLabel, { color: text }]}>Balance</Text>
+          <Text style={[styles.columnLabel, { color: text }]}>
+            Balance Total
+          </Text>
           <Text
             style={[
               styles.columnValue,
               { color: text },
-              //   { color: balance >= 0 ? incomeAmount : expenseAmount },
+              //   { color: totalBalance >= 0 ? incomeAmount : expenseAmount },
             ]}
           >
-            {formatNumber$(balance)}
+            {formatNumber$(totalBalance)}
           </Text>
         </View>
       </View>
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   columnLabel: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
   },

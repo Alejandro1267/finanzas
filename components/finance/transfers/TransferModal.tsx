@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { formatNumber$ } from "@/helpers";
+import { useAccount } from "@/hooks/useAccount";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useState } from "react";
@@ -11,8 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { IconSymbol } from "../ui/IconSymbol";
-import { useAccount } from "@/hooks/useAccount";
+import { IconSymbol } from "../../ui/IconSymbol";
 
 export function TransferModal() {
   const {

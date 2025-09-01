@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import CurrencyInput from "react-native-currency-input";
-import { IconSymbol } from "../ui/IconSymbol";
+import { IconSymbol } from "../../ui/IconSymbol";
 
 export default function AccountModal() {
   const {

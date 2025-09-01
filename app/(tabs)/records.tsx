@@ -1,5 +1,5 @@
-import { RecordModal } from "@/components/finance/RecordModal";
-import { RecordsList } from "@/components/finance/RecordsList";
+import { RecordModal } from "@/components/finance/records/RecordModal";
+import { RecordsList } from "@/components/finance/records/RecordsList";
 import { StyleSheet, View } from "react-native";
 
 export default function Records() {

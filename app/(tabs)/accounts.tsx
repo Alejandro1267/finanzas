@@ -1,18 +1,17 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import AccountModal from "@/components/finance/AccountModal";
-import { AccountsHeader } from "@/components/finance/AccountsHeader";
-import { AccountsList } from "@/components/finance/AccountsList";
-import { TransferModal } from "@/components/finance/TransferModal";
+import AccountModal from "@/components/finance/accounts/AccountModal";
+import { AccountsList } from "@/components/finance/accounts/AccountsList";
+import { Header } from "@/components/finance/accounts/Header";
+import { TransferModal } from "@/components/finance/transfers/TransferModal";
 
 export default function Accounts() {
   return (
     <>
       <View style={styles.headerContainer}>
-        <AccountsHeader />
+        <Header />
       </View>
       <ScrollView>
-        {/* <Header /> */}
         <View style={styles.content}>
           <AccountsList />
         </View>
