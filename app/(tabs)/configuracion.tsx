@@ -2,6 +2,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useAccount } from "@/hooks/useAccount";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useExport } from "@/hooks/useExport";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAccountStore } from "@/store/useAccountStore";
 import { useThemeModeStore } from "@/store/useThemeModeStore";
@@ -15,10 +16,23 @@ import {
   View,
 } from "react-native";
 
-export default function ConfiguracionScreen() {
+
+// const { setThemeMode } = useThemeModeStore();
+// const { reconcileBalances } = useAccount();
+// const { isLoading, setIsLoading } = useAccountStore();
+// const text = useThemeColor({}, "text");
+// const backgroundColor = useThemeColor(
+  // { light: Colors.grayT[200], dark: Colors.grayT[800] },
+  // "text"
+// );
+// const currentScheme = useColorScheme();
+
+export default function Configuracion() {
   const { setThemeMode } = useThemeModeStore();
   const { reconcileBalances } = useAccount();
+  const { exportToExcel } = useExport();
   const { isLoading, setIsLoading } = useAccountStore();
+  const [isExporting, setIsExporting] = React.useState(false);
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.grayT[200], dark: Colors.grayT[800] },
@@ -51,6 +65,31 @@ export default function ConfiguracionScreen() {
     );
   };
 
+  const handleExportData = async () => {
+    Alert.alert(
+      "Exportar Datos",
+      "Se creará un archivo Excel con todos tus datos financieros (cuentas, ingresos, gastos y transferencias). ¿Continuar?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Exportar",
+          style: "default",
+          onPress: async () => {
+            setIsExporting(true);
+            try {
+              await exportToExcel();
+            } finally {
+              setIsExporting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView
       style={[styles.container]}
@@ -61,7 +100,7 @@ export default function ConfiguracionScreen() {
       </View>
 
       <View style={styles.section}>
-        <View style={[styles.currentModeInfo, { backgroundColor }]}>
+        <View style={[styles.configItem, { backgroundColor }]}>
           <TouchableOpacity
             onPress={() =>
               setThemeMode(currentScheme === "dark" ? "light" : "dark")
@@ -84,8 +123,25 @@ export default function ConfiguracionScreen() {
             )}
           </TouchableOpacity>
         </View>
+        
+        <View style={[styles.configItem, { backgroundColor }]}>
+          <TouchableOpacity
+            onPress={handleExportData}
+            disabled={isExporting}
+          >
+            <View style={styles.flexRow}>
+              <Text style={[styles.buttonText, { color: text }]}>
+                {isExporting ? "Exportando..." : "Exportar a Excel"}
+              </Text>
+              <IconSymbol 
+                name={isExporting ? "arrow.clockwise" : "square.and.arrow.up"} 
+                color={text} 
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
 
-        <View style={[styles.currentModeInfo, { backgroundColor }]}>
+        <View style={[styles.configItem, { backgroundColor }]}>
           <TouchableOpacity
             onPress={handleReconcileBalances}
             disabled={isLoading}
@@ -122,10 +178,20 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 30,
   },
-  currentModeInfo: {
-    padding: 12,
+  // currentModeInfo: {
+  //   padding: 12,
+  //   borderRadius: 8,
+  //   marginBottom: 20,
+  // },
+  configItem: {
+    padding: 16,
     borderRadius: 8,
     marginBottom: 20,
+    elevation: 1,
+    shadowColor: Colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   buttonText: {
     fontSize: 14,
