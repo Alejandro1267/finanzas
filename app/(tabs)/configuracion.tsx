@@ -134,10 +134,14 @@ export default function Configuracion() {
               <Text style={[styles.buttonText, { color: text }]}>
                 {isExporting ? "Exportando..." : "Exportar Datos"}
               </Text>
+              {isExporting ? (
+                <></>
+              ) : (
               <IconSymbol 
-                name={isExporting ? "arrow.clockwise" : "square.and.arrow.up"} 
+                name={"square.and.arrow.up"} 
                 color={text} 
               />
+            )}
             </View>
           </TouchableOpacity>
         </View>
@@ -151,7 +155,7 @@ export default function Configuracion() {
               <Text style={[styles.buttonText, { color: text }]}>
                 {isLoading ? "Reconciliando..." : "Reconciliar Balances"}
               </Text>
-              <IconSymbol name="arrow.clockwise" color={text} />
+              {/* <IconSymbol name="arrow.clockwise" color={text} /> */}
             </View>
           </TouchableOpacity>
         </View>

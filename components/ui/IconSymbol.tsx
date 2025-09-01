@@ -30,6 +30,8 @@ const MAPPING = {
   "sun.max": "light-mode",
   moon: "dark-mode",
   "arrow.right.arrow.left": "compare-arrows",
+  "arrow.clockwise": "refresh",
+  "square.and.arrow.up": "file-download",
 } as IconMapping;
 
 /**
