@@ -225,7 +225,7 @@ export function useImport() {
   const previewImportFromCSV = async (fileUri: string): Promise<ImportPreviewData> => {
     try {
       const csvContent = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.UTF8,
+        encoding: "utf8",
       });
 
       const data = parseCSVContent(csvContent);
