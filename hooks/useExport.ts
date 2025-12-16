@@ -1,7 +1,7 @@
 // import { useAccountStore } from "@/store/useAccountStore";
 import { Record } from "@/store/useRecordStore";
 import { Transfer } from "@/store/useTransferStore";
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system/next';
 import * as Sharing from 'expo-sharing';
 import * as SQLite from 'expo-sqlite';
 import { Alert } from "react-native";
@@ -68,12 +68,15 @@ const exportToCSV = async () => {
       const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
       const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
       const fileName = `finanzas_backup_${dateStr}_${timeStr}.csv`;
-      const fileUri = FileSystem.documentDirectory + fileName;
+      const file = new File(Paths.document, fileName);
+      file.create();
+      file.write(csvData);
+      const fileUri = file.uri;
 
       // Guardar el archivo
-      await FileSystem.writeAsStringAsync(fileUri, csvData, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      // await FileSystem.writeAsStringAsync(fileUri, csvData, {
+      //   encoding: "utf8",
+      // });
 
       console.log('Archivo CSV creado en:', fileUri);
 
@@ -276,12 +279,20 @@ const exportToCSV = async () => {
       const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
       const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
       const fileName = `finanzas_backup_${dateStr}_${timeStr}.xlsx`;
-      const fileUri = FileSystem.documentDirectory + fileName;
+      const file = new File(Paths.document, fileName);
+      file.create();
+      const binaryString = atob(excelBuffer);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      file.write(bytes);
+      const fileUri = file.uri;
 
       // Guardar el archivo
-      await FileSystem.writeAsStringAsync(fileUri, excelBuffer, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      // await FileSystem.writeAsStringAsync(fileUri, excelBuffer, {
+      //   encoding: FileSystem.EncodingType.Base64,
+      // });
 
       console.log('Archivo Excel creado en:', fileUri);
 

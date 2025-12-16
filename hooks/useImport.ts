@@ -230,7 +230,7 @@ export function useImport() {
 
       const data = parseCSVContent(csvContent);
       validateCSVStructure(data);
-      
+
       return transformCSVToImportData(data);
     } catch (error) {
       console.error('Error previewing CSV:', error);
