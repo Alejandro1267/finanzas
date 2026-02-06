@@ -21,14 +21,14 @@ export default function Configuracion() {
   const { setThemeMode } = useThemeModeStore();
   const { reconcileBalances } = useAccount();
   const { exportToExcel, exportToCSV } = useExport();
-  const { importFromCSV } = useImport();
+  const { importFromExcel, importFromCSV } = useImport();
   const { isLoading, setIsLoading } = useAccountStore();
   const [isExporting, setIsExporting] = React.useState(false);
   const [isImporting, setIsImporting] = React.useState(false);
   const text = useThemeColor({}, "text");
   const backgroundColor = useThemeColor(
     { light: Colors.grayT[200], dark: Colors.grayT[800] },
-    "text"
+    "text",
   );
   const currentScheme = useColorScheme();
 
@@ -53,7 +53,7 @@ export default function Configuracion() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -75,18 +75,18 @@ export default function Configuracion() {
           }
         },
       },
-      {
-        text: "CSV",
-        style: "default",
-        onPress: async () => {
-          setIsExporting(true);
-          try {
-            await exportToCSV();
-          } finally {
-            setIsExporting(false);
-          }
-        },
-      },
+      // {
+      //   text: "CSV",
+      //   style: "default",
+      //   onPress: async () => {
+      //     setIsExporting(true);
+      //     try {
+      //       await exportToCSV();
+      //     } finally {
+      //       setIsExporting(false);
+      //     }
+      //   },
+      // },
     ]);
   };
 
@@ -99,27 +99,61 @@ export default function Configuracion() {
           text: "Cancelar",
           style: "cancel",
         },
+        // {
+        //   text: "Seleccionar Archivo CSV",
+        //   style: "default",
+        //   onPress: async () => {
+        //     setIsImporting(true);
+        //     try {
+        //       const result = await importFromCSV(true); // Replace existing data
+
+        //       if (result.success) {
+        //         Alert.alert(
+        //           "Importación Exitosa",
+        //           `${result.message}\n\nImportado:\n• ${result.imported.accounts} cuentas\n• ${result.imported.records} registros\n• ${result.imported.transfers} transferencias`,
+        //         );
+
+        //         // Refresh the app state after successful import
+        //         // The user might need to restart the app or we could trigger a data reload
+        //         // Alert.alert(
+        //         //   "Reiniciar Aplicación",
+        //         //   "Para ver los datos importados correctamente, es recomendable reiniciar la aplicación.",
+        //         //   [{ text: "OK" }],
+        //         // );
+        //       } else {
+        //         Alert.alert("Error de Importación", result.message);
+        //       }
+        //     } catch (error) {
+        //       Alert.alert(
+        //         "Error de Importación",
+        //         `No se pudo importar el archivo: ${
+        //           error instanceof Error ? error.message : "Error desconocido"
+        //         }`,
+        //       );
+        //     } finally {
+        //       setIsImporting(false);
+        //     }
+        //   },
+        // },
         {
-          text: "Seleccionar Archivo CSV",
+          text: "Seleccionar Archivo .xlsx",
           style: "default",
           onPress: async () => {
             setIsImporting(true);
             try {
-              const result = await importFromCSV(true); // Replace existing data
+              const result = await importFromExcel(true);
 
               if (result.success) {
                 Alert.alert(
                   "Importación Exitosa",
-                  `${result.message}\n\nImportado:\n• ${result.imported.accounts} cuentas\n• ${result.imported.records} registros\n• ${result.imported.transfers} transferencias`
+                  `${result.message}\n\nImportado:\n• ${result.imported.accounts} cuentas\n• ${result.imported.records} registros\n• ${result.imported.transfers} transferencias`,
                 );
 
-                // Refresh the app state after successful import
-                // The user might need to restart the app or we could trigger a data reload
-                Alert.alert(
-                  "Reiniciar Aplicación",
-                  "Para ver los datos importados correctamente, es recomendable reiniciar la aplicación.",
-                  [{ text: "OK" }]
-                );
+                // Alert.alert(
+                //   "Reiniciar Aplicación",
+                //   "Para ver los datos importados correctamente, es recomendable reiniciar la aplicación.",
+                //   [{ text: "OK" }],
+                // );
               } else {
                 Alert.alert("Error de Importación", result.message);
               }
@@ -128,14 +162,14 @@ export default function Configuracion() {
                 "Error de Importación",
                 `No se pudo importar el archivo: ${
                   error instanceof Error ? error.message : "Error desconocido"
-                }`
+                }`,
               );
             } finally {
               setIsImporting(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
