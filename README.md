@@ -1,54 +1,37 @@
-# Welcome to your Expo app 👋
+# Finanzas - Gestor Personal con Expo + React Native
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Descripción
 
-## Get started
+Creé este proyecto porque necesitaba una aplicación que se adaptara a mi manera de manejar las finanzas: quería abrir varias cuentas con porcentajes de distribución definidos y que al registrar un ingreso se pudieran repartir automáticamente según esos porcentajes. Como no encontré ninguna aplicación que tuviera una función similar, decidí desarrollarla yo mismo.
 
-1. Install dependencies
+Aplicación móvil para administrar cuentas, ingresos, egresos y transferencias con persistencia local en SQLite. Diseñada para funcionar offline, ofrece una experiencia nativa pulida gracias a Expo Router, navegación con pestañas y componentes personalizados.
 
-   ```bash
-   npm install
-   ```
+## Características Principales
 
-2. Start the app
+1. **Gestión integral de cuentas:**
+   - Crear, editar y eliminar cuentas con color, porcentaje de distribución y saldo inicial.
+   - Eliminación segura con transferencia automática de registros y balances para evitar inconsistencias.
+   - Botón flotante y modales dedicados con validaciones en tiempo real.
+2. **Registro Unificado de Movimientos:**
+   - Modal con tres pestañas (Ingreso, Gasto, Transferencia) comparte lógica y validación.
+   - Distribución automática de ingresos según porcentajes configurados, incluyendo opción "Distribuir automáticamente".
+   - Navegación mensual para filtrar registros y transferencias por mes/año.
+3. **Transferencias Internas:**
+   - Flujo con doble verificación de saldos, actualización atómica en DB y sincronización con el store.
+   - Historial centralizado y cálculos de balances revertidos al eliminar/migrar cuentas.
+4. **Persistencia Robusta:**
+   - SQLite en todas las operaciones.
+   - Transacciones con BEGIN, COMMIT y ROLLBACK para garantizar la integridad de los datos.
+   - Función para recalcular los saldos desde cero usando la base de datos.
+5. **Personalización:**
+   - Selector de tema (claro/oscuro/automático) y paletas de color temático persistentes con AsyncStorage.
+   - Exportación e importación desde Excel (.xlsx).
+   - Pantalla de configuración.
 
-   ```bash
-   npx expo start
-   ```
+## Arquitectura y Stack
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
-## Conexión con Android
-
-Para que puedas conectar a un celular con Android, tanto el celular como la computadora deben estar conectados a la misma red.
+- **Framework:** Expo + React Native con Expo Router.
+- **Estado Global:** Zustand.
+- **Base de Datos:** SQLite (expo-sqlite).
+- **Validaciones:** Zod para formularios y reglas de negocio.
+- **UI:** Componentes personalizados.
