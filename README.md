@@ -1,7 +1,5 @@
 # Finanzas - Gestor Personal con Expo + React Native
 
-## Descripción
-
 Creé este proyecto porque necesitaba una aplicación que se adaptara a mi manera de manejar las finanzas: quería abrir varias cuentas con porcentajes de distribución definidos y que al registrar un ingreso se pudieran repartir automáticamente según esos porcentajes. Como no encontré ninguna aplicación que tuviera una función similar, decidí desarrollarla yo mismo.
 
 Aplicación móvil para administrar cuentas, ingresos, egresos y transferencias con persistencia local en SQLite. Diseñada para funcionar offline, ofrece una experiencia nativa pulida gracias a Expo Router, navegación con pestañas y componentes personalizados.
